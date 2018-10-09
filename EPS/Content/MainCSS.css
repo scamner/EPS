@@ -175,6 +175,23 @@ table {
         border-color: #355285;
     }
 
+    .webgrid-table-sub-header th {
+        background: #93a5c7;
+        color: White;
+        margin: 0;
+        text-align: center;
+        border-width: thin;
+        border-style: ridge;
+        font-size: x-small;
+        font-weight: bolder;
+        padding: 3px;
+        border-color: #355285;
+    }
+
+.webgrid-table-sub-header td {
+    font-size: x-small;
+}
+
         .webgrid-table th a {
             color: White;
         }

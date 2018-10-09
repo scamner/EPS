@@ -112,8 +112,10 @@ namespace EPS.Controllers
         {
             try
             {
+                DateTime checkTime = DateTime.Now.AddMinutes(-5);
+
                 List<vwRunWorkflow> runs = db.vwRunWorkflows.
-                    Where(r => (r.RunStatus == "Pending" || r.StartTime >= DateTime.Now.AddSeconds(-30))).OrderBy(e => e.StartTime).ToList();
+                    Where(r => (r.RunStatus == "Pending" || r.StartTime >= checkTime)).OrderBy(e => e.StartTime).ToList();
 
                 List<int> RunIDs = runs.Select(r => r.RunID).Distinct().ToList();
                 List<RunResult> Results = db.RunResults.Where(r => RunIDs.Contains(r.RunID)).ToList();

@@ -36,7 +36,6 @@ function LoadMain(item) {
 }
 
 function checkRuns() {
-    $.ajax("/Dashboard/GetRuns").done(function (data) {
-
-    });
+    var tab = $('#GetRuns');
+    SetTab(tab);
 }

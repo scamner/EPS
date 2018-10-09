@@ -14,24 +14,73 @@
 
 @if (Model.Count() == 0)
 {
-    <p style="text-align: center; color: red;">There are no workflows running now.</p> 
+    <p style="text-align: center; color: red;">There are no workflows running now.</p>
 }
 else
 {
-<table class="webgrid-table">
-    @foreach (var item in Model)
-    {
+    <table class="webgrid-table">
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmpID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Workflow.WorkflowName)
-            </td>
+            <th>Run By:</th>
+            <th>Start Time:</th>
+            <th>Employee First Name:</th>
+            <th>Employee Last Name:</th>
+            <th>Item Count:</th>
+            <th>Status:</th>
         </tr>
-    }
-</table>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td style="text-align: left;">
+                    @Html.DisplayFor(modelItem => item.Username)
+                </td>
+                <td>
+                    @{ string startTime = item.StartTime.ToString("MM/dd/yyyy hh:mm tt"); }
+                    @Html.DisplayFor(modelItem => startTime)
+                </td>
+                <td style="text-align: left;">
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td style="text-align: left;">
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemCount)
+                </td>
+                <td style="text-align: left; color: red;">
+                    @Html.DisplayFor(modelItem => item.RunStatus)
+                </td>
+            </tr>
+            <tr>
+                <td style="padding-left: 25px; padding-top: 10px; padding-bottom: 10px; text-align: left;" colspan="6">
+                    @if (item.ResultItems.Count() == 0)
+                    {
+                        <p style="text-align: center; color: red;">No workflow items completed yet.</p>
+                    }
+                    else
+                    {
+                        <table style="display: inline-table;" class="webgrid-table-sub-header">
+                            <tr>
+                                <th>Workflow Item:</th>
+                                <th>Run Start:</th>
+                                <th>Run Complete:</th>
+                                <th>Result:</th>
+                            </tr>
+                            @foreach (DataLayer.RunResult i in item.ResultItems)
+                            {
+                                string itemStartTime = i.TimeStarted.ToString("MM/dd/yyyy hh:mm tt"); 
+                                string itemEndTime = i.TimeCompleted.ToString("MM/dd/yyyy hh:mm tt"); 
+                                
+                            <tr>
+                                    <td style="text-align: left;">@i.WorkflowItem.LibraryItem.ItemDesc</td>
+                                    <td>@itemStartTime</td>
+                                    <td>@itemEndTime</td>
+                                    <td style="text-align: left;">@i.ResultString</td>
+                                </tr>
+                            }
+                        </table>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
 }

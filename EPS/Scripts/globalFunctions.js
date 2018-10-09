@@ -123,6 +123,10 @@ $(document).ajaxSend(function (evt, request, settings) {
         showLoading = false;
     }
 
+    if (url.indexOf("/GetRuns") > -1) {
+        showLoading = false;
+    }
+
     if (showLoading == true) {
         var btnOpenLoading = $("#btnOpenLoading");
         btnOpenLoading.click();
