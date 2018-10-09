@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="d642fe2b9b9e4e42b19dbc2aa5959fa6" Name="Diagram1" ZoomLevel="100">
+        <EntityTypeShape EntityType="EPSModel.LibraryItem" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="EPSModel.Parameter" Width="1.5" PointX="0.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="EPSModel.RunItem" Width="1.5" PointX="5.25" PointY="1.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="EPSModel.RunResult" Width="1.5" PointX="8" PointY="5" IsExpanded="true" />
+        <EntityTypeShape EntityType="EPSModel.RunResultStatus" Width="1.5" PointX="5.75" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="EPSModel.RunWorkflow" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="EPSModel.WorkflowItem" Width="1.5" PointX="3" PointY="5.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="EPSModel.Workflow" Width="1.5" PointX="0.75" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="EPSModel.vwRunWorkflow" Width="1.5" PointX="2.75" PointY="8.75" IsExpanded="true" />
+        <AssociationConnector Association="EPSModel.FK_RunItems_WorkflowItems" ManuallyRouted="false" />
+        <AssociationConnector Association="EPSModel.FK_RunItems_WorkflowRun" ManuallyRouted="false" />
+        <AssociationConnector Association="EPSModel.FK_RunResult_RunResultStatus" ManuallyRouted="false" />
+        <AssociationConnector Association="EPSModel.FK_WorkflowRun_Workflows" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="EPSModel.vwRunItem" Width="1.5" PointX="5.375" PointY="8.75" />
+        <AssociationConnector Association="EPSModel.FK_WorkflowItems_LibraryItems" />
+        <EntityTypeShape EntityType="EPSModel.RunPayload" Width="1.5" PointX="5.25" PointY="11.5" />
+        <AssociationConnector Association="EPSModel.FK_RunPayload_RunWorkflow" />
+        <EntityTypeShape EntityType="EPSModel.ErrorLog" Width="1.5" PointX="10.375" PointY="0.75" />
+        <EntityTypeShape EntityType="EPSModel.Login" Width="1.5" PointX="9.625" PointY="9.25" />
+        <EntityTypeShape EntityType="EPSModel.Employee" Width="1.5" PointX="0.75" PointY="1.125" />
+        <AssociationConnector Association="EPSModel.FK_WorkflowRun_Employees" />
+        <EntityTypeShape EntityType="EPSModel.Employees_Log" Width="1.5" PointX="9.625" PointY="14.5" />
+        <AssociationConnector Association="EPSModel.FK_WorkflowItems_Workflows" />
+        <EntityTypeShape EntityType="EPSModel.User" Width="1.5" PointX="0.75" PointY="11.375" />
+        <AssociationConnector Association="EPSModel.FK_Employees_Log_Users" />
+        <AssociationConnector Association="EPSModel.FK_Logins_Users" />
+        <AssociationConnector Association="EPSModel.FK_RunWorkflow_Users" />
+        <AssociationConnector Association="EPSModel.FK_RunResult_WorkflowItems" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

@@ -1,0 +1,66 @@
+﻿@model IEnumerable<EPS.Models.ADUser>
+
+<hr />
+
+<table class="webgrid-table">
+    <tr>
+        <th>
+            <label>Username</label>
+        </th>
+        <th>
+            <label>First Name</label>
+        </th>
+        <th>
+            <label>Last Name</label>
+        </th>
+        <th>
+            <label>Email</label>
+        </th>
+        <th>
+            Manager?
+        </th>
+        <th>
+            Reports To
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td style="text-align: left;">
+                @Html.DisplayFor(modelItem => item.Username)
+            </td>
+            <td style="text-align: left;">
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td style="text-align: left;">
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td style="text-align: left;">
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                <input type="checkbox" name="IsManager" id="IsManager_@item.Username" />
+            </td>
+            <td>
+                @if (item.Exists == false)
+                {
+                    @Html.DropDownList("ManagerID", new SelectList(ViewBag.Managers, "Value", "Text"), new { @id = "ddlReportTo_" + item.Username })
+                }
+            </td>
+            <td>
+                @if (item.Exists == true)
+                {
+                    <label>Already Exists</label>
+                }
+                else
+                {
+                    <label style="display: none;" id="lblAddEmp_@item.Username">Already Exists</label>
+                    <input type="button" id="btnAddEmp_@item.Username" value="Add Employee" onclick="AddEmployee('@item.ADGUID', '@item.Email', '@item.FirstName', '@item.LastName', '@item.Username');" />
+                }
+            </td>
+        </tr>
+    }
+
+</table>

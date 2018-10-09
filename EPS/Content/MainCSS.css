@@ -1,0 +1,361 @@
+﻿body {
+    color: #001c54;
+    font-family: Arial;
+    font-size: 0.938em;
+}
+
+.ReqAster {
+    color: #df0000;
+    font-weight: bolder;
+    font-size: 1.7em;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+div ui-dialog {
+    font-size: 0.938em;
+}
+
+.ui-widget {
+    font-size: 0.938em !important;
+}
+
+.DefaultGreen {
+    color: forestgreen;
+}
+
+input[type="text"] {
+    border-radius: 4px;
+    height: 18px;
+    padding: 3px;
+    color: #001c54;
+    font-family: Arial;
+    font-size: 0.938em;
+    width: 150px;
+}
+
+textarea {
+    border-radius: 4px;
+    padding: 3px;
+    color: #001c54;
+    font-family: Arial;
+    font-size: 0.938em;
+}
+
+input[type="password"] {
+    font-family: Arial;
+    font-size: 0.938em;
+    border-radius: 4px;
+    height: 18px;
+    padding: 3px;
+}
+
+input[type="submit"] {
+    font: 0.938em Arial;
+    width: auto;
+    height: 30px;
+    border-radius: 8px;
+    border-style: none;
+    background: #27870f;
+    color: white;
+}
+
+input[type="button"] {
+    font: 0.938em Arial;
+    width: auto;
+    height: 30px;
+    border-radius: 8px;
+    border-style: none;
+    background: #27870f;
+    color: white;
+}
+
+button {
+    font: 0.938em Arial;
+    width: auto;
+    height: 30px;
+    border-radius: 8px;
+    border-style: none;
+    background: #27870f;
+    color: white;
+}
+
+input[type="submit"]:hover {
+    background: #1d5f0c;
+    cursor: pointer;
+}
+
+input[type="button"]:hover {
+    background: #1d5f0c;
+    cursor: pointer;
+}
+
+.RedButton {
+    background: #df0000 !important;
+}
+
+    .RedButton:hover {
+        background: firebrick !important;
+    }
+
+.BlueButton {
+    background: #001c54 !important;
+}
+
+    .BlueButton:hover {
+        background: #605e58 !important;
+    }
+
+select {
+    border-radius: 4px;
+    padding: 4px;
+    color: #001c54;
+    font-family: Arial;
+    font-size: 0.938em;
+}
+
+table {
+    display: inline-block;
+    border-color: #355285;
+}
+
+    table tr td {
+        padding: 5px;
+        border-color: #355285;
+    }
+
+.Progress_Background {
+    background-color: Gray;
+    filter: alpha(opacity=80);
+    opacity: 0.8;
+    text-align: center;
+    vertical-align: middle;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100000000;
+}
+
+.General_Header {
+    background: #4b6595;
+    border-color: #355285;
+    color: White;
+    margin: 0;
+    text-align: center;
+    border-width: thin;
+    border-style: ridge;
+    font-size: 0.750em;
+    font-weight: bolder;
+}
+
+.webgrid-header a {
+    color: White;
+}
+
+.webgrid-table {
+    border-collapse: collapse;
+    background-color: white;
+    display: inline-block;
+}
+
+    .webgrid-table th {
+        background: #4b6595;
+        color: White;
+        margin: 0;
+        text-align: center;
+        border-width: thin;
+        border-style: ridge;
+        font-size: 0.750em;
+        font-weight: bolder;
+        padding: 7px;
+        border-color: #355285;
+    }
+
+        .webgrid-table th a {
+            color: White;
+        }
+
+    .webgrid-table td {
+        border: 1px solid #355285;
+    }
+
+.Progress_Inside {
+    height: 100%;
+    padding: 25%;
+}
+
+.Progress_Table {
+    filter: alpha(opacity=100);
+    opacity: 1;
+    border: 1px solid Black;
+    background-color: White;
+    border-radius: 4px;
+    margin-top: -250px;
+}
+
+.ModalLabel {
+    font-size: 0.938em;
+    text-align: left;
+    vertical-align: middle;
+    height: 100%;
+    padding: 20px;
+}
+
+.EPS_Modal_Top {
+    top: 10px !important;
+}
+
+
+.field-validation-valid {
+    display: none;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+.field-validation-error {
+    color: #df0000;
+}
+
+.input-validation-error {
+    border: 1px solid #ff0000;
+    background-color: #ffeeee;
+}
+
+.EPS_Modal .ui-dialog-titlebar-close, .EPS_Modal .ui-draggable, .EPS_Modal .ui-draggable-handle {
+    visibility: hidden;
+}
+
+.EPS_Modal .ui-widget-header, .EPS_Modal .ui-dialog-buttonpane {
+    display: none;
+}
+
+.EPS_Modal {
+    background: none !important;
+    border: none !important;
+    color: #001c54 !important;
+    font-family: Arial !important;
+}
+
+.BoxBorder {
+    padding: 20px;
+    border: 1px solid Gray;
+    background-color: #F5F5F5;
+    text-align: center;
+    border-radius: 4px;
+    margin: 20px;
+    width: auto;
+    vertical-align: top;
+    display: inline-block;
+    font-size: small !important;
+}
+
+.HideBoxBorder {
+    display: none;
+    width: 0;
+}
+
+.BoxLabel {
+    margin-left: -10px;
+    margin-top: -35px;
+    z-index: 100000000;
+    text-align: left;
+    float: left;
+    display: inline;
+    background-color: white;
+    border: 1px solid Gray;
+    padding: 3px;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+.Table_Header {
+    border: 1px solid #355285;
+    text-align: right;
+    font-size: small;
+    background-color: #CCCCCC;
+}
+
+#ui-datepicker-div {
+    border: 1px solid black !important;
+    background-color: white !important;
+    text-align: center;
+}
+
+a.LinkButton {
+    display: inline-block;
+    text-decoration: none;
+    padding-top: 7px;
+    font: 0.938em Arial;
+    width: 175px;
+    height: 25px;
+    border-radius: 8px;
+    border-style: none;
+    background: #27870f;
+    color: white !important;
+    outline-color: black;
+}
+
+    a.LinkButton:hover {
+        background: #1d5f0c;
+        cursor: pointer;
+    }
+
+a.LinkButtonAutoSize {
+    display: inline-block;
+    text-decoration: none;
+    padding-top: 7px;
+    font: 0.938em Arial;
+    padding: 7px !important;
+    border-radius: 8px;
+    border-style: none;
+    background: #27870f;
+    color: white !important;
+}
+
+    a.LinkButtonAutoSize:hover {
+        background: #1d5f0c;
+        cursor: pointer;
+    }
+
+hr {
+    display: block;
+    height: 3px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+    border-color: #27870f;
+}
+
+.CloseModal {
+    height: 25px;
+    width: 25px;
+    cursor: pointer;
+    outline: none;
+}
+
+.Horizontal_list {
+    vertical-align: middle;
+    list-style-type: none;
+    display: inline;
+}
+
+    .Horizontal_list li {
+        display: inline;
+        vertical-align: middle;
+        padding-right: 10px;
+    }
+
+        .Horizontal_list li a {
+            text-decoration: none;
+        }
+
+#btnCloseMessage {
+    outline: none;
+}

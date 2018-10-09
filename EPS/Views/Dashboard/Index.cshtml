@@ -1,0 +1,65 @@
+﻿
+@{
+    ViewBag.Title = "EPS - Employee Provisioning System";
+    Layout = "~/Views/_LayoutPage1.cshtml";
+    string version = typeof(EPS.MvcApplication).Assembly.GetName().Version.ToString();
+}
+
+<script src="~/Scripts/jsDashboard.js?nocache=@version"></script>
+<link href="~/Content/TabTopsCss.css" rel="stylesheet" />
+
+<table class="TabParent" style="border-collapse: collapse; margin-top: 0px;">
+    <tr>
+        <td style="width: 100%;">
+            <div id="tabs_container">
+                <ul id="tabs" style="cursor: default;" class="menu">
+                    <li role="menuitem" class="menu-item active" id="GetEmployees">
+                        <a href="#GetEmployees">
+                            Employees
+                        </a>
+                    </li>
+
+                    <li role="menuitem" class="menu-item" id="GetRuns">
+                        <a href="#GetRuns">
+                            Workflow Runs
+                        </a>
+                    </li>
+
+                    <li role="menuitem" class="menu-item" id="GetSetup">
+                        <a href="#GetSetup">
+                            Workflow Setup
+                        </a>
+                    </li>
+
+                    <li role="menuitem" class="menu-item" id="GetLogs">
+                        <a href="#GetLogs">
+                            Logs
+                        </a>
+                    </li>
+
+                    <li role="menuitem" class="menu-item" id="GetAdmin">
+                        <a href="#GetAdmin">
+                            Admin
+                        </a>
+                    </li>
+
+                    <li role="menuitem" class="menu-item">
+                        <a href="User\Logout">
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="divMain" style="overflow: auto; text-align: center;">
+</div>
+
+<div id="divSyncADModal" style="display: none; padding: 10px;">
+    <input type="image" src="~/Images/Close.png" class="CloseModal" alt="Close" align="right" onclick="PopModal($('#divSyncADModal'), 'hide', '0'); " />
+    <div style="border: medium ridge #C0C0C0; margin: 10px; background-color: #FFFFFF; border-radius: 5px; text-align: center; padding: 10px;">
+        @{ Html.RenderPartial("_SearchAD", new EPS.Models.ADUser { ForUser = false }); }
+    </div>
+</div>

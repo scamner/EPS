@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+
+@{
+    DataLayer.User CurrentUser = (DataLayer.User)System.Web.HttpContext.Current.Session["CurrentUser"];
+    String welcome = CurrentUser == null ? "" : "Welcome: " + CurrentUser.Username;
+    string version = typeof(EPS.MvcApplication).Assembly.GetName().Version.ToString();
+}
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="PRAGMA" content="NO-CACHE" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store" />
+    <meta name="viewport" content="width=device-width" />
+    <title>EPS - Employee Provisioning System</title>
+
+    <link href="~/Content/MainCSS.css" rel="stylesheet" />
+    <link href="~/Content/themes/smoothness/jquery-ui.min.css" rel="stylesheet" />
+
+    <script src="~/Scripts/jquery-2.1.1.js"></script>
+    <script src="~/Scripts/jquery-ui-1.11.1.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Scripts/modernizr-2.8.3.js"></script>
+    <script src="~/Scripts/globalFunctions.js"></script>
+
+    <script type="text/javascript">
+        var eps_Root = '@MvcApplication.getCurrentRoot()';
+    </script>
+</head>
+<body>
+    <table style="padding: 20px; width: 100%;">
+        <tr>
+            <td nowrap>
+                <label style="font-size: 35px;"><b><i>E</i></b></label>
+                <label>mployee</label>
+            </td>
+            <td nowrap>
+                <label style="font-size: 35px;"><b><i>P</i></b></label>
+                <label>rovisioning</label>
+            </td>
+            <td nowrap>
+                <label style="font-size: 35px;"><b><i>S</i></b></label>
+                <label>ystem</label>
+            </td>
+            <td style="width: 100%; text-align: right; vertical-align: middle;">
+                <label id="lblUser">@welcome</label><br />
+                <label style="font-size: xx-small;">Version: @version</label>
+            </td>
+        </tr>
+    </table>
+
+    <hr />
+
+    <div>
+        @RenderBody()
+
+        <div id="divLoading" style="display: none;" class="Progress_Background">
+            <div class="Progress_Inside">
+                <div style="padding: 10px; text-align: center;">
+                    <table class="Progress_Table" role="presentation">
+                        <tr>
+                            <td style="padding: 10px;">
+                                <img src="~/Images/Loading.gif" alt="Loading..." />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; font-size: medium; font-weight: bold;">
+                                <div id="LoadingText" style="width: 200px;">loading...</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="divMessage" style="display: none;">
+            <div style="padding: 10px; text-align: left;">
+                <input type="image" id="btnCloseMessage" src="~/Images/Close.png" alt="Close Message" align="right" style="height: 25px; width: 25px;" onclick="ShowMessage('divMessage', 'hide');" tabindex="11" />
+                <div style="border: medium ridge #C0C0C0; margin: 10px; background-color: #FFFFFF; border-radius: 5px; ">
+                    <div class="ModalLabel" style="padding: 10px; text-align:center;">
+                        <label id="txtMessageText" tabindex="10" style="outline: none;"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="divLogonTimeout" style="display: none;">
+            <div style="padding: 10px; text-align: left;">
+                <div style="border: medium ridge #C0C0C0; margin: 10px; background-color: #FFFFFF; border-radius: 5px; ">
+                    <div class="ModalLabel" style="padding: 10px; text-align:center;">
+                        <div id="txtTimeoutText" style="padding: 5px;"></div>
+                        <p style="text-align: center;">
+                            <input type="button" id="btnLogonTimeout" value="Keep my session open" onclick="resetTimeout();" />
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

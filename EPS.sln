@@ -1,0 +1,67 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2047
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPS", "EPS\EPS.csproj", "{DB2D5A0E-2F0D-4BDA-A573-5E3C6C837FF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunWorkflows", "RunWorkflows\RunWorkflows.csproj", "{01C3B85A-1146-455C-A490-68DBFB4E66B1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflow_Libraries", "Workflow_Libraries", "{3659EE2F-1950-4216-B848-D4990154AD9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisableADUser", "DisableUser\DisableADUser.csproj", "{3AC60103-F187-48BF-B857-E39AD647697B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer", "DataLayer\DataLayer.csproj", "{5753833B-0831-452D-BE73-9C7D468C2405}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DB2D5A0E-2F0D-4BDA-A573-5E3C6C837FF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB2D5A0E-2F0D-4BDA-A573-5E3C6C837FF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB2D5A0E-2F0D-4BDA-A573-5E3C6C837FF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB2D5A0E-2F0D-4BDA-A573-5E3C6C837FF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01C3B85A-1146-455C-A490-68DBFB4E66B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01C3B85A-1146-455C-A490-68DBFB4E66B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01C3B85A-1146-455C-A490-68DBFB4E66B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01C3B85A-1146-455C-A490-68DBFB4E66B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AC60103-F187-48BF-B857-E39AD647697B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AC60103-F187-48BF-B857-E39AD647697B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AC60103-F187-48BF-B857-E39AD647697B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AC60103-F187-48BF-B857-E39AD647697B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5753833B-0831-452D-BE73-9C7D468C2405}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5753833B-0831-452D-BE73-9C7D468C2405}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5753833B-0831-452D-BE73-9C7D468C2405}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5753833B-0831-452D-BE73-9C7D468C2405}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3AC60103-F187-48BF-B857-E39AD647697B} = {3659EE2F-1950-4216-B848-D4990154AD9C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1C13BB5A-4F02-4A18-BD4E-A277D1C492C3}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 5
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://dctfs1:8080/tfs/chs
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = EPS\\EPS.csproj
+		SccProjectName1 = EPS
+		SccLocalPath1 = EPS
+		SccProjectUniqueName2 = RunWorkflows\\RunWorkflows.csproj
+		SccProjectName2 = RunWorkflows
+		SccLocalPath2 = RunWorkflows
+		SccProjectUniqueName3 = DisableUser\\DisableADUser.csproj
+		SccProjectTopLevelParentUniqueName3 = EPS.sln
+		SccProjectName3 = DisableUser
+		SccLocalPath3 = DisableUser
+		SccProjectUniqueName4 = DataLayer\\DataLayer.csproj
+		SccProjectName4 = DataLayer
+		SccLocalPath4 = DataLayer
+	EndGlobalSection
+EndGlobal

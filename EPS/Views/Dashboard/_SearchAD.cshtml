@@ -1,0 +1,35 @@
+﻿@model EPS.Models.ADUser
+
+@using (Ajax.BeginForm("SearchADForUsers", new AjaxOptions { UpdateTargetId = "divSearchADUsersResult", OnComplete = "$('#divSearchADUsersResult').css('display', 'block');" }))
+{
+    <table>
+        <tr>
+            <td colspan="5" style="padding-bottom: 10px;">
+                Search Active Directory for Users
+            </td>
+        </tr>
+        <tr>
+            <td>First Name</td>
+            <td>
+                @Html.TextBox("FirstName")
+                <br />
+                @Html.ValidationMessageFor(model => model.FirstName)
+            </td>
+            <td>Last Name</td>
+            <td>
+                @Html.TextBox("LastName")
+                <br />
+                @Html.ValidationMessageFor(model => model.LastName)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align: center;">
+                <input type="submit" value="Search for user in Active Directory" />
+            </td>
+        </tr>
+    </table>
+
+    @Html.HiddenFor(m => m.ForUser)
+}
+
+<div id="divSearchADUsersResult"></div>

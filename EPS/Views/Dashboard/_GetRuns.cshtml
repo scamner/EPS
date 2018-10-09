@@ -1,0 +1,37 @@
+﻿@model IEnumerable<EPS.Models.GetWorkflowModel>
+
+<script type="text/javascript">
+    var timerRunCheck = null;
+
+    $(document).ready(function () {
+        if (timerRunCheck == null) {
+            timerRunCheck = window.setTimeout(function () {
+                checkRuns();
+            }, 5000);
+        }
+    });
+</script>
+
+@if (Model.Count() == 0)
+{
+    <p style="text-align: center; color: red;">There are no workflows running now.</p> 
+}
+else
+{
+<table class="webgrid-table">
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmpID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Workflow.WorkflowName)
+            </td>
+        </tr>
+    }
+</table>
+}

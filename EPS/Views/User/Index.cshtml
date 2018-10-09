@@ -1,0 +1,53 @@
+﻿@model  EPS.Models.UserModel
+@{
+    ViewBag.Title = "EPS - Employee Provisioning System";
+    Layout = "~/Views/_LayoutPage1.cshtml";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Username').focus();
+    });
+
+    function LoginFailed() {
+        ShowMessage('Logon Failed.', 'show');
+        $('#Password').val('');
+    }
+</script>
+
+<div style="text-align: center; margin-top: 50px;">
+    @using (Ajax.BeginForm("CheckPassword", "User", null, new AjaxOptions { UpdateTargetId = "divLoginResult", HttpMethod = "POST" }))
+    {
+        <table style="display: inline-table;">
+            <tr>
+                <td>
+                    <label for="Username">Username:</label>
+                </td>
+                <td>
+                    @Html.TextBox("Username", "scamner")
+                    <br />
+                    @Html.ValidationMessageFor(model => model.Username)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Password">Password:</label>
+                </td>
+                <td>
+                    @Html.Password("Password", "$ilvanaNin^2026", new { @autocomplete = "off" })
+                    <br />
+                    @Html.ValidationMessageFor(model => model.Password)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <input type="submit" value="Log In" alt="Log In" width="30" height="30">
+                </td>
+            </tr>
+        </table>
+    }
+</div>
+
+<div id="divLoginResult"></div>
+
+
