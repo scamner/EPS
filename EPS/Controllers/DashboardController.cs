@@ -293,7 +293,7 @@ namespace EPS.Controllers
                 String error = util.ParseError(ex);
                 util.WriteErrorToLog("Dashboard/AddEmployee", ex, String.Format("First Name: {0}, Last Name: {1}", FirstName, LastName));
 
-                return Json(new { Error = error, JsonRequestBehavior.AllowGet });
+                return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -331,7 +331,7 @@ namespace EPS.Controllers
                 String error = util.ParseError(ex);
                 util.WriteErrorToLog("Dashboard/SetEmployeeAsManager", ex, String.Format("Emp ID: {0}, Is Manager: {1}", EmpID.ToString(), IsManager.ToString()));
 
-                return Json(new { Error = error, JsonRequestBehavior.AllowGet });
+                return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -364,7 +364,7 @@ namespace EPS.Controllers
                 String error = util.ParseError(ex);
                 util.WriteErrorToLog("Dashboard/SetEmployeeReportTo", ex, String.Format("Emp ID: {0}, Manager ID: {1}", EmpID.ToString(), ManagerID.ToString()));
 
-                return Json(new { Error = error, JsonRequestBehavior.AllowGet });
+                return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -374,26 +374,55 @@ namespace EPS.Controllers
             try
             {
                 List<Workflow> wf = db.Workflows.Where(w => w.Disabled == false).OrderBy(w => w.WorkflowName).ToList();
+                List<LoadRunWorkflowsModel> model = new List<LoadRunWorkflowsModel>();
 
-                var list = JsonConvert.SerializeObject(wf, Formatting.None,
+                foreach (Workflow w in wf)
+                {
+                    LoadRunWorkflowsModel lr = new LoadRunWorkflowsModel
+                    {
+                        WorkflowID = w.WorkflowID,
+                        WorkflowName = w.WorkflowName
+                    };
+
+                    foreach (WorkflowItem i in w.WorkflowItems.OrderBy(wfi => wfi.RunOrder))
+                    {
+                        LoadRunWorkflow_WorkflowItems wfi = new LoadRunWorkflow_WorkflowItems
+                        {
+                            Disabled = i.Disabled,
+                            ItemID = i.ItemID,
+                            RunOrder = i.RunOrder,
+                            WFItemID = i.WFItemID
+                        };
+
+                        wfi.LibraryItem = new LoadRunWorkflow_LibraryItem
+                        {
+                            Disabled = i.LibraryItem.Disabled,
+                            HtmlOptions = i.LibraryItem.HtmlOptions,
+                            ItemDesc = i.LibraryItem.ItemDesc,
+                            ItemID = i.LibraryItem.ItemID,
+                            ItemName = i.LibraryItem.ItemName
+                        };
+
+                        lr.WorkflowItems.Add(wfi);
+                    }
+
+                    model.Add(lr);
+                }
+
+                var list = JsonConvert.SerializeObject(model, Formatting.None,
                 new JsonSerializerSettings()
                 {
-                    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
                 });
-
-                foreach (Workflow wf1 in wf)
-                {
-                    wf1.WorkflowItems = wf1.WorkflowItems.OrderBy(w => w.RunOrder).ToList();
-                }
 
                 return Json(new { Error = "", WorkFlows = list }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                String error = util.ParseError(ex);
+                String error = "There was an error loading your workflows.";
                 util.WriteErrorToLog("Dashboard/LoadRunWorkflows", ex, "");
 
-                return Json(new { Error = error, JsonRequestBehavior.AllowGet });
+                return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -435,15 +464,27 @@ namespace EPS.Controllers
 
                     tran.Commit();
 
+                    RunWorkflows.ExecuteWorkflows exec = new RunWorkflows.ExecuteWorkflows();
+                    RunWorkflows.WorkflowResult res = exec.RunWorkflow(run.RunID);
+
+                    if (res.Success == false)
+                    {
+                        throw new Exception(res.ResultString);
+                    }
+
                     return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
                 }
                 catch (Exception ex)
                 {
-                    tran.Rollback();
+                    if (tran.UnderlyingTransaction.Connection != null)
+                    {
+                        tran.Rollback();
+                    }
+
                     String error = util.ParseError(ex);
                     util.WriteErrorToLog("Dashboard/RunWorkflow", ex, String.Format("Emp ID: {0}", EmpID));
 
-                    return Json(new { Error = error, JsonRequestBehavior.AllowGet });
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
                 }
             }
         }

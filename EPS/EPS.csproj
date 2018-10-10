@@ -203,6 +203,7 @@
     <Compile Include="Models\AdminModel.cs" />
     <Compile Include="Models\ADUser.cs" />
     <Compile Include="Models\GetWorkflowModel.cs" />
+    <Compile Include="Models\LoadRunWorkflowsModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Models\Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -262,7 +263,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>11732</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:11732/</IISUrl>
+          <IISUrl>http://localhost:2040</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

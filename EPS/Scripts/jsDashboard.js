@@ -16,6 +16,13 @@ function TabPressed(tab) {
 }
 
 function SetTab(tab) {
+    var id = tab.attr('id');
+
+    if (id != "GetRuns") {
+        timerRunCheck = "off";
+        clearTimeout(timerRunCheck);
+    }
+
     $("#tabs li").removeClass('active');
     tab.addClass("active");
     $(".tab_content").hide();
@@ -36,6 +43,8 @@ function LoadMain(item) {
 }
 
 function checkRuns() {
-    var tab = $('#GetRuns');
-    SetTab(tab);
+    if (timerRunCheck != "off") {
+        var tab = $('#GetRuns');
+        SetTab(tab);
+    }
 }
