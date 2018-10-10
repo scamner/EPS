@@ -6,6 +6,7 @@ using System.Linq;
 using PagedList;
 using System.Web.Mvc;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace EPS.Controllers
 {
@@ -124,6 +125,21 @@ namespace EPS.Controllers
 
                 foreach (vwRunWorkflow wf in runs)
                 {
+                    String statusColor = "color: orange;";
+
+                    if (wf.RunStatus == "Running")
+                    {
+                        statusColor = "color: green;";
+                    }
+                    else if (wf.RunStatus == "Completed Successfully")
+                    {
+                        statusColor = "color: blue;";
+                    }
+                    else if (wf.RunStatus == "Completed with Errors")
+                    {
+                        statusColor = "color: red; font-weight: bold;";
+                    }
+
                     GetWorkflowModel m = new GetWorkflowModel
                     {
                         RunID = wf.RunID,
@@ -133,6 +149,7 @@ namespace EPS.Controllers
                         LastName = wf.LastName,
                         ResultItems = Results.Where(r => r.RunID == wf.RunID).OrderBy(r => r.TimeCompleted).ToList(),
                         RunStatus = wf.RunStatus,
+                        RunStatusColor = statusColor,
                         StartTime = wf.StartTime,
                         Username = wf.Username,
                         WorkflowID = wf.WorkflowID
@@ -465,12 +482,7 @@ namespace EPS.Controllers
                     tran.Commit();
 
                     RunWorkflows.ExecuteWorkflows exec = new RunWorkflows.ExecuteWorkflows();
-                    RunWorkflows.WorkflowResult res = exec.RunWorkflow(run.RunID);
-
-                    if (res.Success == false)
-                    {
-                        throw new Exception(res.ResultString);
-                    }
+                    Task.Run(() => exec.RunWorkflow(run.RunID));
 
                     return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
                 }

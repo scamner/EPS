@@ -33,8 +33,6 @@ function SetTab(tab) {
 }
 
 function LoadMain(item) {
-    $('#divMain').html('');
-
     $.ajaxSetup({
         cache: false
     });

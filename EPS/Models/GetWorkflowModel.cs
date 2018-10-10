@@ -8,6 +8,8 @@ namespace EPS.Models
 {
     public class GetWorkflowModel : vwRunWorkflow
     {
+        public String RunStatusColor { get; set; }
+
         public List<RunResult> ResultItems { get; set; }
     }
 }
