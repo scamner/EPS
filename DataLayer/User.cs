@@ -20,6 +20,7 @@ namespace DataLayer
             this.Employees_Log = new HashSet<Employees_Log>();
             this.Logins = new HashSet<Login>();
             this.RunWorkflows = new HashSet<RunWorkflow>();
+            this.Workflow_Log = new HashSet<Workflow_Log>();
         }
     
         public int UserID { get; set; }
@@ -34,5 +35,7 @@ namespace DataLayer
         public virtual ICollection<Login> Logins { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RunWorkflow> RunWorkflows { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Workflow_Log> Workflow_Log { get; set; }
     }
 }

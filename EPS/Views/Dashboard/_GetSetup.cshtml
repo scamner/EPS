@@ -1,3 +1,79 @@
 ﻿@model IEnumerable<DataLayer.Workflow>
+@{ string version = typeof(EPS.MvcApplication).Assembly.GetName().Version.ToString(); }
 
- 
+<script src="~/Scripts/jsSetup.js?nocache=@version"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.validator.unobtrusive.parse($('#divManageWFItemsModal'));
+    });
+</script>
+
+<div style="margin-top: 10px;">
+    <table>
+        <tr>
+            <td><input type="button" value="New Workflow" onclick="OpenNewWorkflowModal();"/></td>
+            <td><input type="button" value="Manage Workflow Items" onclick="OpenManageWFItemsModal();"/></td>
+        </tr>
+    </table>
+
+    <br />
+
+    <table class="webgrid-table" style="margin-top: 10px;">
+        <tr>
+            <th>Workflow</th>
+            <th>Workflow Description</th>
+            <th>Disabled?</th>
+        </tr>
+
+        @foreach (DataLayer.Workflow wf in Model)
+        {
+            <tr>
+                <td>
+                    @wf.WorkflowName
+                </td>
+                <td>
+                    @wf.WorkflowDesc
+                </td>
+                <td>
+                    @Html.CheckBox("WorkflowDisabled", wf.Disabled, new { @onchange = "SetWorkflowDisabled('" + wf.WorkflowID + "', $(this).is(':checked'));" })
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align: left; padding: 10px;">
+                    <table class="webgrid-table-sub-header" style="width: 95%;">
+                        <tr>
+                            <th nowrap>Item Name</th>
+                            <th nowrap>Item Description</th>
+                            <th nowrap>Disabled?</th>
+                            <th nowrap>Run Order</th>
+                        </tr>
+
+                        @foreach (DataLayer.WorkflowItem i in wf.WorkflowItems.OrderBy(i => i.RunOrder))
+                        {
+                            <tr>
+                                <td nowrap>@i.LibraryItem.ItemName</td>
+                                <td style="width: 100%;">@i.LibraryItem.ItemDesc</td>
+                                <td style="text-align: center;" nowrap>@Html.CheckBox("WorkflowItemDisabled", i.Disabled, new { @onchange = "SetWorkflowItemDisabled('" + i.WFItemID + "', $(this).is(':checked'));" })</td>
+                                <td style="text-align: center;" nowrap>@i.RunOrder</td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+<div id="divManageWFItemsModal" style="display: none; padding: 10px;">
+    <input type="image" src="~/Images/Close.png" class="CloseModal" alt="Close" align="right" onclick="PopModal($('#divManageWFItemsModal'), 'hide', '0');" />
+    <div style="border: medium ridge #C0C0C0; margin: 10px; background-color: #FFFFFF; border-radius: 5px; text-align: center; padding: 10px;">
+        <div id="divManageWFItemsContent"></div>
+    </div>
+</div>
+
+<div id="divNewWorkflowModal" style="display: none; padding: 10px;">
+    <input type="image" src="~/Images/Close.png" class="CloseModal" alt="Close" align="right" onclick="PopModal($('#divNewWorkflowModal'), 'hide', '0');" />
+    <div style="border: medium ridge #C0C0C0; margin: 10px; background-color: #FFFFFF; border-radius: 5px; text-align: center; padding: 10px;">
+        <div id="divNewWorkflowContent"></div>
+    </div>
+</div>

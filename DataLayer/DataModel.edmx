@@ -130,6 +130,19 @@
           <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Email" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <EntityType Name="Workflow_Log">
+          <Key>
+            <PropertyRef Name="LogID" />
+          </Key>
+          <Property Name="LogID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ItemID" Type="int" Nullable="false" />
+          <Property Name="ItemType" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="ItemName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ChangeText" Type="varchar" Nullable="false" />
+          <Property Name="ChangeType" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="ChangeDate" Type="datetime" Nullable="false" />
+          <Property Name="ChangedBy" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="WorkflowItems">
           <Key>
             <PropertyRef Name="WFItemID" />
@@ -285,6 +298,18 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Workflow_Log_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Workflow_Log" Type="Self.Workflow_Log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="Workflow_Log">
+              <PropertyRef Name="ChangedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_WorkflowItems_LibraryItems">
           <End Role="LibraryItems" Type="Self.LibraryItems" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -352,6 +377,7 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <EntitySet Name="RunResultStatus" EntityType="Self.RunResultStatus" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RunWorkflow" EntityType="Self.RunWorkflow" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Workflow_Log" EntityType="Self.Workflow_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WorkflowItems" EntityType="Self.WorkflowItems" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Workflows" EntityType="Self.Workflows" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="vwRunItems" EntityType="Self.vwRunItems" store:Type="Views" store:Schema="dbo">
@@ -405,6 +431,10 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <AssociationSet Name="FK_RunWorkflow_Users" Association="Self.FK_RunWorkflow_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="RunWorkflow" EntitySet="RunWorkflow" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Workflow_Log_Users" Association="Self.FK_Workflow_Log_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Workflow_Log" EntitySet="Workflow_Log" />
           </AssociationSet>
           <AssociationSet Name="FK_WorkflowItems_LibraryItems" Association="Self.FK_WorkflowItems_LibraryItems">
             <End Role="LibraryItems" EntitySet="LibraryItems" />
@@ -660,6 +690,11 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             <End Role="WorkflowItem" EntitySet="WorkflowItems" />
             <End Role="RunResult" EntitySet="RunResults" />
           </AssociationSet>
+          <EntitySet Name="Workflow_Log" EntityType="EPSModel.Workflow_Log" />
+          <AssociationSet Name="FK_Workflow_Log_Users" Association="EPSModel.FK_Workflow_Log_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Workflow_Log" EntitySet="Workflow_Log" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="vwRunItem">
           <Key>
@@ -798,6 +833,7 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <NavigationProperty Name="Employees_Log" Relationship="EPSModel.FK_Employees_Log_Users" FromRole="User" ToRole="Employees_Log" />
           <NavigationProperty Name="Logins" Relationship="EPSModel.FK_Logins_Users" FromRole="User" ToRole="Login" />
           <NavigationProperty Name="RunWorkflows" Relationship="EPSModel.FK_RunWorkflow_Users" FromRole="User" ToRole="RunWorkflow" />
+          <NavigationProperty Name="Workflow_Log" Relationship="EPSModel.FK_Workflow_Log_Users" FromRole="User" ToRole="Workflow_Log" />
         </EntityType>
         <Association Name="FK_Employees_Log_Users">
           <End Type="EPSModel.User" Role="User" Multiplicity="1" />
@@ -844,6 +880,32 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             </Principal>
             <Dependent Role="RunResult">
               <PropertyRef Name="WFItemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Workflow_Log">
+          <Key>
+            <PropertyRef Name="LogID" />
+          </Key>
+          <Property Name="LogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ItemID" Type="Int32" Nullable="false" />
+          <Property Name="ItemType" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ItemName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ChangeText" Type="String" Nullable="false" FixedLength="false" Unicode="false" />
+          <Property Name="ChangeType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ChangedBy" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="EPSModel.FK_Workflow_Log_Users" FromRole="Workflow_Log" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Workflow_Log_Users">
+          <End Type="EPSModel.User" Role="User" Multiplicity="1" />
+          <End Type="EPSModel.Workflow_Log" Role="Workflow_Log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="Workflow_Log">
+              <PropertyRef Name="ChangedBy" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1032,6 +1094,20 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Workflow_Log">
+            <EntityTypeMapping TypeName="EPSModel.Workflow_Log">
+              <MappingFragment StoreEntitySet="Workflow_Log">
+                <ScalarProperty Name="ChangedBy" ColumnName="ChangedBy" />
+                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
+                <ScalarProperty Name="ChangeType" ColumnName="ChangeType" />
+                <ScalarProperty Name="ChangeText" ColumnName="ChangeText" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
+                <ScalarProperty Name="ItemType" ColumnName="ItemType" />
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="LogID" ColumnName="LogID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

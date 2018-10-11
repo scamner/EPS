@@ -7,6 +7,8 @@ using PagedList;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using System.Text;
+using System.IO;
 
 namespace EPS.Controllers
 {
@@ -498,6 +500,243 @@ namespace EPS.Controllers
 
                     return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
                 }
+            }
+        }
+
+        [HttpPost]
+        public JsonResult SetWorkflowDisabled(int WorkflowID, Boolean Disabled)
+        {
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    User CurrentUser = util.GetLoggedOnUser();
+
+                    Workflow wf = db.Workflows.Where(w => w.WorkflowID == WorkflowID).FirstOrDefault();
+                    wf.Disabled = Disabled;
+                    db.SaveChanges();
+
+                    Workflow_Log log = new Workflow_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeText = String.Format("Workflow: {0} was set to {1}", wf.WorkflowName, Disabled == true ? "DISABLED" : "Enabled"),
+                        ChangeType = "Update",
+                        ItemID = wf.WorkflowID,
+                        ItemName = wf.WorkflowName,
+                        ItemType = "Workflow"
+                    };
+
+                    db.Workflow_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    if (tran.UnderlyingTransaction.Connection != null)
+                    {
+                        tran.Rollback();
+                    }
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/SetWorkflowDisabled", ex, String.Format("Workflow ID: {0}", WorkflowID, Disabled));
+
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+        [HttpPost]
+        public JsonResult SetWorkflowItemDisabled(int WFItemID, Boolean Disabled)
+        {
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    User CurrentUser = util.GetLoggedOnUser();
+
+                    WorkflowItem wf = db.WorkflowItems.Where(w => w.WFItemID == WFItemID).FirstOrDefault();
+                    wf.Disabled = Disabled;
+                    db.SaveChanges();
+
+                    Workflow_Log log = new Workflow_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeText = String.Format("Workflow Item: {0} was set to {1} in Workflow: {2}", wf.LibraryItem.ItemName, Disabled == true ? "DISABLED" : "Enabled", wf.Workflow.WorkflowName),
+                        ChangeType = "Update",
+                        ItemID = wf.WFItemID,
+                        ItemName = wf.LibraryItem.ItemName,
+                        ItemType = "Workflow Item"
+                    };
+
+                    db.Workflow_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    if (tran.UnderlyingTransaction.Connection != null)
+                    {
+                        tran.Rollback();
+                    }
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/SetWorkflowItemDisabled", ex, String.Format("Workflow Item ID: {0}", WFItemID, Disabled));
+
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+        public ActionResult ManageWFItems()
+        {
+            try
+            {
+                List<LibraryItem> items = db.LibraryItems.OrderBy(l => l.ItemName).ToList();
+
+                return PartialView("_ManageWFItems", items);
+            }
+            catch (Exception ex)
+            {
+                String error = util.ParseError(ex);
+                util.WriteErrorToLog("Dashboard/ManageWFItems", ex, "");
+
+                return Content(String.Format("<script type='text/javascript'>ShowMessage('{0}', 'show');</script>", error));
+            }
+        }
+
+        public ActionResult AddLibraryItem()
+        {
+            return PartialView("_AddLibraryItem", new NewLibraryItemModel());
+        }
+
+        [HttpPost]
+        public JsonResult SaveLibraryItem(int ItemID, String ItemName, String ItemDesc, Boolean Disabled, String HtmlOptions)
+        {
+            User CurrentUser = util.GetLoggedOnUser();
+
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    LibraryItem item = db.LibraryItems.Where(i => i.ItemID == ItemID).FirstOrDefault();
+
+                    StringBuilder sb = new StringBuilder();
+                    if (ItemName != item.ItemName) { sb.AppendFormat("Item name changed from {0} to {1}.<br>", item.ItemName, ItemName); }
+                    if (ItemDesc != item.ItemDesc) { sb.AppendFormat("Item description changed from {0} to {1}.<br>", item.ItemDesc, ItemDesc); }
+                    if (Disabled != item.Disabled) { sb.AppendFormat("Disabled changed from {0} to {1}.<br>", item.Disabled, Disabled); }
+                    if (HtmlOptions != item.HtmlOptions) { sb.AppendFormat("Html Options changed from {0} to {1}.<br>", item.HtmlOptions, ItemName); }
+
+                    item.ItemName = ItemName;
+                    item.ItemDesc = ItemDesc;
+                    item.Disabled = Disabled;
+                    item.HtmlOptions = HtmlOptions;
+
+                    db.SaveChanges();
+
+                    Workflow_Log log = new Workflow_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeText = sb.ToString(),
+                        ChangeType = "Update",
+                        ItemID = ItemID,
+                        ItemName = ItemName,
+                        ItemType = "Library Item"
+                    };
+
+                    db.Workflow_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/SaveLibraryItem", ex, String.Format("Item ID: {0}", ItemID));
+
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+        [HttpPost]
+        public JsonResult SaveWorkflow(int WorkflowID, String WorkflowName, String WorkflowDesc, Boolean Disabled)
+        {
+            User CurrentUser = util.GetLoggedOnUser();
+
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    Workflow wf = db.Workflows.Where(i => i.WorkflowID == WorkflowID).FirstOrDefault();
+
+                    StringBuilder sb = new StringBuilder();
+                    if (WorkflowName != wf.WorkflowName) { sb.AppendFormat("Workflow name changed from {0} to {1}.<br>", wf.WorkflowName, WorkflowName); }
+                    if (WorkflowDesc != wf.WorkflowDesc) { sb.AppendFormat("Workflow description changed from {0} to {1}.<br>", wf.WorkflowDesc, WorkflowDesc); }
+                    if (Disabled != wf.Disabled) { sb.AppendFormat("Disabled changed from {0} to {1}.<br>", wf.Disabled, Disabled); }
+
+                    wf.WorkflowName = WorkflowName;
+                    wf.WorkflowDesc = WorkflowDesc;
+                    wf.Disabled = Disabled;
+
+                    db.SaveChanges();
+
+                    Workflow_Log log = new Workflow_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeText = sb.ToString(),
+                        ChangeType = "Update",
+                        ItemID = WorkflowID,
+                        ItemName = WorkflowName,
+                        ItemType = "Workflow"
+                    };
+
+                    db.Workflow_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/SaveWorkflow", ex, String.Format("Workflow ID: {0}", WorkflowID));
+
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+        public ActionResult AddLibraryItem(NewLibraryItemModel model)
+        {
+            try
+            {
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    model.LibraryPathFile.InputStream.CopyTo(memoryStream);
+                }
+
+                return null;
+            }
+            catch(Exception ex)
+            {
+                return null;
             }
         }
     }

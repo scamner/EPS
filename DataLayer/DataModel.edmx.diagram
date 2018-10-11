@@ -33,6 +33,8 @@
         <AssociationConnector Association="EPSModel.FK_Logins_Users" />
         <AssociationConnector Association="EPSModel.FK_RunWorkflow_Users" />
         <AssociationConnector Association="EPSModel.FK_RunResult_WorkflowItems" />
+        <EntityTypeShape EntityType="EPSModel.Workflow_Log" Width="1.5" PointX="3" PointY="12.375" />
+        <AssociationConnector Association="EPSModel.FK_Workflow_Log_Users" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

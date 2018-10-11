@@ -188,6 +188,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\jsDashboard.js" />
     <Content Include="Scripts\jsEmployee.js" />
+    <Content Include="Scripts\jsSetup.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -204,6 +205,7 @@
     <Compile Include="Models\ADUser.cs" />
     <Compile Include="Models\GetWorkflowModel.cs" />
     <Compile Include="Models\LoadRunWorkflowsModel.cs" />
+    <Compile Include="Models\NewLibraryItemModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Models\Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -223,6 +225,8 @@
     <Content Include="Views\Dashboard\_GetAdmin.cshtml" />
     <Content Include="Views\Dashboard\_SearchAD.cshtml" />
     <Content Include="Views\Dashboard\_SearchADForUsers.cshtml" />
+    <Content Include="Views\Dashboard\_ManageWFItems.cshtml" />
+    <Content Include="Views\Dashboard\_AddLibraryItem.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

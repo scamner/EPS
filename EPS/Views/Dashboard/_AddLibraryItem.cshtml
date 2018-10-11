@@ -1,0 +1,31 @@
+﻿@model EPS.Models.NewLibraryItemModel
+
+@using (Html.BeginForm("AddLibraryItem", "Dashboard", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <table>
+        <tr>
+            <td>Item Name:</td>
+            <td>
+                @Html.TextBoxFor(model => model.ItemName, new { @style = "width: 100px;", @maxlength = "50" })
+                <br />@Html.ValidationMessageFor(model => model.ItemName)
+            </td>
+            <td>Item Description:</td>
+            <td>
+                @Html.TextBoxFor(model => model.ItemDesc, new { @style = "width: 200px;", @maxlength = "500" })
+                <br />@Html.ValidationMessageFor(model => model.ItemDesc)
+            </td>
+            <td><input type="submit" value="Upload New Workflow Item" /></td>
+        </tr>
+        <tr>
+            <td>Select the library file:</td>
+            <td style="vertical-align: top;">
+                @Html.TextBoxFor(model => model.LibraryPathFile, new { @style = "width: 100px;", @type = "file" })
+                <br />@Html.ValidationMessageFor(model => model.LibraryPathFile)
+            </td>
+            <td>HTML Options (Optional)</td>
+            <td>
+                @Html.TextAreaFor(model => model.HtmlOptions, new { @style = "width: 200px; height: 75px;" })
+            </td>
+        </tr>
+    </table>
+}

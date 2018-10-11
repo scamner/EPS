@@ -30,7 +30,7 @@ input[type="text"] {
     padding: 3px;
     color: #001c54;
     font-family: Arial;
-    font-size: 0.938em;
+    font-size: small;
     width: 150px;
 }
 
@@ -39,12 +39,12 @@ textarea {
     padding: 3px;
     color: #001c54;
     font-family: Arial;
-    font-size: 0.938em;
+    font-size: small;
 }
 
 input[type="password"] {
     font-family: Arial;
-    font-size: 0.938em;
+    font-size: small;
     border-radius: 4px;
     height: 18px;
     padding: 3px;
@@ -375,4 +375,8 @@ hr {
 
 #btnCloseMessage {
     outline: none;
+}
+
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+    font-size: small !important;
 }
