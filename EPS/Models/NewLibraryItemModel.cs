@@ -15,7 +15,7 @@ namespace EPS.Models
         [Required(ErrorMessage = "An item description is required.")]
         public new String ItemDesc { get; set; }
 
-        [Required, FileExtensions(Extensions = "dll", ErrorMessage = "Specify a dll file.")]
+        [Required(ErrorMessage = "A library file (dll) is required.")]
         public HttpPostedFileBase LibraryPathFile { get; set; }
     }
 }

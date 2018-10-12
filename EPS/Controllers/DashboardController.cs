@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Text;
 using System.IO;
+using System.Web;
 
 namespace EPS.Controllers
 {
@@ -17,8 +18,9 @@ namespace EPS.Controllers
         DataLayer.EPSEntities db = new DataLayer.EPSEntities();
         Utilities util = new Utilities();
 
-        public ActionResult Index()
+        public ActionResult Index(String TabToOpen = "")
         {
+            ViewBag.TabToOpen = TabToOpen;
             return View();
         }
 
@@ -723,20 +725,60 @@ namespace EPS.Controllers
             }
         }
 
-        public ActionResult AddLibraryItem(NewLibraryItemModel model)
+        public ActionResult NewLibraryItem(NewLibraryItemModel model)
         {
             try
             {
+                FileInfo fi = new FileInfo(model.LibraryPathFile.FileName);
+
+                if (fi.Extension != ".dll")
+                {
+                    throw new Exception("You must upload a .dll file.");
+                }
+
+                Byte[] file;
+
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
                     model.LibraryPathFile.InputStream.CopyTo(memoryStream);
+
+                    file = memoryStream.ToArray();
+                    memoryStream.Close();
+                    memoryStream.Dispose();
                 }
 
-                return null;
+                string binPath = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "bin");
+                string fullPath = String.Format("{0}\\{1}", binPath, fi.Name);
+
+                if (System.IO.File.Exists(fullPath))
+                {
+                    System.IO.File.Delete(fullPath);
+                }
+
+                System.IO.File.WriteAllBytes(fullPath, file);
+
+                LibraryItem li = new LibraryItem
+                {
+                    Disabled = false,
+                    HtmlOptions = model.HtmlOptions,
+                    ItemDesc = model.ItemDesc,
+                    ItemName = model.ItemName,
+                    LibraryPath = fullPath
+                };
+
+                db.LibraryItems.Add(li);
+                db.SaveChanges();
+
+                String fullURLRoot = string.Format("{0}://{1}{2}", System.Web.HttpContext.Current.Request.Url.Scheme, System.Web.HttpContext.Current.Request.Url.Authority, VirtualPathUtility.ToAbsolute("~"));
+
+                return Redirect(String.Format("{0}Dashboard?TabToOpen=GetSetup", fullURLRoot));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return null;
+                String error = util.ParseError(ex);
+                util.WriteErrorToLog("Dashboard/NewLibraryItem", ex, "");
+
+                return Content(String.Format("<script type='text/javascript'>alert('{0}');</script>", error));
             }
         }
     }

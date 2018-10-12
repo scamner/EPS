@@ -2,11 +2,6 @@
 @{ string version = typeof(EPS.MvcApplication).Assembly.GetName().Version.ToString(); }
 
 <script src="~/Scripts/jsSetup.js?nocache=@version"></script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $.validator.unobtrusive.parse($('#divManageWFItemsModal'));
-    });
-</script>
 
 <div style="margin-top: 10px;">
     <table>

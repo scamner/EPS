@@ -2,6 +2,7 @@
     $("#divManageWFItemsContent").load('Dashboard/ManageWFItems', function (response) {
         if (response.indexOf("<script type='text/javascript'>ShowMessage") !== 0) {
             PopModal($('#divManageWFItemsModal'), 'show', 'auto');
+            $.validator.unobtrusive.parse($('#divManageWFItemsModal'));
         }
     });    
 }

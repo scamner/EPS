@@ -8,6 +8,19 @@
 <script src="~/Scripts/jsDashboard.js?nocache=@version"></script>
 <link href="~/Content/TabTopsCss.css" rel="stylesheet" />
 
+<script type="text/javascript">
+    $(document).ready(function () {
+        var tab = $('#GetEmployees');
+
+        @if (!String.IsNullOrEmpty(ViewBag.TabToOpen))
+        {
+            @:tab = $('#@ViewBag.TabToOpen');
+        }
+        
+        SetTab(tab);
+    });
+</script>
+
 <table class="TabParent" style="border-collapse: collapse; margin-top: 0px;">
     <tr>
         <td style="width: 100%;">

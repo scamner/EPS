@@ -2,9 +2,6 @@
     $("#tabs li").click(function () {
         TabPressed($(this));
     });
-
-    var tab = $('#GetEmployees');
-    SetTab(tab);
 });
 
 function TabPressed(tab) {
