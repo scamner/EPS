@@ -8,9 +8,19 @@
 }
 
 function OpenNewWorkflowModal() {
-    $("#divMain").load('Dashboard/' + item);
+    $('#divNewWorkflowContent').load('Dashboard/AddWorkflow', function (response) {
+        if (response.indexOf("<script type='text/javascript'>ShowMessage") !== 0) {
+            $.validator.unobtrusive.parse($('#divNewWorkflowModal'));
+            PopModal($('#divNewWorkflowModal'), 'show', 'auto');
+        }
+    });        
+}
 
-    PopModal($('#divNewWorkflowModal'), 'show', 'auto');
+function WorkflowAdded() {
+    PopModal($('#divNewWorkflowModal'), 'hide', 'auto');
+
+    var tab = $('#GetSetup');
+    SetTab(tab);
 }
 
 function SetWorkflowDisabled(workflowID, disabled) {
@@ -90,6 +100,48 @@ function SaveWFItem(id) {
         success: function (data) {
             if (data.Error === "") {
                 $("#divManageWFItemsContent").load('Dashboard/ManageWFItems');
+            }
+            else {
+                ShowMessage(data.Error, 'show');
+            }
+        }
+    });
+}
+
+function AddWorflowItemToWF(wfid) {
+    var itemID = $('#ddlAddWorkflowItemToWF_' + wfid).val();
+
+    $.ajax({
+        url: '/Dashboard/AddWorflowItemToWF',
+        type: 'POST',
+        data: { WorkflowID: wfid, ItemID: itemID },
+        datatype: 'json',
+        cache: false,
+        success: function (data) {
+            if (data.Error === "") {
+                var tab = $('#GetSetup');
+                SetTab(tab);
+            }
+            else {
+                ShowMessage(data.Error, 'show');
+            }
+        }
+    });
+}
+
+function ChangeRunOrder(wfItemID, direction, focusItem) {
+    $.ajax({
+        url: '/Dashboard/ChangeRunOrder',
+        type: 'POST',
+        data: { WFItemID: wfItemID, Direction: direction },
+        datatype: 'json',
+        cache: false,
+        success: function (data) {
+            if (data.Error === "") {
+                var tab = $('#GetSetup');
+                SetTab(tab);
+
+                focusItem.focus();
             }
             else {
                 ShowMessage(data.Error, 'show');

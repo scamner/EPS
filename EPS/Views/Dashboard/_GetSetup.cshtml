@@ -6,8 +6,8 @@
 <div style="margin-top: 10px;">
     <table>
         <tr>
-            <td><input type="button" value="New Workflow" onclick="OpenNewWorkflowModal();"/></td>
-            <td><input type="button" value="Manage Workflow Items" onclick="OpenManageWFItemsModal();"/></td>
+            <td><input type="button" value="New Workflow" onclick="OpenNewWorkflowModal();" /></td>
+            <td><input type="button" value="Manage Workflow Items" onclick="OpenManageWFItemsModal();" /></td>
         </tr>
     </table>
 
@@ -18,42 +18,91 @@
             <th>Workflow</th>
             <th>Workflow Description</th>
             <th>Disabled?</th>
+            <th>Workflow Items to add</th>
         </tr>
 
         @foreach (DataLayer.Workflow wf in Model)
         {
             <tr>
-                <td>
+                <td style="text-align: left;">
                     @wf.WorkflowName
                 </td>
-                <td>
+                <td style="text-align: left;">
                     @wf.WorkflowDesc
                 </td>
                 <td>
                     @Html.CheckBox("WorkflowDisabled", wf.Disabled, new { @onchange = "SetWorkflowDisabled('" + wf.WorkflowID + "', $(this).is(':checked'));" })
                 </td>
+                <td>
+                    @{
+                        List<SelectListItem> liList = new List<SelectListItem>();
+                        foreach (DataLayer.LibraryItem li in (List<DataLayer.LibraryItem>)ViewBag.LibraryItems)
+                        {
+                            if (!wf.WorkflowItems.Where(wfc => wfc.ItemID == li.ItemID).Any())
+                            {
+                                SelectListItem i = new SelectListItem();
+                                i.Text = li.ItemName;
+                                i.Value = li.ItemID.ToString();
+                                liList.Add(i);
+                            }
+                        }
+                    }
+
+                    @if (liList.Count() > 0)
+                    {
+                        @Html.DropDownList("ddlAddWorkflowItemToWF", new SelectList(liList, "Value", "Text", null), new { @id = "ddlAddWorkflowItemToWF_" + wf.WorkflowID })
+                        <input type="button" value="Add Item" onclick="AddWorflowItemToWF(@wf.WorkflowID);" />
+                    }
+                    else
+                    {
+                        <label>No items to add</label>
+                    }
+                </td>
             </tr>
             <tr>
-                <td colspan="3" style="text-align: left; padding: 10px;">
+                <td colspan="4" style="text-align: left; padding: 10px;">
                     <table class="webgrid-table-sub-header" style="width: 95%;">
                         <tr>
                             <th nowrap>Item Name</th>
                             <th nowrap>Item Description</th>
                             <th nowrap>Disabled?</th>
                             <th nowrap>Run Order</th>
+                            <th></th>
                         </tr>
+
+                        @{ int itemCount = wf.WorkflowItems.Count(); }
 
                         @foreach (DataLayer.WorkflowItem i in wf.WorkflowItems.OrderBy(i => i.RunOrder))
                         {
                             <tr>
-                                <td nowrap>@i.LibraryItem.ItemName</td>
-                                <td style="width: 100%;">@i.LibraryItem.ItemDesc</td>
-                                <td style="text-align: center;" nowrap>@Html.CheckBox("WorkflowItemDisabled", i.Disabled, new { @onchange = "SetWorkflowItemDisabled('" + i.WFItemID + "', $(this).is(':checked'));" })</td>
-                                <td style="text-align: center;" nowrap>@i.RunOrder</td>
+                                <td style="vertical-align: middle; text-align: left;" nowrap>@i.LibraryItem.ItemName</td>
+                                <td style="width: 100%; vertical-align: middle; text-align: left;">@i.LibraryItem.ItemDesc</td>
+                                <td style="text-align: center; vertical-align: middle;" nowrap>@Html.CheckBox("WorkflowItemDisabled", i.Disabled, new { @onchange = "SetWorkflowItemDisabled('" + i.WFItemID + "', $(this).is(':checked'));" })</td>
+                                <td style="text-align: center; vertical-align: middle;" nowrap>@i.RunOrder</td>
+                                <td style="text-align: center; vertical-align: middle;">
+                                    @if (i.RunOrder == 1)
+                                    {
+                                        <input type="image" src="~/Images/downArrow.png" onclick="ChangeRunOrder(@i.WFItemID, 'down', $(this));" />
+                                    }
+                                    else if (i.RunOrder == itemCount)
+                                    {
+                                        <input type="image" src="~/Images/upArrow.png" onclick="ChangeRunOrder(@i.WFItemID, 'up', $(this));" />
+                                    }
+                                    else
+                                    {
+                                        <input type="image" src="~/Images/upArrow.png" onclick="ChangeRunOrder(@i.WFItemID, 'up', $(this));" />
+                                        <br />
+                                        <input type="image" src="~/Images/downArrow.png" onclick="ChangeRunOrder(@i.WFItemID, 'down', $(this));" />
+                                    }
+                                </td>
                             </tr>
                         }
                     </table>
                 </td>
+            </tr>
+
+            <tr>
+                <td style="border: none; height: 10px;" colspan="4"></td>
             </tr>
         }
     </table>

@@ -178,6 +178,9 @@ namespace EPS.Controllers
             try
             {
                 List<Workflow> wf = db.Workflows.OrderBy(e => e.WorkflowName).ToList();
+                List<LibraryItem> li = db.LibraryItems.Where(l => l.Disabled == false).OrderBy(l => l.ItemName).ToList();
+
+                ViewBag.LibraryItems = li;
                 return PartialView("_GetSetup", wf);
             }
             catch (Exception ex)
@@ -779,6 +782,210 @@ namespace EPS.Controllers
                 util.WriteErrorToLog("Dashboard/NewLibraryItem", ex, "");
 
                 return Content(String.Format("<script type='text/javascript'>alert('{0}');</script>", error));
+            }
+        }
+
+        public ActionResult AddWorkflow()
+        {
+            try
+            {
+                List<LibraryItem> items = db.LibraryItems.Where(l => l.Disabled == false).OrderBy(l => l.ItemName).ToList();
+
+                return PartialView("_AddWorkflow", new AddWorkflowModel { items = items });
+            }
+            catch (Exception ex)
+            {
+                String error = util.ParseError(ex);
+                util.WriteErrorToLog("Dashboard/AddWorkflow", ex, "");
+
+                return Content(String.Format("<script type='text/javascript'>ShowMessage('{0}', 'show');</script>", error));
+            }
+        }
+
+        public ActionResult NewWorkflow(String WorkflowName, String WorkflowDesc, int[] LibraryItem)
+        {
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    Workflow wf = new Workflow { Disabled = false, WorkflowDesc = WorkflowDesc, WorkflowName = WorkflowName };
+                    db.Workflows.Add(wf);
+                    db.SaveChanges();
+
+                    StringBuilder sbItemLog = new StringBuilder();
+
+                    if (LibraryItem.Count() > 0)
+                    {
+                        int count = 1;
+
+                        foreach (int li in LibraryItem)
+                        {
+                            WorkflowItem wfi = new WorkflowItem
+                            {
+                                Disabled = false,
+                                ItemID = li,
+                                RunOrder = count,
+                                WorkflowID = wf.WorkflowID
+                            };
+
+                            db.WorkflowItems.Add(wfi);
+                            db.SaveChanges();
+
+                            LibraryItem liLog = db.LibraryItems.Where(l => l.ItemID == li).FirstOrDefault();
+
+                            sbItemLog.AppendFormat("{0}, ", liLog.ItemName);
+
+                            count += 1;
+                        }
+                    }
+
+                    User CurrentUser = util.GetLoggedOnUser();
+                    String itemLog = sbItemLog.Length > 0 ? sbItemLog.ToString().Remove(sbItemLog.Length - 2, 2) : "NONE";
+
+                    Workflow_Log log = new Workflow_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeText = String.Format("Workflow: {0} was added and includes workflow items: {1}.", wf.WorkflowName, itemLog),
+                        ChangeType = "Insert",
+                        ItemID = wf.WorkflowID,
+                        ItemName = wf.WorkflowName,
+                        ItemType = "Workflow"
+                    };
+
+                    db.Workflow_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Content("<script type='text/javascript'>WorkflowAdded();</script>");
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/NewWorkflow", ex, String.Format("WorkflowName: {0}", WorkflowName));
+
+                    return Content(String.Format("<script type='text/javascript'>ShowMessage('{0}', 'show');</script>", error));
+                }
+            }
+        }
+
+        [HttpPost]
+        public JsonResult AddWorflowItemToWF(int WorkflowID, int ItemID)
+        {
+            User CurrentUser = util.GetLoggedOnUser();
+            LibraryItem li = db.LibraryItems.Where(l => l.ItemID == ItemID).FirstOrDefault();
+            Workflow wf = db.Workflows.Where(w => w.WorkflowID == WorkflowID).FirstOrDefault();
+            int newOrderNum = db.WorkflowItems.Where(w => w.WorkflowID == WorkflowID).OrderByDescending(w => w.RunOrder).FirstOrDefault().RunOrder + 1;
+
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    WorkflowItem wfi = new WorkflowItem
+                    {
+                        Disabled = false,
+                        ItemID = ItemID,
+                        RunOrder = newOrderNum,
+                        WorkflowID = WorkflowID
+                    };
+                    db.WorkflowItems.Add(wfi);
+                    db.SaveChanges();
+
+                    Workflow_Log log = new Workflow_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeText = String.Format("Added '{1}' to the workflow '{0}'.", wf.WorkflowName, li.ItemName),
+                        ChangeType = "Insert",
+                        ItemID = WorkflowID,
+                        ItemName = li.ItemName,
+                        ItemType = "WorkflowItem"
+                    };
+
+                    db.Workflow_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/AddWorflowItemToWF", ex, String.Format("Workflow ID: {0}, Item ID: {1}", WorkflowID, ItemID));
+
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+        [HttpPost]
+        public JsonResult ChangeRunOrder(int WFItemID, String Direction)
+        {
+            User CurrentUser = util.GetLoggedOnUser();
+
+            WorkflowItem wfi = db.WorkflowItems.Where(w => w.WFItemID == WFItemID).FirstOrDefault();
+            WorkflowItem wfiNeighbor = new WorkflowItem(); 
+
+            if (Direction == "up")
+            {
+                wfiNeighbor = db.WorkflowItems.Where(w => w.WorkflowID == wfi.WorkflowID
+                    && w.RunOrder == (wfi.RunOrder -1)).FirstOrDefault();
+
+                wfi.RunOrder = wfi.RunOrder - 1;
+                db.SaveChanges();
+
+                wfiNeighbor.RunOrder = wfiNeighbor.RunOrder + 1;
+                db.SaveChanges();
+            }
+            else
+            {
+                wfiNeighbor = db.WorkflowItems.Where(w => w.WorkflowID == wfi.WorkflowID
+                    && w.RunOrder == (wfi.RunOrder + 1)).FirstOrDefault();
+
+                wfi.RunOrder = wfi.RunOrder + 1;
+                db.SaveChanges();
+
+                wfiNeighbor.RunOrder = wfiNeighbor.RunOrder - 1;
+                db.SaveChanges();
+            }
+
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    Workflow_Log log = new Workflow_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeText = String.Format("Moved '{0}' {1} in the workflow '{2}'.", wfi.LibraryItem.ItemName, Direction, wfi.Workflow.WorkflowName),
+                        ChangeType = "Update",
+                        ItemID = WFItemID,
+                        ItemName = wfi.LibraryItem.ItemName,
+                        ItemType = "WorkflowItem"
+                    };
+
+                    db.Workflow_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/ChangeRunOrder", ex, String.Format("WFItemID: {0}, Direction: {1}", WFItemID, Direction));
+
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
             }
         }
     }

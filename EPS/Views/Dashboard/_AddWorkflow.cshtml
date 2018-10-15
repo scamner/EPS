@@ -1,0 +1,51 @@
+﻿@model EPS.Models.AddWorkflowModel
+
+@using (Ajax.BeginForm("NewWorkflow", new AjaxOptions { UpdateTargetId = "divNewWorkflowResult" }))
+{
+    <table>
+        <tr>
+            <td style="text-align: right;">Workflow Name:</td>
+            <td style="text-align: left;">
+                @Html.TextBoxFor(model => model.WorkflowName, new { @style = "width: 150px;", @maxlength = "50" })
+                <br />@Html.ValidationMessageFor(model => model.WorkflowName)
+            </td>
+            <td style="text-align: right;">Workflow Description:</td>
+            <td style="text-align: left;">
+                @Html.TextBoxFor(model => model.WorkflowDesc, new { @style = "width: 200px;", @maxlength = "500" })
+                <br />@Html.ValidationMessageFor(model => model.WorkflowDesc)
+            </td>
+            <td><input type="submit" value="Upload New Workflow Item" /></td>
+        </tr>
+
+        <tr>
+            <td colspan="5">
+                <hr />
+                <label>Select which workflow items to assign (optional):</label>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="5">
+                <table class="webgrid-table">
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Item Description</th>
+                        <th>Add to workflow?</th>
+                    </tr>
+                    @foreach (DataLayer.LibraryItem li in Model.items)
+                    {
+                        <tr>
+                            <td style="text-align: left;">@li.ItemName</td>
+                            <td style="text-align: left;">@li.ItemDesc</td>
+                            <td style="text-align: center;">
+                                <input type="checkbox" name="LibraryItem" value="@li.ItemID" />
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </td>
+        </tr>
+    </table>
+}
+
+<div id="divNewWorkflowResult"></div>

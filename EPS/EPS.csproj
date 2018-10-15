@@ -167,9 +167,11 @@
     <Content Include="Global.asax" />
     <Content Include="Images\Close.png" />
     <Content Include="Images\Delete.png" />
+    <Content Include="Images\downArrow.png" />
     <Content Include="Images\Edit.png" />
     <Content Include="Images\GoArrow.png" />
     <Content Include="Images\Loading.gif" />
+    <Content Include="Images\upArrow.png" />
     <Content Include="Scripts\globalFunctions.js" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
@@ -201,6 +203,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AddWorkflowModel.cs" />
     <Compile Include="Models\AdminModel.cs" />
     <Compile Include="Models\ADUser.cs" />
     <Compile Include="Models\GetWorkflowModel.cs" />
@@ -227,6 +230,7 @@
     <Content Include="Views\Dashboard\_SearchADForUsers.cshtml" />
     <Content Include="Views\Dashboard\_ManageWFItems.cshtml" />
     <Content Include="Views\Dashboard\_AddLibraryItem.cshtml" />
+    <Content Include="Views\Dashboard\_AddWorkflow.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
