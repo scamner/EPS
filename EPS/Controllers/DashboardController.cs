@@ -252,6 +252,7 @@ namespace EPS.Controllers
                 }
 
                 ViewBag.Managers = managerList;
+                ViewBag.ForUser = ForUser;
 
                 return PartialView("_SearchADForUsers", users);
             }
@@ -310,7 +311,7 @@ namespace EPS.Controllers
                 db.Employees_Log.Add(log);
                 db.SaveChanges();
 
-                return Json(new { Error = "", JsonRequestBehavior.AllowGet });
+                return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -381,7 +382,7 @@ namespace EPS.Controllers
                 db.Employees_Log.Add(log);
                 db.SaveChanges();
 
-                return Json(new { Error = "", JsonRequestBehavior.AllowGet });
+                return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -930,35 +931,35 @@ namespace EPS.Controllers
             User CurrentUser = util.GetLoggedOnUser();
 
             WorkflowItem wfi = db.WorkflowItems.Where(w => w.WFItemID == WFItemID).FirstOrDefault();
-            WorkflowItem wfiNeighbor = new WorkflowItem(); 
-
-            if (Direction == "up")
-            {
-                wfiNeighbor = db.WorkflowItems.Where(w => w.WorkflowID == wfi.WorkflowID
-                    && w.RunOrder == (wfi.RunOrder -1)).FirstOrDefault();
-
-                wfi.RunOrder = wfi.RunOrder - 1;
-                db.SaveChanges();
-
-                wfiNeighbor.RunOrder = wfiNeighbor.RunOrder + 1;
-                db.SaveChanges();
-            }
-            else
-            {
-                wfiNeighbor = db.WorkflowItems.Where(w => w.WorkflowID == wfi.WorkflowID
-                    && w.RunOrder == (wfi.RunOrder + 1)).FirstOrDefault();
-
-                wfi.RunOrder = wfi.RunOrder + 1;
-                db.SaveChanges();
-
-                wfiNeighbor.RunOrder = wfiNeighbor.RunOrder - 1;
-                db.SaveChanges();
-            }
+            WorkflowItem wfiNeighbor = new WorkflowItem();
 
             using (var tran = db.Database.BeginTransaction())
             {
                 try
                 {
+                    if (Direction == "up")
+                    {
+                        wfiNeighbor = db.WorkflowItems.Where(w => w.WorkflowID == wfi.WorkflowID
+                            && w.RunOrder == (wfi.RunOrder - 1)).FirstOrDefault();
+
+                        wfi.RunOrder = wfi.RunOrder - 1;
+                        db.SaveChanges();
+
+                        wfiNeighbor.RunOrder = wfiNeighbor.RunOrder + 1;
+                        db.SaveChanges();
+                    }
+                    else
+                    {
+                        wfiNeighbor = db.WorkflowItems.Where(w => w.WorkflowID == wfi.WorkflowID
+                            && w.RunOrder == (wfi.RunOrder + 1)).FirstOrDefault();
+
+                        wfi.RunOrder = wfi.RunOrder + 1;
+                        db.SaveChanges();
+
+                        wfiNeighbor.RunOrder = wfiNeighbor.RunOrder - 1;
+                        db.SaveChanges();
+                    }
+
                     Workflow_Log log = new Workflow_Log
                     {
                         ChangeDate = DateTime.Now,
@@ -983,6 +984,265 @@ namespace EPS.Controllers
 
                     String error = util.ParseError(ex);
                     util.WriteErrorToLog("Dashboard/ChangeRunOrder", ex, String.Format("WFItemID: {0}, Direction: {1}", WFItemID, Direction));
+
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+        public ActionResult GetUsers()
+        {
+            try
+            {
+                List<User> users = db.Users.OrderBy(l => l.FirstName).ToList();
+
+                return PartialView("_GetUsers", users);
+            }
+            catch (Exception ex)
+            {
+                String error = util.ParseError(ex);
+                util.WriteErrorToLog("Dashboard/AddWorkflow", ex, "");
+
+                return Content(String.Format("<script type='text/javascript'>ShowMessage('{0}', 'show');</script>", error));
+            }
+        }
+
+        [HttpPost]
+        public JsonResult DeleteUser(int UserID)
+        {
+            User CurrentUser = util.GetLoggedOnUser();
+
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    User user = db.Users.Where(u => u.UserID == UserID).FirstOrDefault();
+
+                    User userLog = user;
+
+                    db.Users.Remove(user);
+                    db.SaveChanges();
+
+                    User_Log log = new User_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeType = "Delete",
+                        FirstName = userLog.FirstName,
+                        LastName = userLog.LastName,
+                        UserID = UserID,
+                        Username = userLog.Username
+                    };
+
+                    db.User_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/DeleteUser", ex, String.Format("UserID: {0}", UserID));
+
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+        public JsonResult AddUser(String ADGUID, String Email, String FirstName, String LastName, String Username)
+        {
+            try
+            {
+                User user = new User
+                {
+                    Email = Email,
+                    FirstName = FirstName,
+                    LastName = LastName,
+                    Username = Username
+                };
+
+                db.Users.Add(user);
+                db.SaveChanges();
+
+                User_Log log = new User_Log
+                {
+                    UserID = user.UserID,
+                    FirstName = FirstName,
+                    LastName = LastName,
+                    Username = Username,
+                    ChangeDate = DateTime.Now,
+                    ChangedBy = util.GetLoggedOnUser().UserID,
+                    ChangeType = "Insert"
+                };
+
+                db.User_Log.Add(log);
+                db.SaveChanges();
+
+                return Json(new { Error = "", UserID = user.UserID }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                String error = util.ParseError(ex);
+                util.WriteErrorToLog("Dashboard/AddUser", ex, String.Format("First Name: {0}, Last Name: {1}", FirstName, LastName));
+
+                return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public ActionResult GetParameters()
+        {
+            try
+            {
+                List<Parameter> model = db.Parameters.OrderBy(l => l.ParamName).ToList();
+
+                return PartialView("_GetParameters", model);
+            }
+            catch (Exception ex)
+            {
+                String error = util.ParseError(ex);
+                util.WriteErrorToLog("Dashboard/AddWorkflow", ex, "");
+
+                return Content(String.Format("<script type='text/javascript'>ShowMessage('{0}', 'show');</script>", error));
+            }
+        }
+
+        public ActionResult AddParam()
+        {
+            return PartialView("_AddParam", new AddParamModel());
+        }
+
+        public ActionResult NewParam(String ParamName, String ParamDesc, String ParamValue)
+        {
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    Parameter p = new Parameter { ParamName = ParamName, ParamDesc = ParamDesc, ParamValue = ParamValue };
+                    db.Parameters.Add(p);
+                    db.SaveChanges();
+
+                    User CurrentUser = util.GetLoggedOnUser();
+
+                    Parameters_Log log = new Parameters_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeType = "Insert",
+                        ParamDesc = ParamDesc,
+                        ParamName = ParamName,
+                        ParamValue = ParamValue
+                    };
+
+                    db.Parameters_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Content("<script type='text/javascript'>ParamAdded();</script>");
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/NewParam", ex, String.Format("Parameter Name: {0}", ParamName));
+
+                    return Content(String.Format("<script type='text/javascript'>ShowMessage('{0}', 'show');</script>", error));
+                }
+            }
+        }
+
+        [HttpPost]
+        public JsonResult EditParam(int ParamID, String ParamName, String ParamDesc, String ParamValue)
+        {
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    Parameter p = db.Parameters.Where(pa => pa.ParamID == ParamID).FirstOrDefault();
+
+                    Parameter logp = p;
+
+                    p.ParamDesc = ParamDesc;
+                    p.ParamName = ParamName;
+                    p.ParamValue = ParamValue;
+                    db.SaveChanges();
+
+                    User CurrentUser = util.GetLoggedOnUser();
+
+                    Parameters_Log log = new Parameters_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeType = "Update",
+                        ParamDesc = logp.ParamDesc == ParamDesc ? "" : ParamDesc,
+                        ParamName = logp.ParamName == ParamName ? "" : ParamName,
+                        ParamValue = logp.ParamValue == ParamValue ? "" : ParamValue,
+                    };
+
+                    db.Parameters_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+                    
+                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/EditParam", ex, String.Format("Param Name: {0}", ParamName));
+
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+        [HttpPost]
+        public JsonResult DeleteParam(int ParamID)
+        {
+            Parameter logp = new Parameter();
+
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    Parameter p = db.Parameters.Where(pa => pa.ParamID == ParamID).FirstOrDefault();
+                    logp = p;
+
+                    db.Parameters.Remove(p);
+                    db.SaveChanges();
+
+                    User CurrentUser = util.GetLoggedOnUser();
+
+                    Parameters_Log log = new Parameters_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeType = "Delete",
+                        ParamDesc = logp.ParamDesc,
+                        ParamName = logp.ParamName,
+                        ParamValue = logp.ParamValue
+                    };
+
+                    db.Parameters_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/NewParam", ex, String.Format("Parameter Name: {0}", logp.ParamName));
 
                     return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
                 }

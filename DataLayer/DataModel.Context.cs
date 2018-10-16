@@ -42,5 +42,7 @@ namespace DataLayer
         public virtual DbSet<Employees_Log> Employees_Log { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Workflow_Log> Workflow_Log { get; set; }
+        public virtual DbSet<User_Log> User_Log { get; set; }
+        public virtual DbSet<Parameters_Log> Parameters_Log { get; set; }
     }
 }

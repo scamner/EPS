@@ -188,8 +188,10 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\jsAdmin.js" />
     <Content Include="Scripts\jsDashboard.js" />
     <Content Include="Scripts\jsEmployee.js" />
+    <Content Include="Scripts\jsLogs.js" />
     <Content Include="Scripts\jsSetup.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Web.config" />
@@ -203,6 +205,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AddParamModel.cs" />
     <Compile Include="Models\AddWorkflowModel.cs" />
     <Compile Include="Models\AdminModel.cs" />
     <Compile Include="Models\ADUser.cs" />
@@ -231,6 +234,9 @@
     <Content Include="Views\Dashboard\_ManageWFItems.cshtml" />
     <Content Include="Views\Dashboard\_AddLibraryItem.cshtml" />
     <Content Include="Views\Dashboard\_AddWorkflow.cshtml" />
+    <Content Include="Views\Dashboard\_GetUsers.cshtml" />
+    <Content Include="Views\Dashboard\_GetParameters.cshtml" />
+    <Content Include="Views\Dashboard\_AddParam.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,0 +1,31 @@
+﻿@model EPS.Models.AddParamModel
+
+@using (Ajax.BeginForm("NewParam", new AjaxOptions { UpdateTargetId = "divNewParamResult" }))
+{
+    <table>
+        <tr>
+            <td>Parameter Name</td>
+            <td style="text-align: left;">
+                @Html.TextBoxFor(model => model.ParamName, new { @style = "width: 75px;", @maxlength = "10" })
+                <br />@Html.ValidationMessageFor(model => model.ParamName)
+            </td>
+            <td>Parameter Description</td>
+            <td style="text-align: left;">
+                @Html.TextBoxFor(model => model.ParamDesc, new { @style = "width: 300px;", @maxlength = "200" })
+                <br />@Html.ValidationMessageFor(model => model.ParamDesc)
+            </td>
+            <td>
+                <input type="submit" value="Add Parameter" />
+            </td>
+        </tr>
+        <tr>
+            <td>Value</td>
+            <td style="text-align: left;" colspan="4">
+                @Html.TextBoxFor(model => model.ParamValue, new { @style = "width: 560px;" })
+                <br />@Html.ValidationMessageFor(model => model.ParamValue)
+            </td>
+        </tr>
+    </table>
+}
+
+<div id="divNewParamResult"></div>

@@ -1,2 +1,28 @@
 ﻿@model EPS.Models.AdminModel
+@{ string version = typeof(EPS.MvcApplication).Assembly.GetName().Version.ToString(); }
 
+<script src="~/Scripts/jsAdmin.js?nocache=@version"></script>
+
+<table class="TabParent_Admin" style="border-collapse: collapse; margin-top: 0px;">
+    <tr>
+        <td style="width: 100%;">
+            <div id="tabs_container_admin">
+                <ul id="tabs_admin" style="cursor: default;" class="menu">
+                    <li role="menuitem" class="menu-item active" id="Users">
+                        <a href="#GetUsers">
+                            Users
+                        </a>
+                    </li>
+
+                    <li role="menuitem" class="menu-item active" id="Parameters">
+                        <a href="#GetParameters">
+                            Parameters
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="divMainAdmin"></div>

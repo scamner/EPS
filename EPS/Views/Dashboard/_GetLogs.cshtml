@@ -1,1 +1,23 @@
-﻿
+﻿@{ string version = typeof(EPS.MvcApplication).Assembly.GetName().Version.ToString(); }
+
+<script src="~/Scripts/jsLogs.js?nocache=@version"></script>
+
+<table class="TabParent_Logs" style="border-collapse: collapse; margin-top: 0px;">
+    <tr>
+        <td style="width: 100%;">
+            <div id="tabs_container_logs">
+                <ul id="tabs_logs" style="cursor: default;" class="menu">
+                    <li role="menuitem" class="menu-item active" id="GetEmployees">
+                        <a href="#GetEmployees">
+                            Employees
+                        </a>
+                    </li>
+
+
+                </ul>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="divMainLogs"></div>

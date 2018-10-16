@@ -92,5 +92,187 @@
                 background: linear-gradient(to top, #ffffff 0%, #f0f0f0 100%);
             }
 
+/*Admin Page*/
+.TabParent_Admin {
+    cursor: pointer;
+    width: 100%;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 5px;
+    padding: 0px;
+}
+
+    .TabParent_Admin tr {
+        margin: 0px;
+        padding: 0px;
+    }
+
+        .TabParent_Admin tr td {
+            margin: 0px;
+            padding: 0px;
+        }
+
+#tabs_admin_container {
+    margin: 0px;
+    padding: 0px;
+}
+
+#tabs_admin {
+    overflow: hidden;
+    margin: 0px;
+    padding: 0px;
+}
+
+    #tabs_admin li {
+        display: inline;
+        font-size: 0.938em;
+        float: left;
+        margin: 0px;
+        padding: 0px;
+        outline: none;
+    }
+
+        #tabs_admin li a {
+            text-decoration: none;
+            color: #001c58;
+            font-weight: bolder;
+            color: #3c5c96;
+            cursor: pointer;
+            font-family: "Raleway", sans-serif;
+            font-size: 1.1em;
+            text-align: center;
+            white-space: normal;
+            margin-top: 0px;
+            margin-bottom: 0px;
+            padding: 15px;
+            line-height: 20px;
+            height: 20px;
+            float: left;
+            vertical-align: middle;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            outline: none;
+        }
+
+            #tabs_admin li a:hover {
+                background-color: transparent;
+                background: -moz-linear-gradient(top #ffffff 0%, #f0f0f0 100%); /* FF3.6+ */
+                background: -webkit-gradient(linear, top, bottom, color-stop(0%,#f0f0f0), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
+                background: -webkit-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* Chrome10+,Safari5.1+ */
+                background: -o-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* Opera 11.10+ */
+                background: -ms-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* IE10+ */
+                background: linear-gradient(to top, #ffffff 0%, #f0f0f0 100%);
+            }
+
+        #tabs_admin li.active a {
+            background: -moz-linear-gradient(top #ffffff 0%, #f0f0f0 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, top, bottom, color-stop(0%,#f0f0f0), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* IE10+ */
+            background: linear-gradient(to top, #ffffff 0%, #f0f0f0 100%);
+        }
+
+            #tabs_admin li.active a:hover {
+                background-color: transparent;
+                background: -moz-linear-gradient(top #ffffff 0%, #f0f0f0 100%); /* FF3.6+ */
+                background: -webkit-gradient(linear, top, bottom, color-stop(0%,#f0f0f0), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
+                background: -webkit-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* Chrome10+,Safari5.1+ */
+                background: -o-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* Opera 11.10+ */
+                background: -ms-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* IE10+ */
+                background: linear-gradient(to top, #ffffff 0%, #f0f0f0 100%);
+            }
 
 
+/*Logs Page*/
+.TabParent_Logs {
+    cursor: pointer;
+    width: 100%;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 5px;
+    padding: 0px;
+}
+
+    .TabParent_Logs tr {
+        margin: 0px;
+        padding: 0px;
+    }
+
+        .TabParent_Logs tr td {
+            margin: 0px;
+            padding: 0px;
+        }
+
+#tabs_logs_container {
+    margin: 0px;
+    padding: 0px;
+}
+
+#tabs_logs {
+    overflow: hidden;
+    margin: 0px;
+    padding: 0px;
+}
+
+    #tabs_logs li {
+        display: inline;
+        font-size: 0.938em;
+        float: left;
+        margin: 0px;
+        padding: 0px;
+        outline: none;
+    }
+
+        #tabs_logs li a {
+            text-decoration: none;
+            color: #001c58;
+            font-weight: bolder;
+            color: #3c5c96;
+            cursor: pointer;
+            font-family: "Raleway", sans-serif;
+            font-size: 1.1em;
+            text-align: center;
+            white-space: normal;
+            margin-top: 0px;
+            margin-bottom: 0px;
+            padding: 15px;
+            line-height: 20px;
+            height: 20px;
+            float: left;
+            vertical-align: middle;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            outline: none;
+        }
+
+            #tabs_logs li a:hover {
+                background-color: transparent;
+                background: -moz-linear-gradient(top #ffffff 0%, #f0f0f0 100%); /* FF3.6+ */
+                background: -webkit-gradient(linear, top, bottom, color-stop(0%,#f0f0f0), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
+                background: -webkit-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* Chrome10+,Safari5.1+ */
+                background: -o-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* Opera 11.10+ */
+                background: -ms-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* IE10+ */
+                background: linear-gradient(to top, #ffffff 0%, #f0f0f0 100%);
+            }
+
+        #tabs_logs li.active a {
+            background: -moz-linear-gradient(top #ffffff 0%, #f0f0f0 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, top, bottom, color-stop(0%,#f0f0f0), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* IE10+ */
+            background: linear-gradient(to top, #ffffff 0%, #f0f0f0 100%);
+        }
+
+            #tabs_logs li.active a:hover {
+                background-color: transparent;
+                background: -moz-linear-gradient(top #ffffff 0%, #f0f0f0 100%); /* FF3.6+ */
+                background: -webkit-gradient(linear, top, bottom, color-stop(0%,#f0f0f0), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
+                background: -webkit-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* Chrome10+,Safari5.1+ */
+                background: -o-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* Opera 11.10+ */
+                background: -ms-linear-gradient(top, #ffffff 0%, #f0f0f0 100%); /* IE10+ */
+                background: linear-gradient(to top, #ffffff 0%, #f0f0f0 100%);
+            }

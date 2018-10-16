@@ -1,0 +1,52 @@
+﻿@model IEnumerable<DataLayer.Parameter>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.validator.unobtrusive.parse($('#divMainAdmin'));
+    });
+</script>
+
+<p>
+@{ Html.RenderPartial("_AddParam", new EPS.Models.AddParamModel()); }
+</p>
+<table class="webgrid-table">
+    <tr>
+        <th>
+            Parameter Name
+        </th>
+        <th>
+            Parameter Description
+        </th>
+        <th>
+            Value
+        </th>
+        <th></th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            <label class="NoEdit_@item.ParamID">@item.ParamName</label>
+            <input type="text" class="Edit_@item.ParamID" style="display: none; width: 75px;" maxlength="10" id="txtParamName_@item.ParamID" value="@item.ParamName" />
+        </td>
+        <td>
+            <label class="NoEdit_@item.ParamID">@item.ParamDesc</label>
+            <input type="text" class="Edit_@item.ParamID" style="display: none; width: 200px;" maxlength="200" id="txtParamDesc_@item.ParamID" value="@item.ParamDesc" />
+        </td>
+        <td>
+            <label class="NoEdit_@item.ParamID">@item.ParamValue</label>
+            <input type="text" class="Edit_@item.ParamID" style="display: none; width: 200px;" id="txtParamValue_@item.ParamID" value="@item.ParamValue" />
+        </td>
+        <td nowrap>
+            <input type="button" class="NoEdit_@item.ParamID" onclick="SetParamEdit(true, '@item.ParamID');" value="Edit" />
+            <input type="button" class="Edit_@item.ParamID" style="display: none;" onclick="SaveParam(@item.ParamID);" value="Save" />
+            <input type="button" class="Edit_@item.ParamID RedButton" style="display: none;" onclick="SetParamEdit(false, @item.ParamID);" value="Cancel" />
+        </td>
+        <td>
+            <input type="button" class="RedButton" value="Delete" onclick="DeleteParam('@item.ParamID');" />
+        </td>
+    </tr>
+}
+
+</table>

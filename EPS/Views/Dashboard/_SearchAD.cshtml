@@ -1,6 +1,6 @@
 ﻿@model EPS.Models.ADUser
 
-@using (Ajax.BeginForm("SearchADForUsers", new AjaxOptions { UpdateTargetId = "divSearchADUsersResult", OnComplete = "$('#divSearchADUsersResult').css('display', 'block');" }))
+@using (Ajax.BeginForm("SearchADForUsers", new AjaxOptions { UpdateTargetId = Model.ForUser == false ? "divSearchADUsersResult" : "divSearchADUsersResultAdmin", OnComplete = Model.ForUser == false ? "$('#divSearchADUsersResult').css('display', 'block');" : "$('#divSearchADUsersResultAdmin').css('display', 'block');" }))
 {
     <table>
         <tr>
@@ -32,4 +32,11 @@
     @Html.HiddenFor(m => m.ForUser)
 }
 
-<div id="divSearchADUsersResult"></div>
+@if(Model.ForUser == false)
+{
+    <div id="divSearchADUsersResult"></div>
+}
+else
+{
+    <div id="divSearchADUsersResultAdmin"></div>
+}

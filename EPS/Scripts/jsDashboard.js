@@ -18,6 +18,8 @@ function SetTab(tab) {
     if (id != "GetRuns") {
         timerRunCheck = "off";
         clearTimeout(timerRunCheck);
+
+        $("#divMain").html('');
     }
 
     $("#tabs li").removeClass('active');
