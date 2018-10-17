@@ -188,6 +188,16 @@
           <Property Name="Disabled" Type="bit" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
+warning 6002: The table/view 'EPS.dbo.vw_Managers_From_Logs' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_Managers_From_Logs">
+          <Key>
+            <PropertyRef Name="EmpID" />
+            <PropertyRef Name="ManagerName" />
+          </Key>
+          <Property Name="EmpID" Type="int" Nullable="false" />
+          <Property Name="ManagerName" Type="varchar" MaxLength="101" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
 warning 6002: The table/view 'EPS.dbo.vwRunItems' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="vwRunItems">
           <Key>
@@ -431,6 +441,12 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <EntitySet Name="Workflow_Log" EntityType="Self.Workflow_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WorkflowItems" EntityType="Self.WorkflowItems" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Workflows" EntityType="Self.Workflows" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="vw_Managers_From_Logs" EntityType="Self.vw_Managers_From_Logs" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_Managers_From_Logs].[EmpID] AS [EmpID], 
+    [vw_Managers_From_Logs].[ManagerName] AS [ManagerName]
+    FROM [dbo].[vw_Managers_From_Logs] AS [vw_Managers_From_Logs]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="vwRunItems" EntityType="Self.vwRunItems" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [vwRunItems].[RunID] AS [RunID], 
@@ -764,6 +780,7 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             <End Role="User" EntitySet="Users" />
             <End Role="Parameters_Log" EntitySet="Parameters_Log" />
           </AssociationSet>
+          <EntitySet Name="vw_Managers_From_Logs" EntityType="EPSModel.vw_Managers_From_Logs" />
         </EntityContainer>
         <EntityType Name="vwRunItem">
           <Key>
@@ -1031,6 +1048,14 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="vw_Managers_From_Logs">
+          <Key>
+            <PropertyRef Name="ManagerName" />
+            <PropertyRef Name="EmpID" />
+          </Key>
+          <Property Name="ManagerName" Type="String" Nullable="false" MaxLength="101" FixedLength="false" Unicode="false" />
+          <Property Name="EmpID" Type="Int32" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1257,6 +1282,14 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
                 <ScalarProperty Name="ParamDesc" ColumnName="ParamDesc" />
                 <ScalarProperty Name="ParamName" ColumnName="ParamName" />
                 <ScalarProperty Name="LogID" ColumnName="LogID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_Managers_From_Logs">
+            <EntityTypeMapping TypeName="EPSModel.vw_Managers_From_Logs">
+              <MappingFragment StoreEntitySet="vw_Managers_From_Logs">
+                <ScalarProperty Name="EmpID" ColumnName="EmpID" />
+                <ScalarProperty Name="ManagerName" ColumnName="ManagerName" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

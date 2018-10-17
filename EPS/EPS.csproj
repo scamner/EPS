@@ -237,6 +237,7 @@
     <Content Include="Views\Dashboard\_GetUsers.cshtml" />
     <Content Include="Views\Dashboard\_GetParameters.cshtml" />
     <Content Include="Views\Dashboard\_AddParam.cshtml" />
+    <Content Include="Views\Dashboard\_GetEmployeesLog.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

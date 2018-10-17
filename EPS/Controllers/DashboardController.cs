@@ -339,6 +339,9 @@ namespace EPS.Controllers
 
                 Employees_Log log = new Employees_Log
                 {
+                    FirstName = emp.FirstName,
+                    LastName = emp.LastName,
+                    Username = emp.Username,
                     IsManager = Convert.ToBoolean(IsManager),
                     EmpID = emp.EmpID,
                     ChangeDate = DateTime.Now,
@@ -372,6 +375,9 @@ namespace EPS.Controllers
 
                 Employees_Log log = new Employees_Log
                 {
+                    FirstName = emp.FirstName,
+                    LastName = emp.LastName,
+                    Username = emp.Username,
                     ReportsTo = Convert.ToInt32(ManagerID),
                     EmpID = emp.EmpID,
                     ChangeDate = DateTime.Now,
@@ -1188,7 +1194,7 @@ namespace EPS.Controllers
                     db.SaveChanges();
 
                     tran.Commit();
-                    
+
                     return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
                 }
                 catch (Exception ex)
@@ -1246,6 +1252,100 @@ namespace EPS.Controllers
 
                     return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
                 }
+            }
+        }
+
+        public ActionResult GetEmployeesLog(string sortOrder, string SortDirection, int? page, String Username, String FirstName, String LastName, int? AuditUser, String AuditDateFrom, String AuditDateTo, String ChangeType)
+        {
+            try
+            {
+                sortOrder = String.IsNullOrEmpty(sortOrder) ? "FirstName" : sortOrder;
+                SortDirection = String.IsNullOrEmpty(SortDirection) ? "desc" : SortDirection;
+                ViewBag.CurrentSort = sortOrder;
+
+                int pageSize = 20;
+                int pageNumber = (page ?? 1);
+
+                DateTime? auditDateFrom = String.IsNullOrEmpty(AuditDateFrom) ? new DateTime() : Convert.ToDateTime(AuditDateFrom);
+                DateTime? auditDateTo = String.IsNullOrEmpty(AuditDateTo) ? new DateTime() : Convert.ToDateTime(AuditDateTo);
+
+                List<Employees_Log> emps = db.Employees_Log
+                    .Where(e => (String.IsNullOrEmpty(Username) || e.Username.StartsWith(Username)) &&
+                        (String.IsNullOrEmpty(FirstName) || e.FirstName.StartsWith(FirstName)) &&
+                        (String.IsNullOrEmpty(LastName) || e.LastName.StartsWith(LastName)) &&
+                        (AuditUser == null || e.ChangedBy == AuditUser) &&
+                        (auditDateFrom.Value.Year == 0001 || e.ChangeDate > auditDateFrom) &&
+                        (auditDateTo.Value.Year == 0001 || e.ChangeDate < auditDateTo) &&
+                        (String.IsNullOrEmpty(ChangeType) || e.ChangeType == ChangeType)
+                        ).OrderBy(e => e.FirstName).ThenBy(e => e.LastName).ToList();
+
+                ViewBag.Username = Username;
+                ViewBag.FirstName = FirstName;
+                ViewBag.LastName = LastName;
+                ViewBag.AuditUser = AuditUser;
+                ViewBag.AuditDateFrom = AuditDateFrom;
+                ViewBag.AuditDateTo = AuditDateTo;
+                ViewBag.ChangeType = ChangeType;                
+
+                switch (sortOrder)
+                {
+                    case "Username":
+                        if (SortDirection == "desc")
+                            emps = emps.OrderByDescending(m => m.Username).ToList();
+                        else
+                            emps = emps.OrderBy(m => m.Username).ToList();
+                        break;
+
+                    case "FirstName":
+                        if (SortDirection == "desc")
+                            emps = emps.OrderByDescending(m => m.FirstName).ToList();
+                        else
+                            emps = emps.OrderBy(m => m.FirstName).ToList();
+                        break;
+
+                    case "LastName":
+                        if (SortDirection == "desc")
+                            emps = emps.OrderByDescending(m => m.LastName).ToList();
+                        else
+                            emps = emps.OrderBy(m => m.LastName).ToList();
+                        break;
+                }
+
+                List<User> users = db.Users.OrderBy(u => u.FirstName).ToList();
+                List<SelectListItem> userList = new List<SelectListItem>();
+                SelectListItem iempty = new SelectListItem { Text = "", Value = "", Selected = true };
+                userList.Add(iempty);
+
+                foreach (User e in users)
+                {
+                    SelectListItem i = new SelectListItem();
+                    i.Text = String.Format("{0} {1}", e.FirstName, e.LastName);
+                    i.Value = e.UserID.ToString();
+                    userList.Add(i);
+                }
+
+                List<SelectListItem> changeTypes = new List<SelectListItem> {
+                    new SelectListItem { Selected = true, Text = "", Value = "" },
+                    new SelectListItem { Text = "Insert", Value = "Insert" },
+                    new SelectListItem { Text = "Update", Value = "Update" },
+                    new SelectListItem { Text = "Delete", Value = "Delete" }
+                };
+
+                List<vw_Managers_From_Logs> managers = db.vw_Managers_From_Logs.OrderBy(m => m.ManagerName).ToList();
+
+                ViewBag.Managers = managers;
+                ViewBag.ChangeTypes = changeTypes;
+                ViewBag.Users = userList;
+                ViewBag.SortDirection = SortDirection == "asc" ? "desc" : "asc";
+
+                return PartialView("_GetEmployeesLog", emps.ToPagedList(pageNumber, pageSize));
+            }
+            catch (Exception ex)
+            {
+                String error = util.ParseError(ex);
+                util.WriteErrorToLog("Dashboard/GetEmployeesLog", ex, null);
+
+                return Content(String.Format("<script type='text/javascript'>ShowMessage('{0}', 'show');</script>", error));
             }
         }
     }

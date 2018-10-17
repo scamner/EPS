@@ -118,6 +118,9 @@
     <Compile Include="vwRunWorkflow.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="vw_Managers_From_Logs.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Workflow.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>

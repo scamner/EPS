@@ -44,5 +44,6 @@ namespace DataLayer
         public virtual DbSet<Workflow_Log> Workflow_Log { get; set; }
         public virtual DbSet<User_Log> User_Log { get; set; }
         public virtual DbSet<Parameters_Log> Parameters_Log { get; set; }
+        public virtual DbSet<vw_Managers_From_Logs> vw_Managers_From_Logs { get; set; }
     }
 }
