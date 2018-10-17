@@ -100,7 +100,7 @@
     <Compile Include="RunResult.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="RunResultStatus.cs">
+    <Compile Include="RunResultStatu.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="RunWorkflow.cs">
@@ -119,6 +119,9 @@
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="vw_Managers_From_Logs.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="vw_RunResults_Log.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Workflow.cs">

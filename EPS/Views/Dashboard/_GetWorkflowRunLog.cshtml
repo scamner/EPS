@@ -1,0 +1,178 @@
+﻿@model PagedList.IPagedList<DataLayer.vw_RunResults_Log>
+@using PagedList.Mvc;
+@{ List<DataLayer.vw_Managers_From_Logs> managers = ViewBag.Managers; }
+<link href="~/Content/PagedList.css" rel="stylesheet" />
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#AuditDateFrom_Filter').datepicker();
+        $('#AuditDateTo_Filter').datepicker();
+    });
+</script>
+
+<div style="padding: 5px; font-size: smaller;">
+    <table cellpadding="2" class="tblFilter">
+        <tr>
+            <td style="text-align: left; font-size: larger;"><b>Filter Options:</b></td>
+            <td style="text-align: left;">
+                Workflow:
+            </td>
+            <td style="text-align: left;">
+                Workflow Item:
+            </td>
+            <td style="text-align: left;">
+                Run Result:
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td style="text-align: left;">
+                @Html.DropDownList("ItemID_Filter", new SelectList(ViewBag.ItemList, "Value", "Text", ViewBag.ItemID), new { @id = "ItemID_Filter" })
+            </td>
+            <td style="text-align: left;">
+                @Html.DropDownList("WorkflowID_Filter", new SelectList(ViewBag.WorkflowList, "Value", "Text", ViewBag.WorkflowID), new { @id = "WorkflowID_Filter" })
+            </td>
+            <td style="text-align: left;">
+                @Html.DropDownList("ResultID_Filter", new SelectList(ViewBag.RunStatusList, "Value", "Text", ViewBag.ResultID), new { @id = "ResultID_Filter" })
+            </td>
+            <td>
+                <input type="button" value="Filter List" onclick="FilterWorkflowRunLog();" />
+                <input type="hidden" value="@Model.PageNumber" id="hidPageNum" />
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td style="text-align: left;">
+                First Name:
+            </td>
+            <td style="text-align: left;">
+                Last Name:
+            </td>
+            <td style="text-align: left;">
+                Dates:
+            </td>
+            <td style="text-align: left;">
+                Changed By:
+            </td>
+            <td style="text-align: left;">
+                Change Type:
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td style="text-align: left;">
+                <input type="text" id="FirstName_Filter" value="@ViewBag.FirstName" />
+            </td>
+            <td style="text-align: left;">
+                <input type="text" id="LastName_Filter" value="@ViewBag.LastName" />
+            </td>
+            <td style="text-align: left;">
+                <input type="text" id="AuditDateFrom_Filter" style="width: 75px;" value="@ViewBag.AuditDateFrom" />
+                to
+                <input type="text" id="AuditDateTo_Filter" style="width: 75px;" value="@ViewBag.AuditDateTo" />
+            </td>
+            <td style="text-align: left;">
+                @Html.DropDownList("UserID_Filter", new SelectList(ViewBag.Users, "Value", "Text", ViewBag.AuditUser), new { @id = "UserID_Filter" })
+            </td>
+            <td style="text-align: left;">
+                @Html.DropDownList("selUser_Filter", new SelectList(ViewBag.ChangeTypes, "Value", "Text", ViewBag.ChangeType), new { @id = "selUser_Filter" })
+            </td>
+        </tr>
+    </table>
+</div>
+
+@if (Model.Count == 0)
+{
+    <p style="text-align: center; color: red;">No results returned</p>
+}
+else
+{
+    <table class="webgrid-table">
+        <tr>
+            <th>
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterWorkflowRunLog('WorkflowName','@ViewBag.SortDirection');">Workflow Name:</a>
+            </th>
+            <th>
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterWorkflowRunLog('ItemName','@ViewBag.SortDirection');">Workflow Item Name:</a>
+            </th>
+            <th>
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterWorkflowRunLog('FirstName','@ViewBag.SortDirection');">First Name:</a>
+            </th>
+            <th>
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterWorkflowRunLog('LastName','@ViewBag.SortDirection');">Last Name:</a>
+            </th>
+            <th>
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterWorkflowRunLog('RunByUser','@ViewBag.SortDirection');">Run By:</a>
+            </th>
+            <th>
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterWorkflowRunLog('ResultStatus','@ViewBag.SortDirection');">Result:</a>
+            </th>
+            <th>
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterWorkflowRunLog('Started','@ViewBag.SortDirection');">Started:</a>
+            </th>
+            <th>
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterWorkflowRunLog('Completed','@ViewBag.SortDirection');">Completed:</a>
+            </th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WorkflowName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RunByUser)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ResultStatus)
+                </td>
+
+                <td>
+                    @{ String startTime = item.TimeStarted.ToString("MM/dd/yyyy hh:mm tt"); }
+                    @startTime
+                </td>
+                <td>
+                    @{ String compTime = item.TimeCompleted.ToString("MM/dd/yyyy hh:mm tt"); }
+                    @compTime
+                </td>
+            </tr>
+        }
+
+    </table>
+}
+
+<div id="divPager">
+    @if (Model.PageCount > 1)
+    {
+        @:Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+
+
+
+        @Html.PagedListPager(Model, page => Url.Action("GetWorkflowRunLog", new
+   {
+       sortOrder = ViewBag.CurrentSort,
+       CurrentSort = ViewBag.CurrentSort,
+       page = page,
+       ItemID = ViewBag.ItemID,
+       ResultID = ViewBag.ResultID,
+       FirstName = ViewBag.FirstName,
+       LastName = ViewBag.LastName,
+       WorkflowID = ViewBag.WorkflowID,
+       AuditUser = ViewBag.AuditUser,
+       AuditDateFrom = ViewBag.AuditDateFrom,
+       AuditDateTo = ViewBag.AuditDateTo,
+       ChangeType = ViewBag.ChangeType
+   }), PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions() { HttpMethod = "GET", UpdateTargetId = "divMainLogs" }))}
+</div>
+

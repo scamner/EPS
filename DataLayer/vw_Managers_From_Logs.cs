@@ -14,7 +14,7 @@ namespace DataLayer
     
     public partial class vw_Managers_From_Logs
     {
-        public string ManagerName { get; set; }
         public int EmpID { get; set; }
+        public string ManagerName { get; set; }
     }
 }

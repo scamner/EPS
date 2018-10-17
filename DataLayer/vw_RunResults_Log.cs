@@ -12,7 +12,7 @@ namespace DataLayer
     using System;
     using System.Collections.Generic;
     
-    public partial class RunResult
+    public partial class vw_RunResults_Log
     {
         public int RunResultID { get; set; }
         public int RunID { get; set; }
@@ -21,8 +21,13 @@ namespace DataLayer
         public string ResultString { get; set; }
         public System.DateTime TimeStarted { get; set; }
         public System.DateTime TimeCompleted { get; set; }
-    
-        public virtual RunResultStatu RunResultStatu { get; set; }
-        public virtual WorkflowItem WorkflowItem { get; set; }
+        public string ResultStatus { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string WorkflowName { get; set; }
+        public string ItemName { get; set; }
+        public string RunByUser { get; set; }
+        public int RunByUserID { get; set; }
+        public int WorkflowID { get; set; }
     }
 }

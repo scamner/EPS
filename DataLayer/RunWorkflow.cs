@@ -27,12 +27,12 @@ namespace DataLayer
         public System.DateTime StartTime { get; set; }
         public int RunByUserID { get; set; }
     
+        public virtual Employee Employee { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RunItem> RunItems { get; set; }
-        public virtual Workflow Workflow { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RunPayload> RunPayloads { get; set; }
-        public virtual Employee Employee { get; set; }
         public virtual User User { get; set; }
+        public virtual Workflow Workflow { get; set; }
     }
 }

@@ -238,6 +238,10 @@
     <Content Include="Views\Dashboard\_GetParameters.cshtml" />
     <Content Include="Views\Dashboard\_AddParam.cshtml" />
     <Content Include="Views\Dashboard\_GetEmployeesLog.cshtml" />
+    <Content Include="Views\Dashboard\_GetParametersLog.cshtml" />
+    <Content Include="Views\Dashboard\_GetUsersLog.cshtml" />
+    <Content Include="Views\Dashboard\_GetWorkflowLog.cshtml" />
+    <Content Include="Views\Dashboard\_GetWorkflowRunLog.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

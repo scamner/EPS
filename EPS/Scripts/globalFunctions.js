@@ -156,6 +156,7 @@ function PopModal(control, showHide, width, top, hideCloseButton, controlToFocus
             hide: 'fold',
             show: 'blind',
             width: width,
+            resizable: false,
             dialogClass: className,
         });
 

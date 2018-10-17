@@ -49,3 +49,71 @@ function FilterEmployeeLog(sortOrder, sortDir) {
     LoadLogs('GetEmployeesLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&Username=' + un + '&FirstName=' + fn + '&LastName=' + ln +
         '&AuditUser=' + user + '&AuditDateFrom=' + dateFrom + '&AuditDateTo=' + dateTo + '&ChangeType=' + type);
 }
+
+function FilterWorkflowRunLog(sortOrder, sortDir) {
+    var iid = $('#ItemID_Filter').val();
+    var fn = $('#FirstName_Filter').val();
+    var ln = $('#LastName_Filter').val();
+    var rid = $('#ResultID_Filter').val();
+    var wfid = $('#WorkflowID_Filter').val();
+    var page = $('#hidPageNum').val();
+    var user = $('#UserID_Filter').val();
+    var dateFrom = $('#AuditDateFrom_Filter').val();
+    var dateTo = $('#AuditDateTo_Filter').val();
+    var type = $('#selUser_Filter').val();
+
+    sortOrder = sortOrder === undefined ? '' : sortOrder;
+    sortDir = sortDir === undefined ? '' : sortDir;
+
+    LoadLogs('GetWorkflowRunLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&ItemID=' + iid + '&FirstName=' + fn + '&LastName=' + ln +
+        '&ResultID=' + rid + '&WorkflowID=' + wfid +
+        '&AuditUser=' + user + '&AuditDateFrom=' + dateFrom + '&AuditDateTo=' + dateTo + '&ChangeType=' + type);
+}
+
+function FilterWorkflowLog(sortOrder, sortDir) {
+    var it = $('#ItemType_Filter').val();
+    var iname = $('#ItemName_Filter').val();
+    var page = $('#hidPageNum').val();
+    var user = $('#UserID_Filter').val();
+    var dateFrom = $('#AuditDateFrom_Filter').val();
+    var dateTo = $('#AuditDateTo_Filter').val();
+    var type = $('#selUser_Filter').val();
+
+    sortOrder = sortOrder === undefined ? '' : sortOrder;
+    sortDir = sortDir === undefined ? '' : sortDir;
+
+    LoadLogs('GetWorkflowLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&ItemType=' + it + '&ItemName=' + iname +
+        '&AuditUser=' + user + '&AuditDateFrom=' + dateFrom + '&AuditDateTo=' + dateTo + '&ChangeType=' + type);
+}
+
+function FilterParametersLog(sortOrder, sortDir) {
+    var pn = $('#ParamName_Filter').val();
+    var page = $('#hidPageNum').val();
+    var user = $('#UserID_Filter').val();
+    var dateFrom = $('#AuditDateFrom_Filter').val();
+    var dateTo = $('#AuditDateTo_Filter').val();
+    var type = $('#selUser_Filter').val();
+
+    sortOrder = sortOrder === undefined ? '' : sortOrder;
+    sortDir = sortDir === undefined ? '' : sortDir;
+
+    LoadLogs('GetParametersLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&ParamName=' + pn + 
+        '&AuditUser=' + user + '&AuditDateFrom=' + dateFrom + '&AuditDateTo=' + dateTo + '&ChangeType=' + type);
+}
+
+function FilterUsersLog(sortOrder, sortDir) {
+    var un = $('#Username_Filter').val();
+    var fn = $('#FirstName_Filter').val();
+    var ln = $('#LastName_Filter').val();
+    var page = $('#hidPageNum').val();
+    var user = $('#UserID_Filter').val();
+    var dateFrom = $('#AuditDateFrom_Filter').val();
+    var dateTo = $('#AuditDateTo_Filter').val();
+    var type = $('#selUser_Filter').val();
+
+    sortOrder = sortOrder === undefined ? '' : sortOrder;
+    sortDir = sortDir === undefined ? '' : sortDir;
+
+    LoadLogs('GetUsersLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&Username=' + un + '&FirstName=' + fn + '&LastName=' + ln +
+        '&AuditUser=' + user + '&AuditDateFrom=' + dateFrom + '&AuditDateTo=' + dateTo + '&ChangeType=' + type);
+}

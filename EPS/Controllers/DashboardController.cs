@@ -267,135 +267,185 @@ namespace EPS.Controllers
 
         public JsonResult AddEmployee(String ADGUID, String Email, String FirstName, String LastName, String Username, String IsManager, String ManagerID)
         {
-            try
+            using (var tran = db.Database.BeginTransaction())
             {
-                Employee emp = new Employee
+                try
                 {
-                    ADGUID = new Guid(ADGUID),
-                    Email = Email,
-                    FirstName = FirstName,
-                    EmpNum = "",
-                    LastName = LastName,
-                    Username = Username,
-                    IsManager = Convert.ToBoolean(IsManager)
-                };
+                    Employee emp = new Employee
+                    {
+                        ADGUID = new Guid(ADGUID),
+                        Email = Email,
+                        FirstName = FirstName,
+                        EmpNum = "",
+                        LastName = LastName,
+                        Username = Username,
+                        IsManager = Convert.ToBoolean(IsManager)
+                    };
 
-                if (!String.IsNullOrEmpty(ManagerID) && ManagerID != "0")
-                {
-                    emp.ReportsTo = Convert.ToInt32(ManagerID);
+                    if (!String.IsNullOrEmpty(ManagerID) && ManagerID != "0")
+                    {
+                        emp.ReportsTo = Convert.ToInt32(ManagerID);
+                    }
+
+                    db.Employees.Add(emp);
+                    db.SaveChanges();
+
+                    Employees_Log log = new Employees_Log
+                    {
+                        ADGUID = new Guid(ADGUID),
+                        Email = Email,
+                        FirstName = FirstName,
+                        EmpNum = "",
+                        LastName = LastName,
+                        Username = Username,
+                        IsManager = Convert.ToBoolean(IsManager),
+                        EmpID = emp.EmpID,
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = util.GetLoggedOnUser().UserID,
+                        ChangeType = "Insert"
+                    };
+
+                    if (!String.IsNullOrEmpty(ManagerID) && ManagerID != "0")
+                    {
+                        log.ReportsTo = Convert.ToInt32(ManagerID);
+                    }
+
+                    db.Employees_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
                 }
-
-                db.Employees.Add(emp);
-                db.SaveChanges();
-
-                Employees_Log log = new Employees_Log
+                catch (Exception ex)
                 {
-                    ADGUID = new Guid(ADGUID),
-                    Email = Email,
-                    FirstName = FirstName,
-                    EmpNum = "",
-                    LastName = LastName,
-                    Username = Username,
-                    IsManager = Convert.ToBoolean(IsManager),
-                    EmpID = emp.EmpID,
-                    ChangeDate = DateTime.Now,
-                    ChangedBy = util.GetLoggedOnUser().UserID,
-                    ChangeType = "Insert"
-                };
+                    tran.Rollback();
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/AddEmployee", ex, String.Format("First Name: {0}, Last Name: {1}", FirstName, LastName));
 
-                if (!String.IsNullOrEmpty(ManagerID) && ManagerID != "0")
-                {
-                    log.ReportsTo = Convert.ToInt32(ManagerID);
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
                 }
-
-                db.Employees_Log.Add(log);
-                db.SaveChanges();
-
-                return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                String error = util.ParseError(ex);
-                util.WriteErrorToLog("Dashboard/AddEmployee", ex, String.Format("First Name: {0}, Last Name: {1}", FirstName, LastName));
-
-                return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
             }
         }
 
         public JsonResult SetEmployeeAsManager(int EmpID, Boolean IsManager)
         {
-            try
+            using (var tran = db.Database.BeginTransaction())
             {
-                int isManagerCount = db.Employees.Where(e => e.ReportsTo == EmpID).Count();
-
-                if (isManagerCount > 0)
+                try
                 {
-                    return Json(new { Error = "That employee is assigned as a manager to other employees. Please change that first.", JsonRequestBehavior.AllowGet });
+                    int isManagerCount = db.Employees.Where(e => e.ReportsTo == EmpID).Count();
+
+                    if (isManagerCount > 0)
+                    {
+                        return Json(new { Error = "That employee is assigned as a manager to other employees. Please change that first.", JsonRequestBehavior.AllowGet });
+                    }
+
+                    Employee emp = db.Employees.Where(e => e.EmpID == EmpID).FirstOrDefault();
+                    Employees_Log logB = new Employees_Log
+                    {
+                        FirstName = emp.FirstName,
+                        LastName = emp.LastName,
+                        Username = emp.Username,
+                        IsManager = emp.IsManager,
+                        EmpID = emp.EmpID,
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = util.GetLoggedOnUser().UserID,
+                        ChangeType = "Before Update"
+                    };
+
+                    emp.IsManager = IsManager;
+                    db.SaveChanges();
+
+                    db.Employees_Log.Add(logB);
+                    db.SaveChanges();
+
+                    Employees_Log logA = new Employees_Log
+                    {
+                        FirstName = emp.FirstName,
+                        LastName = emp.LastName,
+                        Username = emp.Username,
+                        IsManager = Convert.ToBoolean(IsManager),
+                        EmpID = emp.EmpID,
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = util.GetLoggedOnUser().UserID,
+                        ChangeType = "After Update"
+                    };
+
+                    db.Employees_Log.Add(logA);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "", ManagerName = String.Format("{0} {1}", emp.FirstName, emp.LastName), JsonRequestBehavior.AllowGet });
                 }
-
-                Employee emp = db.Employees.Where(e => e.EmpID == EmpID).FirstOrDefault();
-                emp.IsManager = IsManager;
-                db.SaveChanges();
-
-                Employees_Log log = new Employees_Log
+                catch (Exception ex)
                 {
-                    FirstName = emp.FirstName,
-                    LastName = emp.LastName,
-                    Username = emp.Username,
-                    IsManager = Convert.ToBoolean(IsManager),
-                    EmpID = emp.EmpID,
-                    ChangeDate = DateTime.Now,
-                    ChangedBy = util.GetLoggedOnUser().UserID,
-                    ChangeType = "Update"
-                };
+                    tran.Rollback();
 
-                db.Employees_Log.Add(log);
-                db.SaveChanges();
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/SetEmployeeAsManager", ex, String.Format("Emp ID: {0}, Is Manager: {1}", EmpID.ToString(), IsManager.ToString()));
 
-                return Json(new { Error = "", ManagerName = String.Format("{0} {1}", emp.FirstName, emp.LastName), JsonRequestBehavior.AllowGet });
-            }
-            catch (Exception ex)
-            {
-                String error = util.ParseError(ex);
-                util.WriteErrorToLog("Dashboard/SetEmployeeAsManager", ex, String.Format("Emp ID: {0}, Is Manager: {1}", EmpID.ToString(), IsManager.ToString()));
-
-                return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
             }
         }
 
         public JsonResult SetEmployeeReportTo(int EmpID, String ManagerID)
         {
-            try
+            using (var tran = db.Database.BeginTransaction())
             {
-                Employee emp = db.Employees.Where(e => e.EmpID == EmpID).FirstOrDefault();
-
-                if (Convert.ToInt32(ManagerID) == 0) { emp.ReportsTo = null; }
-                else { emp.ReportsTo = Convert.ToInt32(ManagerID); }
-                db.SaveChanges();
-
-                Employees_Log log = new Employees_Log
+                try
                 {
-                    FirstName = emp.FirstName,
-                    LastName = emp.LastName,
-                    Username = emp.Username,
-                    ReportsTo = Convert.ToInt32(ManagerID),
-                    EmpID = emp.EmpID,
-                    ChangeDate = DateTime.Now,
-                    ChangedBy = util.GetLoggedOnUser().UserID,
-                    ChangeType = "Update"
-                };
+                    Employee emp = db.Employees.Where(e => e.EmpID == EmpID).FirstOrDefault();
 
-                db.Employees_Log.Add(log);
-                db.SaveChanges();
+                    Employees_Log logB = new Employees_Log
+                    {
+                        FirstName = emp.FirstName,
+                        LastName = emp.LastName,
+                        Username = emp.Username,
+                        ReportsTo = emp.ReportsTo,
+                        EmpID = emp.EmpID,
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = util.GetLoggedOnUser().UserID,
+                        ChangeType = "Before Update"
+                    };
 
-                return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                String error = util.ParseError(ex);
-                util.WriteErrorToLog("Dashboard/SetEmployeeReportTo", ex, String.Format("Emp ID: {0}, Manager ID: {1}", EmpID.ToString(), ManagerID.ToString()));
+                    if (Convert.ToInt32(ManagerID) == 0) { emp.ReportsTo = null; }
+                    else { emp.ReportsTo = Convert.ToInt32(ManagerID); }
+                    db.SaveChanges();
 
-                return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                    db.Employees_Log.Add(logB);
+                    db.SaveChanges();
+
+                    Employees_Log logA = new Employees_Log
+                    {
+                        FirstName = emp.FirstName,
+                        LastName = emp.LastName,
+                        Username = emp.Username,
+                        ReportsTo = Convert.ToInt32(ManagerID),
+                        EmpID = emp.EmpID,
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = util.GetLoggedOnUser().UserID,
+                        ChangeType = "After Update"
+                    };
+
+                    db.Employees_Log.Add(logA);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/SetEmployeeReportTo", ex, String.Format("Emp ID: {0}, Manager ID: {1}", EmpID.ToString(), ManagerID.ToString()));
+
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
             }
         }
 
@@ -525,6 +575,7 @@ namespace EPS.Controllers
                     User CurrentUser = util.GetLoggedOnUser();
 
                     Workflow wf = db.Workflows.Where(w => w.WorkflowID == WorkflowID).FirstOrDefault();
+
                     wf.Disabled = Disabled;
                     db.SaveChanges();
 
@@ -909,7 +960,7 @@ namespace EPS.Controllers
                         ChangeType = "Insert",
                         ItemID = WorkflowID,
                         ItemName = li.ItemName,
-                        ItemType = "WorkflowItem"
+                        ItemType = "Workflow Item"
                     };
 
                     db.Workflow_Log.Add(log);
@@ -974,7 +1025,7 @@ namespace EPS.Controllers
                         ChangeType = "Update",
                         ItemID = WFItemID,
                         ItemName = wfi.LibraryItem.ItemName,
-                        ItemType = "WorkflowItem"
+                        ItemType = "Workflow Item"
                     };
 
                     db.Workflow_Log.Add(log);
@@ -1061,41 +1112,47 @@ namespace EPS.Controllers
 
         public JsonResult AddUser(String ADGUID, String Email, String FirstName, String LastName, String Username)
         {
-            try
+            using (var tran = db.Database.BeginTransaction())
             {
-                User user = new User
+                try
                 {
-                    Email = Email,
-                    FirstName = FirstName,
-                    LastName = LastName,
-                    Username = Username
-                };
+                    User user = new User
+                    {
+                        Email = Email,
+                        FirstName = FirstName,
+                        LastName = LastName,
+                        Username = Username
+                    };
 
-                db.Users.Add(user);
-                db.SaveChanges();
+                    db.Users.Add(user);
+                    db.SaveChanges();
 
-                User_Log log = new User_Log
+                    User_Log log = new User_Log
+                    {
+                        UserID = user.UserID,
+                        FirstName = FirstName,
+                        LastName = LastName,
+                        Username = Username,
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = util.GetLoggedOnUser().UserID,
+                        ChangeType = "Insert"
+                    };
+
+                    db.User_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "", UserID = user.UserID }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
                 {
-                    UserID = user.UserID,
-                    FirstName = FirstName,
-                    LastName = LastName,
-                    Username = Username,
-                    ChangeDate = DateTime.Now,
-                    ChangedBy = util.GetLoggedOnUser().UserID,
-                    ChangeType = "Insert"
-                };
+                    tran.Rollback();
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/AddUser", ex, String.Format("First Name: {0}, Last Name: {1}", FirstName, LastName));
 
-                db.User_Log.Add(log);
-                db.SaveChanges();
-
-                return Json(new { Error = "", UserID = user.UserID }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                String error = util.ParseError(ex);
-                util.WriteErrorToLog("Dashboard/AddUser", ex, String.Format("First Name: {0}, Last Name: {1}", FirstName, LastName));
-
-                return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
             }
         }
 
@@ -1180,17 +1237,30 @@ namespace EPS.Controllers
 
                     User CurrentUser = util.GetLoggedOnUser();
 
-                    Parameters_Log log = new Parameters_Log
+                    Parameters_Log logB = new Parameters_Log
                     {
                         ChangeDate = DateTime.Now,
                         ChangedBy = CurrentUser.UserID,
-                        ChangeType = "Update",
-                        ParamDesc = logp.ParamDesc == ParamDesc ? "" : ParamDesc,
-                        ParamName = logp.ParamName == ParamName ? "" : ParamName,
-                        ParamValue = logp.ParamValue == ParamValue ? "" : ParamValue,
+                        ChangeType = "Before Update",
+                        ParamDesc = logp.ParamDesc,
+                        ParamName = logp.ParamName,
+                        ParamValue = logp.ParamValue,
                     };
 
-                    db.Parameters_Log.Add(log);
+                    db.Parameters_Log.Add(logB);
+                    db.SaveChanges();
+
+                    Parameters_Log logA = new Parameters_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeType = "After Update",
+                        ParamDesc = ParamDesc,
+                        ParamName = ParamName,
+                        ParamValue = ParamValue,
+                    };
+
+                    db.Parameters_Log.Add(logA);
                     db.SaveChanges();
 
                     tran.Commit();
@@ -1263,7 +1333,7 @@ namespace EPS.Controllers
                 SortDirection = String.IsNullOrEmpty(SortDirection) ? "desc" : SortDirection;
                 ViewBag.CurrentSort = sortOrder;
 
-                int pageSize = 20;
+                int pageSize = 25;
                 int pageNumber = (page ?? 1);
 
                 DateTime? auditDateFrom = String.IsNullOrEmpty(AuditDateFrom) ? new DateTime() : Convert.ToDateTime(AuditDateFrom);
@@ -1276,7 +1346,7 @@ namespace EPS.Controllers
                         (AuditUser == null || e.ChangedBy == AuditUser) &&
                         (auditDateFrom.Value.Year == 0001 || e.ChangeDate > auditDateFrom) &&
                         (auditDateTo.Value.Year == 0001 || e.ChangeDate < auditDateTo) &&
-                        (String.IsNullOrEmpty(ChangeType) || e.ChangeType == ChangeType)
+                        (String.IsNullOrEmpty(ChangeType) || e.ChangeType.Contains(ChangeType))
                         ).OrderBy(e => e.FirstName).ThenBy(e => e.LastName).ToList();
 
                 ViewBag.Username = Username;
@@ -1285,29 +1355,29 @@ namespace EPS.Controllers
                 ViewBag.AuditUser = AuditUser;
                 ViewBag.AuditDateFrom = AuditDateFrom;
                 ViewBag.AuditDateTo = AuditDateTo;
-                ViewBag.ChangeType = ChangeType;                
+                ViewBag.ChangeType = ChangeType;
 
                 switch (sortOrder)
                 {
                     case "Username":
                         if (SortDirection == "desc")
-                            emps = emps.OrderByDescending(m => m.Username).ToList();
+                            emps = emps.OrderByDescending(m => m.Username).ThenBy(m => m.LogID).ToList();
                         else
-                            emps = emps.OrderBy(m => m.Username).ToList();
+                            emps = emps.OrderBy(m => m.Username).ThenBy(m => m.LogID).ToList();
                         break;
 
                     case "FirstName":
                         if (SortDirection == "desc")
-                            emps = emps.OrderByDescending(m => m.FirstName).ToList();
+                            emps = emps.OrderByDescending(m => m.FirstName).ThenBy(m => m.LogID).ToList();
                         else
-                            emps = emps.OrderBy(m => m.FirstName).ToList();
+                            emps = emps.OrderBy(m => m.FirstName).ThenBy(m => m.LogID).ToList();
                         break;
 
                     case "LastName":
                         if (SortDirection == "desc")
-                            emps = emps.OrderByDescending(m => m.LastName).ToList();
+                            emps = emps.OrderByDescending(m => m.LastName).ThenBy(m => m.LogID).ToList();
                         else
-                            emps = emps.OrderBy(m => m.LastName).ToList();
+                            emps = emps.OrderBy(m => m.LastName).ThenBy(m => m.LogID).ToList();
                         break;
                 }
 
@@ -1344,6 +1414,398 @@ namespace EPS.Controllers
             {
                 String error = util.ParseError(ex);
                 util.WriteErrorToLog("Dashboard/GetEmployeesLog", ex, null);
+
+                return Content(String.Format("<script type='text/javascript'>ShowMessage('{0}', 'show');</script>", error));
+            }
+        }
+
+        public ActionResult GetParametersLog(string sortOrder, string SortDirection, int? page, String ParamName, int? AuditUser, String AuditDateFrom, String AuditDateTo, String ChangeType)
+        {
+            try
+            {
+                sortOrder = String.IsNullOrEmpty(sortOrder) ? "ParamName" : sortOrder;
+                SortDirection = String.IsNullOrEmpty(SortDirection) ? "desc" : SortDirection;
+                ViewBag.CurrentSort = sortOrder;
+
+                int pageSize = 25;
+                int pageNumber = (page ?? 1);
+
+                DateTime? auditDateFrom = String.IsNullOrEmpty(AuditDateFrom) ? new DateTime() : Convert.ToDateTime(AuditDateFrom);
+                DateTime? auditDateTo = String.IsNullOrEmpty(AuditDateTo) ? new DateTime() : Convert.ToDateTime(AuditDateTo);
+
+                List<Parameters_Log> logs = db.Parameters_Log
+                    .Where(e => (String.IsNullOrEmpty(ParamName) || e.ParamName.StartsWith(ParamName)) &&
+                        (AuditUser == null || e.ChangedBy == AuditUser) &&
+                        (auditDateFrom.Value.Year == 0001 || e.ChangeDate > auditDateFrom) &&
+                        (auditDateTo.Value.Year == 0001 || e.ChangeDate < auditDateTo) &&
+                        (String.IsNullOrEmpty(ChangeType) || e.ChangeType.Contains(ChangeType))
+                        ).OrderBy(e => e.ParamName).ToList();
+
+                ViewBag.ParamName = ParamName;
+                ViewBag.AuditUser = AuditUser;
+                ViewBag.AuditDateFrom = AuditDateFrom;
+                ViewBag.AuditDateTo = AuditDateTo;
+                ViewBag.ChangeType = ChangeType;
+
+                if (SortDirection == "desc")
+                {
+                    logs = logs.OrderByDescending(m => m.ParamName).ThenBy(m => m.LogID).ToList();
+                }
+                else
+                {
+                    logs = logs.OrderBy(m => m.ParamName).ThenBy(m => m.LogID).ToList();
+                }
+
+                List<User> users = db.Users.OrderBy(u => u.FirstName).ToList();
+                List<SelectListItem> userList = new List<SelectListItem>();
+                SelectListItem iempty = new SelectListItem { Text = "", Value = "", Selected = true };
+                userList.Add(iempty);
+
+                foreach (User e in users)
+                {
+                    SelectListItem i = new SelectListItem();
+                    i.Text = String.Format("{0} {1}", e.FirstName, e.LastName);
+                    i.Value = e.UserID.ToString();
+                    userList.Add(i);
+                }
+
+                List<SelectListItem> changeTypes = new List<SelectListItem> {
+                    new SelectListItem { Selected = true, Text = "", Value = "" },
+                    new SelectListItem { Text = "Insert", Value = "Insert" },
+                    new SelectListItem { Text = "Update", Value = "Update" },
+                    new SelectListItem { Text = "Delete", Value = "Delete" }
+                };
+
+                ViewBag.ChangeTypes = changeTypes;
+                ViewBag.Users = userList;
+                ViewBag.SortDirection = SortDirection == "asc" ? "desc" : "asc";
+
+                return PartialView("_GetParametersLog", logs.ToPagedList(pageNumber, pageSize));
+            }
+            catch (Exception ex)
+            {
+                String error = util.ParseError(ex);
+                util.WriteErrorToLog("Dashboard/GetParametersLog", ex, null);
+
+                return Content(String.Format("<script type='text/javascript'>ShowMessage('{0}', 'show');</script>", error));
+            }
+        }
+
+        public ActionResult GetUsersLog(string sortOrder, string SortDirection, int? page, String Username, String FirstName, String LastName, int? AuditUser, String AuditDateFrom, String AuditDateTo, String ChangeType)
+        {
+            try
+            {
+                sortOrder = String.IsNullOrEmpty(sortOrder) ? "FirstName" : sortOrder;
+                SortDirection = String.IsNullOrEmpty(SortDirection) ? "desc" : SortDirection;
+                ViewBag.CurrentSort = sortOrder;
+
+                int pageSize = 25;
+                int pageNumber = (page ?? 1);
+
+                DateTime? auditDateFrom = String.IsNullOrEmpty(AuditDateFrom) ? new DateTime() : Convert.ToDateTime(AuditDateFrom);
+                DateTime? auditDateTo = String.IsNullOrEmpty(AuditDateTo) ? new DateTime() : Convert.ToDateTime(AuditDateTo);
+
+                List<User_Log> logs = db.User_Log
+                    .Where(e => (String.IsNullOrEmpty(Username) || e.Username.StartsWith(Username)) &&
+                        (String.IsNullOrEmpty(FirstName) || e.FirstName.StartsWith(FirstName)) &&
+                        (String.IsNullOrEmpty(LastName) || e.LastName.StartsWith(LastName)) &&
+                        (AuditUser == null || e.ChangedBy == AuditUser) &&
+                        (auditDateFrom.Value.Year == 0001 || e.ChangeDate > auditDateFrom) &&
+                        (auditDateTo.Value.Year == 0001 || e.ChangeDate < auditDateTo) &&
+                        (String.IsNullOrEmpty(ChangeType) || e.ChangeType.Contains(ChangeType))
+                        ).OrderBy(e => e.FirstName).ThenBy(e => e.LastName).ToList();
+
+                ViewBag.Username = Username;
+                ViewBag.FirstName = FirstName;
+                ViewBag.LastName = LastName;
+                ViewBag.AuditUser = AuditUser;
+                ViewBag.AuditDateFrom = AuditDateFrom;
+                ViewBag.AuditDateTo = AuditDateTo;
+                ViewBag.ChangeType = ChangeType;
+
+                switch (sortOrder)
+                {
+                    case "Username":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.Username).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.Username).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "FirstName":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.FirstName).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.FirstName).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "LastName":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.LastName).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.LastName).ThenBy(m => m.LogID).ToList();
+                        break;
+                }
+
+                List<User> users = db.Users.OrderBy(u => u.FirstName).ToList();
+                List<SelectListItem> userList = new List<SelectListItem>();
+                SelectListItem iempty = new SelectListItem { Text = "", Value = "", Selected = true };
+                userList.Add(iempty);
+
+                foreach (User e in users)
+                {
+                    SelectListItem i = new SelectListItem();
+                    i.Text = String.Format("{0} {1}", e.FirstName, e.LastName);
+                    i.Value = e.UserID.ToString();
+                    userList.Add(i);
+                }
+
+                List<SelectListItem> changeTypes = new List<SelectListItem> {
+                    new SelectListItem { Selected = true, Text = "", Value = "" },
+                    new SelectListItem { Text = "Insert", Value = "Insert" },
+                    new SelectListItem { Text = "Update", Value = "Update" },
+                    new SelectListItem { Text = "Delete", Value = "Delete" }
+                };
+
+                ViewBag.ChangeTypes = changeTypes;
+                ViewBag.Users = userList;
+                ViewBag.SortDirection = SortDirection == "asc" ? "desc" : "asc";
+
+                return PartialView("_GetUsersLog", logs.ToPagedList(pageNumber, pageSize));
+            }
+            catch (Exception ex)
+            {
+                String error = util.ParseError(ex);
+                util.WriteErrorToLog("Dashboard/GetUsersLog", ex, null);
+
+                return Content(String.Format("<script type='text/javascript'>ShowMessage('{0}', 'show');</script>", error));
+            }
+        }
+
+        public ActionResult GetWorkflowLog(string sortOrder, string SortDirection, int? page, String ItemType, String ItemName, int? AuditWorkflow, String AuditDateFrom, String AuditDateTo, String ChangeType)
+        {
+            try
+            {
+                sortOrder = String.IsNullOrEmpty(sortOrder) ? "ChangeDate" : sortOrder;
+                SortDirection = String.IsNullOrEmpty(SortDirection) ? "desc" : SortDirection;
+                ViewBag.CurrentSort = sortOrder;
+
+                int pageSize = 25;
+                int pageNumber = (page ?? 1);
+
+                DateTime? auditDateFrom = String.IsNullOrEmpty(AuditDateFrom) ? new DateTime() : Convert.ToDateTime(AuditDateFrom);
+                DateTime? auditDateTo = String.IsNullOrEmpty(AuditDateTo) ? new DateTime() : Convert.ToDateTime(AuditDateTo);
+
+                List<Workflow_Log> logs = db.Workflow_Log
+                    .Where(e => (String.IsNullOrEmpty(ItemType) || e.ItemType == ItemType) &&
+                        (String.IsNullOrEmpty(ItemName) || e.ItemName.StartsWith(ItemName)) &&
+                        (AuditWorkflow == null || e.ChangedBy == AuditWorkflow) &&
+                        (auditDateFrom.Value.Year == 0001 || e.ChangeDate > auditDateFrom) &&
+                        (auditDateTo.Value.Year == 0001 || e.ChangeDate < auditDateTo) &&
+                        (String.IsNullOrEmpty(ChangeType) || e.ChangeType.Contains(ChangeType))
+                        ).OrderBy(e => e.LogID).ToList();
+
+                ViewBag.ItemType = ItemType;
+                ViewBag.ItemName = ItemName;
+                ViewBag.AuditWorkflow = AuditWorkflow;
+                ViewBag.AuditDateFrom = AuditDateFrom;
+                ViewBag.AuditDateTo = AuditDateTo;
+                ViewBag.ChangeType = ChangeType;
+
+                switch (sortOrder)
+                {
+                    case "ChangeDate":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ChangeDate).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ChangeDate).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "ItemType":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ItemType).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ItemType).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "ItemName":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ItemName).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ItemName).ThenBy(m => m.LogID).ToList();
+                        break;
+                }
+
+                List<SelectListItem> itemTypes = new List<SelectListItem> {
+                    new SelectListItem { Selected = true, Text = "", Value = "" },
+                    new SelectListItem { Text = "Workflow", Value = "Workflow" },
+                    new SelectListItem { Text = "Workflow Item", Value = "Workflow Item" },
+                    new SelectListItem { Text = "Library Item", Value = "Library Item" }
+                };
+
+                List<SelectListItem> changeTypes = new List<SelectListItem> {
+                    new SelectListItem { Selected = true, Text = "", Value = "" },
+                    new SelectListItem { Text = "Insert", Value = "Insert" },
+                    new SelectListItem { Text = "Update", Value = "Update" },
+                    new SelectListItem { Text = "Delete", Value = "Delete" }
+                };
+
+                ViewBag.ChangeTypes = changeTypes;
+                ViewBag.ItemTypes = itemTypes;
+                ViewBag.SortDirection = SortDirection == "asc" ? "desc" : "asc";
+
+                return PartialView("_GetWorkflowLog", logs.ToPagedList(pageNumber, pageSize));
+            }
+            catch (Exception ex)
+            {
+                String error = util.ParseError(ex);
+                util.WriteErrorToLog("Dashboard/GetWorkflowLog", ex, null);
+
+                return Content(String.Format("<script type='text/javascript'>ShowMessage('{0}', 'show');</script>", error));
+            }
+        }
+
+        public ActionResult GetWorkflowRunLog(string sortOrder, string SortDirection, int? page, int? ItemID, int? ResultID, String FirstName, String LastName, int? WorkflowID, int? AuditUserID, String AuditDateFrom, String AuditDateTo, String ChangeType)
+        {
+            try
+            {
+                sortOrder = String.IsNullOrEmpty(sortOrder) ? "TimeCompleted" : sortOrder;
+                SortDirection = String.IsNullOrEmpty(SortDirection) ? "desc" : SortDirection;
+                ViewBag.CurrentSort = sortOrder;
+
+                int pageSize = 25;
+                int pageNumber = (page ?? 1);
+
+                DateTime? auditDateFrom = String.IsNullOrEmpty(AuditDateFrom) ? new DateTime() : Convert.ToDateTime(AuditDateFrom);
+                DateTime? auditDateTo = String.IsNullOrEmpty(AuditDateTo) ? new DateTime() : Convert.ToDateTime(AuditDateTo);
+
+                List<vw_RunResults_Log> logs = db.vw_RunResults_Log
+                    .Where(e => (ItemID == null || e.WFItemID == ItemID) &&
+                        (ResultID == null || e.ResultID == ResultID) &&
+                        (String.IsNullOrEmpty(FirstName) || e.FirstName.Contains(FirstName)) &&
+                        (String.IsNullOrEmpty(LastName) || e.LastName.Contains(LastName)) &&
+                        (AuditUserID == null || e.RunByUserID == AuditUserID) &&
+                        (WorkflowID == null || e.WorkflowID == WorkflowID) &&
+                        (auditDateFrom.Value.Year == 0001 || e.TimeCompleted > auditDateFrom) &&
+                        (auditDateTo.Value.Year == 0001 || e.TimeCompleted < auditDateTo)
+                        ).OrderBy(e => e.FirstName).ThenBy(e => e.LastName).ToList();
+
+                ViewBag.ItemID = ItemID;
+                ViewBag.ResultID = ResultID;
+                ViewBag.FirstName = FirstName;
+                ViewBag.LastName = LastName;
+                ViewBag.WorkflowID = WorkflowID;
+                ViewBag.AuditDateFrom = AuditDateFrom;
+                ViewBag.AuditDateTo = AuditDateTo;
+                ViewBag.ChangeType = ChangeType;
+
+                switch (sortOrder)
+                {
+                    case "ItemName":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ItemName).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ItemName).ToList();
+                        break;
+
+                    case "FirstName":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.FirstName).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.FirstName).ToList();
+                        break;
+
+                    case "LastName":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.LastName).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.LastName).ToList();
+                        break;
+
+                    case "ResultStatus":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ResultStatus).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ResultStatus).ToList();
+                        break;
+
+                    case "WorkflowName":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.WorkflowName).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.WorkflowName).ToList();
+                        break;
+
+                    case "RunByUser":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.RunByUser).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.RunByUser).ToList();
+                        break;
+
+                    case "Started":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.TimeStarted).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.TimeStarted).ToList();
+                        break;
+
+                    case "Completed":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.TimeCompleted).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.TimeCompleted).ToList();
+                        break;
+                }
+
+                List<RunResultStatu> RunStatus = db.RunResultStatus.OrderBy(u => u.ResultStatus).ToList();
+                List<SelectListItem> RunStatusList = new List<SelectListItem> { new SelectListItem { Text = "", Value = "", Selected = true } };
+                foreach (RunResultStatu e in RunStatus)
+                {
+                    RunStatusList.Add(new SelectListItem { Text = e.ResultStatus, Value = e.ResultID.ToString() });
+                }
+
+                List<LibraryItem> Items = db.LibraryItems.OrderBy(u => u.ItemName).ToList();
+                List<SelectListItem> ItemList = new List<SelectListItem> { new SelectListItem { Text = "", Value = "", Selected = true } };
+                foreach (LibraryItem e in Items)
+                {
+                    ItemList.Add(new SelectListItem { Text = e.ItemName, Value = e.ItemID.ToString() });
+                }
+
+                List<Workflow> Workflows = db.Workflows.OrderBy(u => u.WorkflowName).ToList();
+                List<SelectListItem> WorkflowList = new List<SelectListItem> { new SelectListItem { Text = "", Value = "", Selected = true } };
+                foreach (Workflow e in Workflows)
+                {
+                    WorkflowList.Add(new SelectListItem { Text = e.WorkflowName, Value = e.WorkflowID.ToString() });
+                }
+
+                List<User> users = db.Users.OrderBy(u => u.FirstName).ToList();
+                List<SelectListItem> userList = new List<SelectListItem> { new SelectListItem { Text = "", Value = "", Selected = true } };
+                foreach (User e in users)
+                {
+                    userList.Add(new SelectListItem { Text = String.Format("{0} {1}", e.FirstName, e.LastName), Value = e.UserID.ToString() });
+                }
+
+                List<SelectListItem> changeTypes = new List<SelectListItem> {
+                    new SelectListItem { Selected = true, Text = "", Value = "" },
+                    new SelectListItem { Text = "Insert", Value = "Insert" },
+                    new SelectListItem { Text = "Update", Value = "Update" },
+                    new SelectListItem { Text = "Delete", Value = "Delete" }
+                };
+
+                ViewBag.WorkflowList = WorkflowList;
+                ViewBag.ItemList = ItemList;
+                ViewBag.ChangeTypes = changeTypes;
+                ViewBag.Users = userList;
+                ViewBag.RunStatusList = RunStatusList;
+                ViewBag.SortDirection = SortDirection == "asc" ? "desc" : "asc";
+
+                return PartialView("_GetWorkflowRunLog", logs.ToPagedList(pageNumber, pageSize));
+            }
+            catch (Exception ex)
+            {
+                String error = util.ParseError(ex);
+                util.WriteErrorToLog("Dashboard/GetWorkflowRunLog", ex, null);
 
                 return Content(String.Format("<script type='text/javascript'>ShowMessage('{0}', 'show');</script>", error));
             }

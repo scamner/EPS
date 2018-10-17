@@ -33,7 +33,7 @@
           <Property Name="IsManager" Type="bit" />
           <Property Name="ReportsTo" Type="int" />
           <Property Name="EmpNum" Type="varchar" MaxLength="20" />
-          <Property Name="ChangeType" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="ChangeType" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="ChangeDate" Type="datetime" Nullable="false" />
           <Property Name="ChangedBy" Type="int" Nullable="false" />
         </EntityType>
@@ -82,7 +82,7 @@
           <Property Name="ParamName" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="ParamDesc" Type="varchar" MaxLength="200" Nullable="false" />
           <Property Name="ParamValue" Type="varchar(max)" Nullable="false" />
-          <Property Name="ChangeType" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="ChangeType" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="ChangeDate" Type="datetime" Nullable="false" />
           <Property Name="ChangedBy" Type="int" Nullable="false" />
         </EntityType>
@@ -141,7 +141,7 @@
           <Property Name="Username" Type="varchar" MaxLength="50" />
           <Property Name="FirstName" Type="varchar" MaxLength="50" />
           <Property Name="LastName" Type="varchar" MaxLength="50" />
-          <Property Name="ChangeType" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="ChangeType" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="ChangeDate" Type="datetime" Nullable="false" />
           <Property Name="ChangedBy" Type="int" Nullable="false" />
         </EntityType>
@@ -164,7 +164,7 @@
           <Property Name="ItemType" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="ItemName" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="ChangeText" Type="varchar(max)" Nullable="false" />
-          <Property Name="ChangeType" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="ChangeType" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="ChangeDate" Type="datetime" Nullable="false" />
           <Property Name="ChangedBy" Type="int" Nullable="false" />
         </EntityType>
@@ -198,6 +198,42 @@ warning 6002: The table/view 'EPS.dbo.vw_Managers_From_Logs' does not have a pri
           <Property Name="ManagerName" Type="varchar" MaxLength="101" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
+warning 6002: The table/view 'EPS.dbo.vw_RunResults_Log' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_RunResults_Log">
+          <Key>
+            <PropertyRef Name="RunResultID" />
+            <PropertyRef Name="RunID" />
+            <PropertyRef Name="WFItemID" />
+            <PropertyRef Name="ResultID" />
+            <PropertyRef Name="ResultString" />
+            <PropertyRef Name="TimeStarted" />
+            <PropertyRef Name="TimeCompleted" />
+            <PropertyRef Name="ResultStatus" />
+            <PropertyRef Name="FirstName" />
+            <PropertyRef Name="LastName" />
+            <PropertyRef Name="WorkflowName" />
+            <PropertyRef Name="ItemName" />
+            <PropertyRef Name="RunByUser" />
+            <PropertyRef Name="RunByUserID" />
+            <PropertyRef Name="WorkflowID" />
+          </Key>
+          <Property Name="RunResultID" Type="int" Nullable="false" />
+          <Property Name="RunID" Type="int" Nullable="false" />
+          <Property Name="WFItemID" Type="int" Nullable="false" />
+          <Property Name="ResultID" Type="int" Nullable="false" />
+          <Property Name="ResultString" Type="varchar(max)" Nullable="false" />
+          <Property Name="TimeStarted" Type="datetime" Nullable="false" />
+          <Property Name="TimeCompleted" Type="datetime" Nullable="false" />
+          <Property Name="ResultStatus" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="WorkflowName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ItemName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="RunByUser" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="RunByUserID" Type="int" Nullable="false" />
+          <Property Name="WorkflowID" Type="int" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
 warning 6002: The table/view 'EPS.dbo.vwRunItems' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="vwRunItems">
           <Key>
@@ -221,7 +257,7 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             <PropertyRef Name="FirstName" />
             <PropertyRef Name="LastName" />
           </Key>
-          <Property Name="RunID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="RunID" Type="int" Nullable="false" />
           <Property Name="EmpID" Type="int" Nullable="false" />
           <Property Name="WorkflowID" Type="int" Nullable="false" />
           <Property Name="ItemCount" Type="int" />
@@ -447,6 +483,25 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
     [vw_Managers_From_Logs].[ManagerName] AS [ManagerName]
     FROM [dbo].[vw_Managers_From_Logs] AS [vw_Managers_From_Logs]</DefiningQuery>
           </EntitySet>
+          <EntitySet Name="vw_RunResults_Log" EntityType="Self.vw_RunResults_Log" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_RunResults_Log].[RunResultID] AS [RunResultID], 
+    [vw_RunResults_Log].[RunID] AS [RunID], 
+    [vw_RunResults_Log].[WFItemID] AS [WFItemID], 
+    [vw_RunResults_Log].[ResultID] AS [ResultID], 
+    [vw_RunResults_Log].[ResultString] AS [ResultString], 
+    [vw_RunResults_Log].[TimeStarted] AS [TimeStarted], 
+    [vw_RunResults_Log].[TimeCompleted] AS [TimeCompleted], 
+    [vw_RunResults_Log].[ResultStatus] AS [ResultStatus], 
+    [vw_RunResults_Log].[FirstName] AS [FirstName], 
+    [vw_RunResults_Log].[LastName] AS [LastName], 
+    [vw_RunResults_Log].[WorkflowName] AS [WorkflowName], 
+    [vw_RunResults_Log].[ItemName] AS [ItemName], 
+    [vw_RunResults_Log].[RunByUser] AS [RunByUser], 
+    [vw_RunResults_Log].[RunByUserID] AS [RunByUserID], 
+    [vw_RunResults_Log].[WorkflowID] AS [WorkflowID]
+    FROM [dbo].[vw_RunResults_Log] AS [vw_RunResults_Log]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="vwRunItems" EntityType="Self.vwRunItems" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [vwRunItems].[RunID] AS [RunID], 
@@ -532,321 +587,89 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="EPSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="LibraryItem">
-          <Key>
-            <PropertyRef Name="ItemID" />
-          </Key>
-          <Property Name="ItemID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ItemName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="ItemDesc" Type="String" MaxLength="500" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Disabled" Type="Boolean" Nullable="false" />
-          <Property Name="LibraryPath" Type="String" MaxLength="500" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="WorkflowItems" Relationship="EPSModel.FK_WorkflowItems_LibraryItems" FromRole="LibraryItem" ToRole="WorkflowItem" />
-          <Property Name="HtmlOptions" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="Parameter">
-          <Key>
-            <PropertyRef Name="ParamID" />
-          </Key>
-          <Property Name="ParamID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParamName" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="ParamDesc" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="ParamValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
-        </EntityType>
-        <EntityType Name="RunItem">
-          <Key>
-            <PropertyRef Name="RunItemID" />
-          </Key>
-          <Property Name="RunItemID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RunID" Type="Int32" Nullable="false" />
-          <Property Name="WFItemID" Type="Int32" />
-          <NavigationProperty Name="WorkflowItem" Relationship="Self.FK_RunItems_WorkflowItems" FromRole="RunItems" ToRole="WorkflowItems" />
-          <NavigationProperty Name="RunWorkflow" Relationship="Self.FK_RunItems_WorkflowRun" FromRole="RunItems" ToRole="RunWorkflow" />
-          <Property Name="HtmlAnswers" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="RunResult">
-          <Key>
-            <PropertyRef Name="RunResultID" />
-          </Key>
-          <Property Name="RunResultID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RunID" Type="Int32" Nullable="false" />
-          <Property Name="WFItemID" Type="Int32" Nullable="false" />
-          <Property Name="ResultID" Type="Int32" Nullable="false" />
-          <Property Name="ResultString" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="TimeStarted" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="TimeCompleted" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="RunResultStatu" Relationship="Self.FK_RunResult_RunResultStatus" FromRole="RunResult" ToRole="RunResultStatus" />
-          <NavigationProperty Name="WorkflowItem" Relationship="EPSModel.FK_RunResult_WorkflowItems" FromRole="RunResult" ToRole="WorkflowItem" />
-        </EntityType>
-        <EntityType Name="RunResultStatus">
-          <Key>
-            <PropertyRef Name="ResultID" />
-          </Key>
-          <Property Name="ResultID" Type="Int32" Nullable="false" />
-          <Property Name="ResultStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="RunResults" Relationship="Self.FK_RunResult_RunResultStatus" FromRole="RunResultStatus" ToRole="RunResult" />
-        </EntityType>
-        <EntityType Name="RunWorkflow">
-          <Key>
-            <PropertyRef Name="RunID" />
-          </Key>
-          <Property Name="RunID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="EmpID" Type="Int32" Nullable="false" />
-          <Property Name="WorkflowID" Type="Int32" Nullable="false" />
-          <Property Name="StartTime" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="RunItems" Relationship="Self.FK_RunItems_WorkflowRun" FromRole="RunWorkflow" ToRole="RunItems" />
-          <NavigationProperty Name="Workflow" Relationship="Self.FK_WorkflowRun_Workflows" FromRole="RunWorkflow" ToRole="Workflows" />
-          <NavigationProperty Name="RunPayloads" Relationship="EPSModel.FK_RunPayload_RunWorkflow" FromRole="RunWorkflow" ToRole="RunPayload" />
-          <Property Name="RunByUserID" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Employee" Relationship="EPSModel.FK_WorkflowRun_Employees" FromRole="RunWorkflow" ToRole="Employee" />
-          <NavigationProperty Name="User" Relationship="EPSModel.FK_RunWorkflow_Users" FromRole="RunWorkflow" ToRole="User" />
-        </EntityType>
-        <EntityType Name="WorkflowItem">
-          <Key>
-            <PropertyRef Name="WFItemID" />
-          </Key>
-          <Property Name="WFItemID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="WorkflowID" Type="Int32" Nullable="false" />
-          <Property Name="ItemID" Type="Int32" Nullable="false" />
-          <Property Name="RunOrder" Type="Int32" Nullable="false" />
-          <Property Name="Disabled" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="RunItems" Relationship="Self.FK_RunItems_WorkflowItems" FromRole="WorkflowItems" ToRole="RunItems" />
-          <NavigationProperty Name="LibraryItem" Relationship="EPSModel.FK_WorkflowItems_LibraryItems" FromRole="WorkflowItem" ToRole="LibraryItem" />
-          <NavigationProperty Name="Workflow" Relationship="EPSModel.FK_WorkflowItems_Workflows" FromRole="WorkflowItem" ToRole="Workflow" />
-          <NavigationProperty Name="RunResults" Relationship="EPSModel.FK_RunResult_WorkflowItems" FromRole="WorkflowItem" ToRole="RunResult" />
-        </EntityType>
-        <EntityType Name="Workflow">
-          <Key>
-            <PropertyRef Name="WorkflowID" />
-          </Key>
-          <Property Name="WorkflowID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="WorkflowName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="WorkflowDesc" Type="String" MaxLength="500" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Disabled" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="RunWorkflows" Relationship="Self.FK_WorkflowRun_Workflows" FromRole="Workflows" ToRole="RunWorkflow" />
-          <NavigationProperty Name="WorkflowItems" Relationship="EPSModel.FK_WorkflowItems_Workflows" FromRole="Workflow" ToRole="WorkflowItem" />
-        </EntityType>
-        <EntityType Name="vwRunWorkflow">
-          <Key>
-            <PropertyRef Name="RunID" />
-            <PropertyRef Name="EmpID" />
-            <PropertyRef Name="WorkflowID" />
-            <PropertyRef Name="StartTime" />
-            <PropertyRef Name="Username" />
-            <PropertyRef Name="FirstName" />
-            <PropertyRef Name="LastName" />
-          </Key>
-          <Property Name="RunID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="EmpID" Type="Int32" Nullable="false" />
-          <Property Name="WorkflowID" Type="Int32" Nullable="false" />
-          <Property Name="ItemCount" Type="Int32" />
-          <Property Name="RunStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="StartTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <Association Name="FK_RunItems_WorkflowItems">
-          <End Role="WorkflowItems" Type="Self.WorkflowItem" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="RunItems" Type="Self.RunItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="WorkflowItems">
-              <PropertyRef Name="WFItemID" />
-            </Principal>
-            <Dependent Role="RunItems">
-              <PropertyRef Name="WFItemID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RunItems_WorkflowRun">
-          <End Role="RunWorkflow" Type="Self.RunWorkflow" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="RunItems" Type="Self.RunItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RunWorkflow">
-              <PropertyRef Name="RunID" />
-            </Principal>
-            <Dependent Role="RunItems">
-              <PropertyRef Name="RunID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RunResult_RunResultStatus">
-          <End Role="RunResultStatus" Type="EPSModel.RunResultStatus" Multiplicity="1" />
-          <End Role="RunResult" Type="Self.RunResult" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RunResultStatus">
-              <PropertyRef Name="ResultID" />
-            </Principal>
-            <Dependent Role="RunResult">
-              <PropertyRef Name="ResultID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_WorkflowRun_Workflows">
-          <End Role="Workflows" Type="Self.Workflow" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="RunWorkflow" Type="Self.RunWorkflow" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Workflows">
-              <PropertyRef Name="WorkflowID" />
-            </Principal>
-            <Dependent Role="RunWorkflow">
-              <PropertyRef Name="WorkflowID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="EPSEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="LibraryItems" EntityType="Self.LibraryItem" />
-          <EntitySet Name="Parameters" EntityType="Self.Parameter" />
-          <EntitySet Name="RunItems" EntityType="Self.RunItem" />
-          <EntitySet Name="RunResults" EntityType="Self.RunResult" />
-          <EntitySet Name="RunResultStatus" EntityType="EPSModel.RunResultStatus" />
-          <EntitySet Name="RunWorkflows" EntityType="Self.RunWorkflow" />
-          <EntitySet Name="WorkflowItems" EntityType="Self.WorkflowItem" />
-          <EntitySet Name="Workflows" EntityType="Self.Workflow" />
-          <EntitySet Name="vwRunWorkflows" EntityType="Self.vwRunWorkflow" />
-          <AssociationSet Name="FK_RunItems_WorkflowItems" Association="Self.FK_RunItems_WorkflowItems">
-            <End Role="WorkflowItems" EntitySet="WorkflowItems" />
-            <End Role="RunItems" EntitySet="RunItems" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RunItems_WorkflowRun" Association="Self.FK_RunItems_WorkflowRun">
-            <End Role="RunWorkflow" EntitySet="RunWorkflows" />
-            <End Role="RunItems" EntitySet="RunItems" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RunResult_RunResultStatus" Association="Self.FK_RunResult_RunResultStatus">
-            <End Role="RunResultStatus" EntitySet="RunResultStatus" />
-            <End Role="RunResult" EntitySet="RunResults" />
-          </AssociationSet>
-          <AssociationSet Name="FK_WorkflowRun_Workflows" Association="Self.FK_WorkflowRun_Workflows">
-            <End Role="Workflows" EntitySet="Workflows" />
-            <End Role="RunWorkflow" EntitySet="RunWorkflows" />
-          </AssociationSet>
-          <EntitySet Name="vwRunItems" EntityType="EPSModel.vwRunItem" />
-          <AssociationSet Name="FK_WorkflowItems_LibraryItems" Association="EPSModel.FK_WorkflowItems_LibraryItems">
-            <End Role="LibraryItem" EntitySet="LibraryItems" />
-            <End Role="WorkflowItem" EntitySet="WorkflowItems" />
-          </AssociationSet>
-          <EntitySet Name="RunPayloads" EntityType="EPSModel.RunPayload" />
-          <AssociationSet Name="FK_RunPayload_RunWorkflow" Association="EPSModel.FK_RunPayload_RunWorkflow">
-            <End Role="RunWorkflow" EntitySet="RunWorkflows" />
-            <End Role="RunPayload" EntitySet="RunPayloads" />
-          </AssociationSet>
-          <EntitySet Name="ErrorLogs" EntityType="EPSModel.ErrorLog" />
-          <EntitySet Name="Logins" EntityType="EPSModel.Login" />
           <EntitySet Name="Employees" EntityType="EPSModel.Employee" />
+          <EntitySet Name="Employees_Log" EntityType="EPSModel.Employees_Log" />
+          <EntitySet Name="ErrorLogs" EntityType="EPSModel.ErrorLog" />
+          <EntitySet Name="LibraryItems" EntityType="EPSModel.LibraryItem" />
+          <EntitySet Name="Logins" EntityType="EPSModel.Login" />
+          <EntitySet Name="Parameters" EntityType="EPSModel.Parameter" />
+          <EntitySet Name="Parameters_Log" EntityType="EPSModel.Parameters_Log" />
+          <EntitySet Name="RunItems" EntityType="EPSModel.RunItem" />
+          <EntitySet Name="RunPayloads" EntityType="EPSModel.RunPayload" />
+          <EntitySet Name="RunResults" EntityType="EPSModel.RunResult" />
+          <EntitySet Name="RunResultStatus" EntityType="EPSModel.RunResultStatu" />
+          <EntitySet Name="RunWorkflows" EntityType="EPSModel.RunWorkflow" />
+          <EntitySet Name="User_Log" EntityType="EPSModel.User_Log" />
+          <EntitySet Name="Users" EntityType="EPSModel.User" />
+          <EntitySet Name="Workflow_Log" EntityType="EPSModel.Workflow_Log" />
+          <EntitySet Name="WorkflowItems" EntityType="EPSModel.WorkflowItem" />
+          <EntitySet Name="Workflows" EntityType="EPSModel.Workflow" />
+          <EntitySet Name="vw_Managers_From_Logs" EntityType="EPSModel.vw_Managers_From_Logs" />
+          <EntitySet Name="vw_RunResults_Log" EntityType="EPSModel.vw_RunResults_Log" />
+          <EntitySet Name="vwRunItems" EntityType="EPSModel.vwRunItem" />
+          <EntitySet Name="vwRunWorkflows" EntityType="EPSModel.vwRunWorkflow" />
           <AssociationSet Name="FK_WorkflowRun_Employees" Association="EPSModel.FK_WorkflowRun_Employees">
             <End Role="Employee" EntitySet="Employees" />
             <End Role="RunWorkflow" EntitySet="RunWorkflows" />
           </AssociationSet>
-          <EntitySet Name="Employees_Log" EntityType="EPSModel.Employees_Log" />
-          <AssociationSet Name="FK_WorkflowItems_Workflows" Association="EPSModel.FK_WorkflowItems_Workflows">
-            <End Role="Workflow" EntitySet="Workflows" />
-            <End Role="WorkflowItem" EntitySet="WorkflowItems" />
-          </AssociationSet>
-          <EntitySet Name="Users" EntityType="EPSModel.User" />
           <AssociationSet Name="FK_Employees_Log_Users" Association="EPSModel.FK_Employees_Log_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="Employees_Log" EntitySet="Employees_Log" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WorkflowItems_LibraryItems" Association="EPSModel.FK_WorkflowItems_LibraryItems">
+            <End Role="LibraryItem" EntitySet="LibraryItems" />
+            <End Role="WorkflowItem" EntitySet="WorkflowItems" />
           </AssociationSet>
           <AssociationSet Name="FK_Logins_Users" Association="EPSModel.FK_Logins_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="Login" EntitySet="Logins" />
           </AssociationSet>
-          <AssociationSet Name="FK_RunWorkflow_Users" Association="EPSModel.FK_RunWorkflow_Users">
+          <AssociationSet Name="FK_Parameters_Log_Users" Association="EPSModel.FK_Parameters_Log_Users">
             <End Role="User" EntitySet="Users" />
+            <End Role="Parameters_Log" EntitySet="Parameters_Log" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RunItems_WorkflowItems" Association="EPSModel.FK_RunItems_WorkflowItems">
+            <End Role="WorkflowItem" EntitySet="WorkflowItems" />
+            <End Role="RunItem" EntitySet="RunItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RunItems_WorkflowRun" Association="EPSModel.FK_RunItems_WorkflowRun">
             <End Role="RunWorkflow" EntitySet="RunWorkflows" />
+            <End Role="RunItem" EntitySet="RunItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RunPayload_RunWorkflow" Association="EPSModel.FK_RunPayload_RunWorkflow">
+            <End Role="RunWorkflow" EntitySet="RunWorkflows" />
+            <End Role="RunPayload" EntitySet="RunPayloads" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RunResult_RunResultStatus" Association="EPSModel.FK_RunResult_RunResultStatus">
+            <End Role="RunResultStatu" EntitySet="RunResultStatus" />
+            <End Role="RunResult" EntitySet="RunResults" />
           </AssociationSet>
           <AssociationSet Name="FK_RunResult_WorkflowItems" Association="EPSModel.FK_RunResult_WorkflowItems">
             <End Role="WorkflowItem" EntitySet="WorkflowItems" />
             <End Role="RunResult" EntitySet="RunResults" />
           </AssociationSet>
-          <EntitySet Name="Workflow_Log" EntityType="EPSModel.Workflow_Log" />
-          <AssociationSet Name="FK_Workflow_Log_Users" Association="EPSModel.FK_Workflow_Log_Users">
+          <AssociationSet Name="FK_RunWorkflow_Users" Association="EPSModel.FK_RunWorkflow_Users">
             <End Role="User" EntitySet="Users" />
-            <End Role="Workflow_Log" EntitySet="Workflow_Log" />
+            <End Role="RunWorkflow" EntitySet="RunWorkflows" />
           </AssociationSet>
-          <EntitySet Name="User_Log" EntityType="EPSModel.User_Log" />
+          <AssociationSet Name="FK_WorkflowRun_Workflows" Association="EPSModel.FK_WorkflowRun_Workflows">
+            <End Role="Workflow" EntitySet="Workflows" />
+            <End Role="RunWorkflow" EntitySet="RunWorkflows" />
+          </AssociationSet>
           <AssociationSet Name="FK_User_Log_Users" Association="EPSModel.FK_User_Log_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="User_Log" EntitySet="User_Log" />
           </AssociationSet>
-          <EntitySet Name="Parameters_Log" EntityType="EPSModel.Parameters_Log" />
-          <AssociationSet Name="FK_Parameters_Log_Users" Association="EPSModel.FK_Parameters_Log_Users">
+          <AssociationSet Name="FK_Workflow_Log_Users" Association="EPSModel.FK_Workflow_Log_Users">
             <End Role="User" EntitySet="Users" />
-            <End Role="Parameters_Log" EntitySet="Parameters_Log" />
+            <End Role="Workflow_Log" EntitySet="Workflow_Log" />
           </AssociationSet>
-          <EntitySet Name="vw_Managers_From_Logs" EntityType="EPSModel.vw_Managers_From_Logs" />
+          <AssociationSet Name="FK_WorkflowItems_Workflows" Association="EPSModel.FK_WorkflowItems_Workflows">
+            <End Role="Workflow" EntitySet="Workflows" />
+            <End Role="WorkflowItem" EntitySet="WorkflowItems" />
+          </AssociationSet>
         </EntityContainer>
-        <EntityType Name="vwRunItem">
-          <Key>
-            <PropertyRef Name="RunID" />
-            <PropertyRef Name="ItemID" />
-            <PropertyRef Name="RunOrder" />
-          </Key>
-          <Property Name="RunID" Type="Int32" Nullable="false" />
-          <Property Name="ItemID" Type="Int32" Nullable="false" />
-          <Property Name="RunOrder" Type="Int32" Nullable="false" />
-        </EntityType>
-        <Association Name="FK_WorkflowItems_LibraryItems">
-          <End Type="EPSModel.LibraryItem" Role="LibraryItem" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="EPSModel.WorkflowItem" Role="WorkflowItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="LibraryItem">
-              <PropertyRef Name="ItemID" />
-            </Principal>
-            <Dependent Role="WorkflowItem">
-              <PropertyRef Name="ItemID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="RunPayload">
-          <Key>
-            <PropertyRef Name="PayloadID" />
-          </Key>
-          <Property Name="PayloadID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RunID" Type="Int32" Nullable="false" />
-          <Property Name="RunPayload1" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="RunWorkflow" Relationship="EPSModel.FK_RunPayload_RunWorkflow" FromRole="RunPayload" ToRole="RunWorkflow" />
-        </EntityType>
-        <Association Name="FK_RunPayload_RunWorkflow">
-          <End Type="EPSModel.RunWorkflow" Role="RunWorkflow" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="EPSModel.RunPayload" Role="RunPayload" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RunWorkflow">
-              <PropertyRef Name="RunID" />
-            </Principal>
-            <Dependent Role="RunPayload">
-              <PropertyRef Name="RunID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="ErrorLog">
-          <Key>
-            <PropertyRef Name="LogID" />
-          </Key>
-          <Property Name="LogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ErrorDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ErrorMessage" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
-        </EntityType>
-        <EntityType Name="Login">
-          <Key>
-            <PropertyRef Name="LoginID" />
-          </Key>
-          <Property Name="LoginID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserID" Type="Int32" Nullable="false" />
-          <Property Name="LoginDate" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="User" Relationship="EPSModel.FK_Logins_Users" FromRole="Login" ToRole="User" />
-        </EntityType>
         <EntityType Name="Employee">
           <Key>
             <PropertyRef Name="EmpID" />
@@ -862,20 +685,6 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <Property Name="EmpNum" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="RunWorkflows" Relationship="EPSModel.FK_WorkflowRun_Employees" FromRole="Employee" ToRole="RunWorkflow" />
         </EntityType>
-        <Association Name="FK_WorkflowRun_Employees">
-          <End Type="EPSModel.Employee" Role="Employee" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="EPSModel.RunWorkflow" Role="RunWorkflow" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Employee">
-              <PropertyRef Name="EmpID" />
-            </Principal>
-            <Dependent Role="RunWorkflow">
-              <PropertyRef Name="EmpID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="Employees_Log">
           <Key>
             <PropertyRef Name="LogID" />
@@ -890,23 +699,134 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <Property Name="IsManager" Type="Boolean" />
           <Property Name="ReportsTo" Type="Int32" />
           <Property Name="EmpNum" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="ChangeType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="ChangeType" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ChangedBy" Type="Int32" Nullable="false" />
           <NavigationProperty Name="User" Relationship="EPSModel.FK_Employees_Log_Users" FromRole="Employees_Log" ToRole="User" />
         </EntityType>
-        <Association Name="FK_WorkflowItems_Workflows">
-          <End Type="EPSModel.Workflow" Role="Workflow" Multiplicity="1" />
-          <End Type="EPSModel.WorkflowItem" Role="WorkflowItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Workflow">
-              <PropertyRef Name="WorkflowID" />
-            </Principal>
-            <Dependent Role="WorkflowItem">
-              <PropertyRef Name="WorkflowID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
+        <EntityType Name="ErrorLog">
+          <Key>
+            <PropertyRef Name="LogID" />
+          </Key>
+          <Property Name="LogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ErrorDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ErrorMessage" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="LibraryItem">
+          <Key>
+            <PropertyRef Name="ItemID" />
+          </Key>
+          <Property Name="ItemID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ItemName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ItemDesc" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Disabled" Type="Boolean" Nullable="false" />
+          <Property Name="LibraryPath" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="HtmlOptions" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="WorkflowItems" Relationship="EPSModel.FK_WorkflowItems_LibraryItems" FromRole="LibraryItem" ToRole="WorkflowItem" />
+        </EntityType>
+        <EntityType Name="Login">
+          <Key>
+            <PropertyRef Name="LoginID" />
+          </Key>
+          <Property Name="LoginID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="Int32" Nullable="false" />
+          <Property Name="LoginDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="User" Relationship="EPSModel.FK_Logins_Users" FromRole="Login" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Parameter">
+          <Key>
+            <PropertyRef Name="ParamID" />
+          </Key>
+          <Property Name="ParamID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParamName" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="ParamDesc" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="ParamValue" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Parameters_Log">
+          <Key>
+            <PropertyRef Name="LogID" />
+          </Key>
+          <Property Name="LogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParamName" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="ParamDesc" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="ParamValue" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ChangeType" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ChangedBy" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="EPSModel.FK_Parameters_Log_Users" FromRole="Parameters_Log" ToRole="User" />
+        </EntityType>
+        <EntityType Name="RunItem">
+          <Key>
+            <PropertyRef Name="RunItemID" />
+          </Key>
+          <Property Name="RunItemID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RunID" Type="Int32" Nullable="false" />
+          <Property Name="WFItemID" Type="Int32" />
+          <Property Name="HtmlAnswers" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="WorkflowItem" Relationship="EPSModel.FK_RunItems_WorkflowItems" FromRole="RunItem" ToRole="WorkflowItem" />
+          <NavigationProperty Name="RunWorkflow" Relationship="EPSModel.FK_RunItems_WorkflowRun" FromRole="RunItem" ToRole="RunWorkflow" />
+        </EntityType>
+        <EntityType Name="RunPayload">
+          <Key>
+            <PropertyRef Name="PayloadID" />
+          </Key>
+          <Property Name="PayloadID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RunID" Type="Int32" Nullable="false" />
+          <Property Name="RunPayload1" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="RunWorkflow" Relationship="EPSModel.FK_RunPayload_RunWorkflow" FromRole="RunPayload" ToRole="RunWorkflow" />
+        </EntityType>
+        <EntityType Name="RunResult">
+          <Key>
+            <PropertyRef Name="RunResultID" />
+          </Key>
+          <Property Name="RunResultID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RunID" Type="Int32" Nullable="false" />
+          <Property Name="WFItemID" Type="Int32" Nullable="false" />
+          <Property Name="ResultID" Type="Int32" Nullable="false" />
+          <Property Name="ResultString" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="TimeStarted" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="TimeCompleted" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="RunResultStatu" Relationship="EPSModel.FK_RunResult_RunResultStatus" FromRole="RunResult" ToRole="RunResultStatu" />
+          <NavigationProperty Name="WorkflowItem" Relationship="EPSModel.FK_RunResult_WorkflowItems" FromRole="RunResult" ToRole="WorkflowItem" />
+        </EntityType>
+        <EntityType Name="RunResultStatu">
+          <Key>
+            <PropertyRef Name="ResultID" />
+          </Key>
+          <Property Name="ResultID" Type="Int32" Nullable="false" />
+          <Property Name="ResultStatus" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="RunResults" Relationship="EPSModel.FK_RunResult_RunResultStatus" FromRole="RunResultStatu" ToRole="RunResult" />
+        </EntityType>
+        <EntityType Name="RunWorkflow">
+          <Key>
+            <PropertyRef Name="RunID" />
+          </Key>
+          <Property Name="RunID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EmpID" Type="Int32" Nullable="false" />
+          <Property Name="WorkflowID" Type="Int32" Nullable="false" />
+          <Property Name="StartTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="RunByUserID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Employee" Relationship="EPSModel.FK_WorkflowRun_Employees" FromRole="RunWorkflow" ToRole="Employee" />
+          <NavigationProperty Name="RunItems" Relationship="EPSModel.FK_RunItems_WorkflowRun" FromRole="RunWorkflow" ToRole="RunItem" />
+          <NavigationProperty Name="RunPayloads" Relationship="EPSModel.FK_RunPayload_RunWorkflow" FromRole="RunWorkflow" ToRole="RunPayload" />
+          <NavigationProperty Name="User" Relationship="EPSModel.FK_RunWorkflow_Users" FromRole="RunWorkflow" ToRole="User" />
+          <NavigationProperty Name="Workflow" Relationship="EPSModel.FK_WorkflowRun_Workflows" FromRole="RunWorkflow" ToRole="Workflow" />
+        </EntityType>
+        <EntityType Name="User_Log">
+          <Key>
+            <PropertyRef Name="LogID" />
+          </Key>
+          <Property Name="LogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="Int32" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ChangeType" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ChangedBy" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="EPSModel.FK_User_Log_Users" FromRole="User_Log" ToRole="User" />
+        </EntityType>
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="UserID" />
@@ -918,11 +838,136 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Employees_Log" Relationship="EPSModel.FK_Employees_Log_Users" FromRole="User" ToRole="Employees_Log" />
           <NavigationProperty Name="Logins" Relationship="EPSModel.FK_Logins_Users" FromRole="User" ToRole="Login" />
-          <NavigationProperty Name="RunWorkflows" Relationship="EPSModel.FK_RunWorkflow_Users" FromRole="User" ToRole="RunWorkflow" />
-          <NavigationProperty Name="Workflow_Log" Relationship="EPSModel.FK_Workflow_Log_Users" FromRole="User" ToRole="Workflow_Log" />
-          <NavigationProperty Name="User_Log" Relationship="EPSModel.FK_User_Log_Users" FromRole="User" ToRole="User_Log" />
           <NavigationProperty Name="Parameters_Log" Relationship="EPSModel.FK_Parameters_Log_Users" FromRole="User" ToRole="Parameters_Log" />
+          <NavigationProperty Name="RunWorkflows" Relationship="EPSModel.FK_RunWorkflow_Users" FromRole="User" ToRole="RunWorkflow" />
+          <NavigationProperty Name="User_Log" Relationship="EPSModel.FK_User_Log_Users" FromRole="User" ToRole="User_Log" />
+          <NavigationProperty Name="Workflow_Log" Relationship="EPSModel.FK_Workflow_Log_Users" FromRole="User" ToRole="Workflow_Log" />
         </EntityType>
+        <EntityType Name="Workflow_Log">
+          <Key>
+            <PropertyRef Name="LogID" />
+          </Key>
+          <Property Name="LogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ItemID" Type="Int32" Nullable="false" />
+          <Property Name="ItemType" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ItemName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ChangeText" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ChangeType" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ChangedBy" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="EPSModel.FK_Workflow_Log_Users" FromRole="Workflow_Log" ToRole="User" />
+        </EntityType>
+        <EntityType Name="WorkflowItem">
+          <Key>
+            <PropertyRef Name="WFItemID" />
+          </Key>
+          <Property Name="WFItemID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="WorkflowID" Type="Int32" Nullable="false" />
+          <Property Name="ItemID" Type="Int32" Nullable="false" />
+          <Property Name="RunOrder" Type="Int32" Nullable="false" />
+          <Property Name="Disabled" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="LibraryItem" Relationship="EPSModel.FK_WorkflowItems_LibraryItems" FromRole="WorkflowItem" ToRole="LibraryItem" />
+          <NavigationProperty Name="RunItems" Relationship="EPSModel.FK_RunItems_WorkflowItems" FromRole="WorkflowItem" ToRole="RunItem" />
+          <NavigationProperty Name="RunResults" Relationship="EPSModel.FK_RunResult_WorkflowItems" FromRole="WorkflowItem" ToRole="RunResult" />
+          <NavigationProperty Name="Workflow" Relationship="EPSModel.FK_WorkflowItems_Workflows" FromRole="WorkflowItem" ToRole="Workflow" />
+        </EntityType>
+        <EntityType Name="Workflow">
+          <Key>
+            <PropertyRef Name="WorkflowID" />
+          </Key>
+          <Property Name="WorkflowID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="WorkflowName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="WorkflowDesc" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Disabled" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="RunWorkflows" Relationship="EPSModel.FK_WorkflowRun_Workflows" FromRole="Workflow" ToRole="RunWorkflow" />
+          <NavigationProperty Name="WorkflowItems" Relationship="EPSModel.FK_WorkflowItems_Workflows" FromRole="Workflow" ToRole="WorkflowItem" />
+        </EntityType>
+        <EntityType Name="vw_Managers_From_Logs">
+          <Key>
+            <PropertyRef Name="EmpID" />
+            <PropertyRef Name="ManagerName" />
+          </Key>
+          <Property Name="EmpID" Type="Int32" Nullable="false" />
+          <Property Name="ManagerName" Type="String" Nullable="false" MaxLength="101" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="vw_RunResults_Log">
+          <Key>
+            <PropertyRef Name="RunResultID" />
+            <PropertyRef Name="RunID" />
+            <PropertyRef Name="WFItemID" />
+            <PropertyRef Name="ResultID" />
+            <PropertyRef Name="ResultString" />
+            <PropertyRef Name="TimeStarted" />
+            <PropertyRef Name="TimeCompleted" />
+            <PropertyRef Name="ResultStatus" />
+            <PropertyRef Name="FirstName" />
+            <PropertyRef Name="LastName" />
+            <PropertyRef Name="WorkflowName" />
+            <PropertyRef Name="ItemName" />
+            <PropertyRef Name="RunByUser" />
+            <PropertyRef Name="RunByUserID" />
+            <PropertyRef Name="WorkflowID" />
+          </Key>
+          <Property Name="RunResultID" Type="Int32" Nullable="false" />
+          <Property Name="RunID" Type="Int32" Nullable="false" />
+          <Property Name="WFItemID" Type="Int32" Nullable="false" />
+          <Property Name="ResultID" Type="Int32" Nullable="false" />
+          <Property Name="ResultString" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="TimeStarted" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="TimeCompleted" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ResultStatus" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="WorkflowName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ItemName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="RunByUser" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="RunByUserID" Type="Int32" Nullable="false" />
+          <Property Name="WorkflowID" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="vwRunItem">
+          <Key>
+            <PropertyRef Name="RunID" />
+            <PropertyRef Name="ItemID" />
+            <PropertyRef Name="RunOrder" />
+          </Key>
+          <Property Name="RunID" Type="Int32" Nullable="false" />
+          <Property Name="ItemID" Type="Int32" Nullable="false" />
+          <Property Name="RunOrder" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="vwRunWorkflow">
+          <Key>
+            <PropertyRef Name="RunID" />
+            <PropertyRef Name="EmpID" />
+            <PropertyRef Name="WorkflowID" />
+            <PropertyRef Name="StartTime" />
+            <PropertyRef Name="Username" />
+            <PropertyRef Name="FirstName" />
+            <PropertyRef Name="LastName" />
+          </Key>
+          <Property Name="RunID" Type="Int32" Nullable="false" />
+          <Property Name="EmpID" Type="Int32" Nullable="false" />
+          <Property Name="WorkflowID" Type="Int32" Nullable="false" />
+          <Property Name="ItemCount" Type="Int32" />
+          <Property Name="RunStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="StartTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <Association Name="FK_WorkflowRun_Employees">
+          <End Type="EPSModel.Employee" Role="Employee" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="EPSModel.RunWorkflow" Role="RunWorkflow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmpID" />
+            </Principal>
+            <Dependent Role="RunWorkflow">
+              <PropertyRef Name="EmpID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Employees_Log_Users">
           <End Type="EPSModel.User" Role="User" Multiplicity="1" />
           <End Type="EPSModel.Employees_Log" Role="Employees_Log" Multiplicity="*" />
@@ -932,6 +977,20 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             </Principal>
             <Dependent Role="Employees_Log">
               <PropertyRef Name="ChangedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WorkflowItems_LibraryItems">
+          <End Type="EPSModel.LibraryItem" Role="LibraryItem" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="EPSModel.WorkflowItem" Role="WorkflowItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LibraryItem">
+              <PropertyRef Name="ItemID" />
+            </Principal>
+            <Dependent Role="WorkflowItem">
+              <PropertyRef Name="ItemID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -947,15 +1006,69 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_RunWorkflow_Users">
+        <Association Name="FK_Parameters_Log_Users">
           <End Type="EPSModel.User" Role="User" Multiplicity="1" />
-          <End Type="EPSModel.RunWorkflow" Role="RunWorkflow" Multiplicity="*" />
+          <End Type="EPSModel.Parameters_Log" Role="Parameters_Log" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="User">
               <PropertyRef Name="UserID" />
             </Principal>
-            <Dependent Role="RunWorkflow">
-              <PropertyRef Name="RunByUserID" />
+            <Dependent Role="Parameters_Log">
+              <PropertyRef Name="ChangedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RunItems_WorkflowItems">
+          <End Type="EPSModel.WorkflowItem" Role="WorkflowItem" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="EPSModel.RunItem" Role="RunItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WorkflowItem">
+              <PropertyRef Name="WFItemID" />
+            </Principal>
+            <Dependent Role="RunItem">
+              <PropertyRef Name="WFItemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RunItems_WorkflowRun">
+          <End Type="EPSModel.RunWorkflow" Role="RunWorkflow" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="EPSModel.RunItem" Role="RunItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RunWorkflow">
+              <PropertyRef Name="RunID" />
+            </Principal>
+            <Dependent Role="RunItem">
+              <PropertyRef Name="RunID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RunPayload_RunWorkflow">
+          <End Type="EPSModel.RunWorkflow" Role="RunWorkflow" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="EPSModel.RunPayload" Role="RunPayload" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RunWorkflow">
+              <PropertyRef Name="RunID" />
+            </Principal>
+            <Dependent Role="RunPayload">
+              <PropertyRef Name="RunID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RunResult_RunResultStatus">
+          <End Type="EPSModel.RunResultStatu" Role="RunResultStatu" Multiplicity="1" />
+          <End Type="EPSModel.RunResult" Role="RunResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RunResultStatu">
+              <PropertyRef Name="ResultID" />
+            </Principal>
+            <Dependent Role="RunResult">
+              <PropertyRef Name="ResultID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -971,46 +1084,32 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Workflow_Log">
-          <Key>
-            <PropertyRef Name="LogID" />
-          </Key>
-          <Property Name="LogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ItemID" Type="Int32" Nullable="false" />
-          <Property Name="ItemType" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="ItemName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ChangeText" Type="String" Nullable="false" FixedLength="false" Unicode="false" MaxLength="Max" />
-          <Property Name="ChangeType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ChangedBy" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="EPSModel.FK_Workflow_Log_Users" FromRole="Workflow_Log" ToRole="User" />
-        </EntityType>
-        <Association Name="FK_Workflow_Log_Users">
+        <Association Name="FK_RunWorkflow_Users">
           <End Type="EPSModel.User" Role="User" Multiplicity="1" />
-          <End Type="EPSModel.Workflow_Log" Role="Workflow_Log" Multiplicity="*" />
+          <End Type="EPSModel.RunWorkflow" Role="RunWorkflow" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="User">
               <PropertyRef Name="UserID" />
             </Principal>
-            <Dependent Role="Workflow_Log">
-              <PropertyRef Name="ChangedBy" />
+            <Dependent Role="RunWorkflow">
+              <PropertyRef Name="RunByUserID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="User_Log">
-          <Key>
-            <PropertyRef Name="LogID" />
-          </Key>
-          <Property Name="LogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserID" Type="Int32" Nullable="false" />
-          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ChangeType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ChangedBy" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="EPSModel.FK_User_Log_Users" FromRole="User_Log" ToRole="User" />
-        </EntityType>
+        <Association Name="FK_WorkflowRun_Workflows">
+          <End Type="EPSModel.Workflow" Role="Workflow" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="EPSModel.RunWorkflow" Role="RunWorkflow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Workflow">
+              <PropertyRef Name="WorkflowID" />
+            </Principal>
+            <Dependent Role="RunWorkflow">
+              <PropertyRef Name="WorkflowID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_User_Log_Users">
           <End Type="EPSModel.User" Role="User" Multiplicity="1" />
           <End Type="EPSModel.User_Log" Role="User_Log" Multiplicity="*" />
@@ -1023,182 +1122,36 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Parameters_Log">
-          <Key>
-            <PropertyRef Name="LogID" />
-          </Key>
-          <Property Name="LogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParamName" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="ParamDesc" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="ParamValue" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ChangeType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ChangedBy" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="EPSModel.FK_Parameters_Log_Users" FromRole="Parameters_Log" ToRole="User" />
-        </EntityType>
-        <Association Name="FK_Parameters_Log_Users">
+        <Association Name="FK_Workflow_Log_Users">
           <End Type="EPSModel.User" Role="User" Multiplicity="1" />
-          <End Type="EPSModel.Parameters_Log" Role="Parameters_Log" Multiplicity="*" />
+          <End Type="EPSModel.Workflow_Log" Role="Workflow_Log" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="User">
               <PropertyRef Name="UserID" />
             </Principal>
-            <Dependent Role="Parameters_Log">
+            <Dependent Role="Workflow_Log">
               <PropertyRef Name="ChangedBy" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="vw_Managers_From_Logs">
-          <Key>
-            <PropertyRef Name="ManagerName" />
-            <PropertyRef Name="EmpID" />
-          </Key>
-          <Property Name="ManagerName" Type="String" Nullable="false" MaxLength="101" FixedLength="false" Unicode="false" />
-          <Property Name="EmpID" Type="Int32" Nullable="false" />
-        </EntityType>
-      </Schema>
+        <Association Name="FK_WorkflowItems_Workflows">
+          <End Type="EPSModel.Workflow" Role="Workflow" Multiplicity="1" />
+          <End Type="EPSModel.WorkflowItem" Role="WorkflowItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Workflow">
+              <PropertyRef Name="WorkflowID" />
+            </Principal>
+            <Dependent Role="WorkflowItem">
+              <PropertyRef Name="WorkflowID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="EPSModelStoreContainer" CdmEntityContainer="EPSEntities">
-          <EntitySetMapping Name="LibraryItems">
-            <EntityTypeMapping TypeName="EPSModel.LibraryItem">
-              <MappingFragment StoreEntitySet="LibraryItems">
-                <ScalarProperty Name="HtmlOptions" ColumnName="HtmlOptions" />
-                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
-                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
-                <ScalarProperty Name="ItemDesc" ColumnName="ItemDesc" />
-                <ScalarProperty Name="Disabled" ColumnName="Disabled" />
-                <ScalarProperty Name="LibraryPath" ColumnName="LibraryPath" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Parameters">
-            <EntityTypeMapping TypeName="EPSModel.Parameter">
-              <MappingFragment StoreEntitySet="Parameters">
-                <ScalarProperty Name="ParamID" ColumnName="ParamID" />
-                <ScalarProperty Name="ParamName" ColumnName="ParamName" />
-                <ScalarProperty Name="ParamDesc" ColumnName="ParamDesc" />
-                <ScalarProperty Name="ParamValue" ColumnName="ParamValue" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="RunItems">
-            <EntityTypeMapping TypeName="EPSModel.RunItem">
-              <MappingFragment StoreEntitySet="RunItems">
-                <ScalarProperty Name="HtmlAnswers" ColumnName="HtmlAnswers" />
-                <ScalarProperty Name="RunItemID" ColumnName="RunItemID" />
-                <ScalarProperty Name="RunID" ColumnName="RunID" />
-                <ScalarProperty Name="WFItemID" ColumnName="WFItemID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="RunResults">
-            <EntityTypeMapping TypeName="EPSModel.RunResult">
-              <MappingFragment StoreEntitySet="RunResult">
-                <ScalarProperty Name="RunResultID" ColumnName="RunResultID" />
-                <ScalarProperty Name="RunID" ColumnName="RunID" />
-                <ScalarProperty Name="WFItemID" ColumnName="WFItemID" />
-                <ScalarProperty Name="ResultID" ColumnName="ResultID" />
-                <ScalarProperty Name="ResultString" ColumnName="ResultString" />
-                <ScalarProperty Name="TimeStarted" ColumnName="TimeStarted" />
-                <ScalarProperty Name="TimeCompleted" ColumnName="TimeCompleted" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="RunResultStatus">
-            <EntityTypeMapping TypeName="EPSModel.RunResultStatus">
-              <MappingFragment StoreEntitySet="RunResultStatus">
-                <ScalarProperty Name="ResultID" ColumnName="ResultID" />
-                <ScalarProperty Name="ResultStatus" ColumnName="ResultStatus" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="RunWorkflows">
-            <EntityTypeMapping TypeName="EPSModel.RunWorkflow">
-              <MappingFragment StoreEntitySet="RunWorkflow">
-                <ScalarProperty Name="RunByUserID" ColumnName="RunByUserID" />
-                <ScalarProperty Name="RunID" ColumnName="RunID" />
-                <ScalarProperty Name="EmpID" ColumnName="EmpID" />
-                <ScalarProperty Name="WorkflowID" ColumnName="WorkflowID" />
-                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="WorkflowItems">
-            <EntityTypeMapping TypeName="EPSModel.WorkflowItem">
-              <MappingFragment StoreEntitySet="WorkflowItems">
-                <ScalarProperty Name="WFItemID" ColumnName="WFItemID" />
-                <ScalarProperty Name="WorkflowID" ColumnName="WorkflowID" />
-                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
-                <ScalarProperty Name="RunOrder" ColumnName="RunOrder" />
-                <ScalarProperty Name="Disabled" ColumnName="Disabled" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Workflows">
-            <EntityTypeMapping TypeName="EPSModel.Workflow">
-              <MappingFragment StoreEntitySet="Workflows">
-                <ScalarProperty Name="WorkflowID" ColumnName="WorkflowID" />
-                <ScalarProperty Name="WorkflowName" ColumnName="WorkflowName" />
-                <ScalarProperty Name="WorkflowDesc" ColumnName="WorkflowDesc" />
-                <ScalarProperty Name="Disabled" ColumnName="Disabled" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="vwRunWorkflows">
-            <EntityTypeMapping TypeName="EPSModel.vwRunWorkflow">
-              <MappingFragment StoreEntitySet="vwRunWorkflow">
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
-                <ScalarProperty Name="RunID" ColumnName="RunID" />
-                <ScalarProperty Name="EmpID" ColumnName="EmpID" />
-                <ScalarProperty Name="WorkflowID" ColumnName="WorkflowID" />
-                <ScalarProperty Name="ItemCount" ColumnName="ItemCount" />
-                <ScalarProperty Name="RunStatus" ColumnName="RunStatus" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="vwRunItems">
-            <EntityTypeMapping TypeName="EPSModel.vwRunItem">
-              <MappingFragment StoreEntitySet="vwRunItems">
-                <ScalarProperty Name="RunOrder" ColumnName="RunOrder" />
-                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
-                <ScalarProperty Name="RunID" ColumnName="RunID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="RunPayloads">
-            <EntityTypeMapping TypeName="EPSModel.RunPayload">
-              <MappingFragment StoreEntitySet="RunPayload">
-                <ScalarProperty Name="RunPayload1" ColumnName="RunPayload" />
-                <ScalarProperty Name="RunID" ColumnName="RunID" />
-                <ScalarProperty Name="PayloadID" ColumnName="PayloadID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="ErrorLogs">
-            <EntityTypeMapping TypeName="EPSModel.ErrorLog">
-              <MappingFragment StoreEntitySet="ErrorLog">
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="ErrorMessage" ColumnName="ErrorMessage" />
-                <ScalarProperty Name="ErrorDate" ColumnName="ErrorDate" />
-                <ScalarProperty Name="LogID" ColumnName="LogID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Logins">
-            <EntityTypeMapping TypeName="EPSModel.Login">
-              <MappingFragment StoreEntitySet="Logins">
-                <ScalarProperty Name="LoginDate" ColumnName="LoginDate" />
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
-                <ScalarProperty Name="LoginID" ColumnName="LoginID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="EPSModel.Employee">
               <MappingFragment StoreEntitySet="Employees">
@@ -1233,6 +1186,125 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="ErrorLogs">
+            <EntityTypeMapping TypeName="EPSModel.ErrorLog">
+              <MappingFragment StoreEntitySet="ErrorLog">
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="ErrorMessage" ColumnName="ErrorMessage" />
+                <ScalarProperty Name="ErrorDate" ColumnName="ErrorDate" />
+                <ScalarProperty Name="LogID" ColumnName="LogID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LibraryItems">
+            <EntityTypeMapping TypeName="EPSModel.LibraryItem">
+              <MappingFragment StoreEntitySet="LibraryItems">
+                <ScalarProperty Name="HtmlOptions" ColumnName="HtmlOptions" />
+                <ScalarProperty Name="LibraryPath" ColumnName="LibraryPath" />
+                <ScalarProperty Name="Disabled" ColumnName="Disabled" />
+                <ScalarProperty Name="ItemDesc" ColumnName="ItemDesc" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Logins">
+            <EntityTypeMapping TypeName="EPSModel.Login">
+              <MappingFragment StoreEntitySet="Logins">
+                <ScalarProperty Name="LoginDate" ColumnName="LoginDate" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="LoginID" ColumnName="LoginID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Parameters">
+            <EntityTypeMapping TypeName="EPSModel.Parameter">
+              <MappingFragment StoreEntitySet="Parameters">
+                <ScalarProperty Name="ParamValue" ColumnName="ParamValue" />
+                <ScalarProperty Name="ParamDesc" ColumnName="ParamDesc" />
+                <ScalarProperty Name="ParamName" ColumnName="ParamName" />
+                <ScalarProperty Name="ParamID" ColumnName="ParamID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Parameters_Log">
+            <EntityTypeMapping TypeName="EPSModel.Parameters_Log">
+              <MappingFragment StoreEntitySet="Parameters_Log">
+                <ScalarProperty Name="ChangedBy" ColumnName="ChangedBy" />
+                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
+                <ScalarProperty Name="ChangeType" ColumnName="ChangeType" />
+                <ScalarProperty Name="ParamValue" ColumnName="ParamValue" />
+                <ScalarProperty Name="ParamDesc" ColumnName="ParamDesc" />
+                <ScalarProperty Name="ParamName" ColumnName="ParamName" />
+                <ScalarProperty Name="LogID" ColumnName="LogID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RunItems">
+            <EntityTypeMapping TypeName="EPSModel.RunItem">
+              <MappingFragment StoreEntitySet="RunItems">
+                <ScalarProperty Name="HtmlAnswers" ColumnName="HtmlAnswers" />
+                <ScalarProperty Name="WFItemID" ColumnName="WFItemID" />
+                <ScalarProperty Name="RunID" ColumnName="RunID" />
+                <ScalarProperty Name="RunItemID" ColumnName="RunItemID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RunPayloads">
+            <EntityTypeMapping TypeName="EPSModel.RunPayload">
+              <MappingFragment StoreEntitySet="RunPayload">
+                <ScalarProperty Name="RunPayload1" ColumnName="RunPayload" />
+                <ScalarProperty Name="RunID" ColumnName="RunID" />
+                <ScalarProperty Name="PayloadID" ColumnName="PayloadID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RunResults">
+            <EntityTypeMapping TypeName="EPSModel.RunResult">
+              <MappingFragment StoreEntitySet="RunResult">
+                <ScalarProperty Name="TimeCompleted" ColumnName="TimeCompleted" />
+                <ScalarProperty Name="TimeStarted" ColumnName="TimeStarted" />
+                <ScalarProperty Name="ResultString" ColumnName="ResultString" />
+                <ScalarProperty Name="ResultID" ColumnName="ResultID" />
+                <ScalarProperty Name="WFItemID" ColumnName="WFItemID" />
+                <ScalarProperty Name="RunID" ColumnName="RunID" />
+                <ScalarProperty Name="RunResultID" ColumnName="RunResultID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RunResultStatus">
+            <EntityTypeMapping TypeName="EPSModel.RunResultStatu">
+              <MappingFragment StoreEntitySet="RunResultStatus">
+                <ScalarProperty Name="ResultStatus" ColumnName="ResultStatus" />
+                <ScalarProperty Name="ResultID" ColumnName="ResultID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RunWorkflows">
+            <EntityTypeMapping TypeName="EPSModel.RunWorkflow">
+              <MappingFragment StoreEntitySet="RunWorkflow">
+                <ScalarProperty Name="RunByUserID" ColumnName="RunByUserID" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="WorkflowID" ColumnName="WorkflowID" />
+                <ScalarProperty Name="EmpID" ColumnName="EmpID" />
+                <ScalarProperty Name="RunID" ColumnName="RunID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="User_Log">
+            <EntityTypeMapping TypeName="EPSModel.User_Log">
+              <MappingFragment StoreEntitySet="User_Log">
+                <ScalarProperty Name="ChangedBy" ColumnName="ChangedBy" />
+                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
+                <ScalarProperty Name="ChangeType" ColumnName="ChangeType" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="LogID" ColumnName="LogID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="EPSModel.User">
               <MappingFragment StoreEntitySet="Users">
@@ -1258,38 +1330,77 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="User_Log">
-            <EntityTypeMapping TypeName="EPSModel.User_Log">
-              <MappingFragment StoreEntitySet="User_Log">
-                <ScalarProperty Name="ChangedBy" ColumnName="ChangedBy" />
-                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
-                <ScalarProperty Name="ChangeType" ColumnName="ChangeType" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
-                <ScalarProperty Name="LogID" ColumnName="LogID" />
+          <EntitySetMapping Name="WorkflowItems">
+            <EntityTypeMapping TypeName="EPSModel.WorkflowItem">
+              <MappingFragment StoreEntitySet="WorkflowItems">
+                <ScalarProperty Name="Disabled" ColumnName="Disabled" />
+                <ScalarProperty Name="RunOrder" ColumnName="RunOrder" />
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="WorkflowID" ColumnName="WorkflowID" />
+                <ScalarProperty Name="WFItemID" ColumnName="WFItemID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Parameters_Log">
-            <EntityTypeMapping TypeName="EPSModel.Parameters_Log">
-              <MappingFragment StoreEntitySet="Parameters_Log">
-                <ScalarProperty Name="ChangedBy" ColumnName="ChangedBy" />
-                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
-                <ScalarProperty Name="ChangeType" ColumnName="ChangeType" />
-                <ScalarProperty Name="ParamValue" ColumnName="ParamValue" />
-                <ScalarProperty Name="ParamDesc" ColumnName="ParamDesc" />
-                <ScalarProperty Name="ParamName" ColumnName="ParamName" />
-                <ScalarProperty Name="LogID" ColumnName="LogID" />
+          <EntitySetMapping Name="Workflows">
+            <EntityTypeMapping TypeName="EPSModel.Workflow">
+              <MappingFragment StoreEntitySet="Workflows">
+                <ScalarProperty Name="Disabled" ColumnName="Disabled" />
+                <ScalarProperty Name="WorkflowDesc" ColumnName="WorkflowDesc" />
+                <ScalarProperty Name="WorkflowName" ColumnName="WorkflowName" />
+                <ScalarProperty Name="WorkflowID" ColumnName="WorkflowID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="vw_Managers_From_Logs">
             <EntityTypeMapping TypeName="EPSModel.vw_Managers_From_Logs">
               <MappingFragment StoreEntitySet="vw_Managers_From_Logs">
-                <ScalarProperty Name="EmpID" ColumnName="EmpID" />
                 <ScalarProperty Name="ManagerName" ColumnName="ManagerName" />
+                <ScalarProperty Name="EmpID" ColumnName="EmpID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_RunResults_Log">
+            <EntityTypeMapping TypeName="EPSModel.vw_RunResults_Log">
+              <MappingFragment StoreEntitySet="vw_RunResults_Log">
+                <ScalarProperty Name="WorkflowID" ColumnName="WorkflowID" />
+                <ScalarProperty Name="RunByUserID" ColumnName="RunByUserID" />
+                <ScalarProperty Name="RunByUser" ColumnName="RunByUser" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
+                <ScalarProperty Name="WorkflowName" ColumnName="WorkflowName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="ResultStatus" ColumnName="ResultStatus" />
+                <ScalarProperty Name="TimeCompleted" ColumnName="TimeCompleted" />
+                <ScalarProperty Name="TimeStarted" ColumnName="TimeStarted" />
+                <ScalarProperty Name="ResultString" ColumnName="ResultString" />
+                <ScalarProperty Name="ResultID" ColumnName="ResultID" />
+                <ScalarProperty Name="WFItemID" ColumnName="WFItemID" />
+                <ScalarProperty Name="RunID" ColumnName="RunID" />
+                <ScalarProperty Name="RunResultID" ColumnName="RunResultID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vwRunItems">
+            <EntityTypeMapping TypeName="EPSModel.vwRunItem">
+              <MappingFragment StoreEntitySet="vwRunItems">
+                <ScalarProperty Name="RunOrder" ColumnName="RunOrder" />
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="RunID" ColumnName="RunID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vwRunWorkflows">
+            <EntityTypeMapping TypeName="EPSModel.vwRunWorkflow">
+              <MappingFragment StoreEntitySet="vwRunWorkflow">
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="RunStatus" ColumnName="RunStatus" />
+                <ScalarProperty Name="ItemCount" ColumnName="ItemCount" />
+                <ScalarProperty Name="WorkflowID" ColumnName="WorkflowID" />
+                <ScalarProperty Name="EmpID" ColumnName="EmpID" />
+                <ScalarProperty Name="RunID" ColumnName="RunID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

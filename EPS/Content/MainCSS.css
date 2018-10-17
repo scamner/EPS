@@ -380,3 +380,7 @@ hr {
 .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
     font-size: small !important;
 }
+
+.tblFilter tr td {
+    padding: 2px !important;
+}
