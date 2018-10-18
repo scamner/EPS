@@ -1,1 +1,142 @@
-﻿
+﻿@model PagedList.IPagedList<DataLayer.User_Log>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" />
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#AuditDateFrom_Filter').datepicker();
+        $('#AuditDateTo_Filter').datepicker();
+    });
+</script>
+
+<div style="padding: 5px; font-size: smaller;">
+    <table cellpadding="2" class="tblFilter">
+        <tr>
+            <td style="text-align: left; font-size: larger;"><b>Filter Options:</b></td>
+            <td style="text-align: left;">
+                User Name:
+            </td>
+            <td style="text-align: left;">
+                First Name:
+            </td>
+            <td style="text-align: left;">
+                Last Name:
+            </td>
+            <td style="text-align: left;">
+                Dates:
+            </td>
+            <td style="text-align: left;">
+                Changed By:
+            </td>
+            <td style="text-align: left;">
+                Change Type:
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input type="text" id="Username_Filter" value="@ViewBag.Username" />
+            </td>
+            <td>
+                <input type="text" id="FirstName_Filter" value="@ViewBag.FirstName" />
+            </td>
+            <td>
+                <input type="text" id="LastName_Filter" value="@ViewBag.LastName" />
+            </td>
+            <td style="text-align: left;">
+                <input type="text" id="AuditDateFrom_Filter" style="width: 75px;" value="@ViewBag.AuditDateFrom" />
+                to
+                <input type="text" id="AuditDateTo_Filter" style="width: 75px;" value="@ViewBag.AuditDateTo" />
+            </td>
+            <td style="text-align: left;">
+                @Html.DropDownList("UserID_Filter", new SelectList(ViewBag.Users, "Value", "Text", ViewBag.AuditUser), new { @id = "UserID_Filter" })
+            </td>
+            <td style="text-align: left;">
+                @Html.DropDownList("selUser_Filter", new SelectList(ViewBag.ChangeTypes, "Value", "Text", ViewBag.ChangeType), new { @id = "selUser_Filter" })
+            </td>
+            <td>
+                <input type="button" value="Filter List" onclick="FilterUsersLog();" />
+                <input type="hidden" value="@Model.PageNumber" id="hidPageNum" />
+            </td>
+        </tr>
+    </table>
+</div>
+
+@if (Model.Count == 0)
+{
+    <p style="text-align: center; color: red;">No results returned</p>
+}
+else
+{
+    <table class="webgrid-table">
+        <tr>
+            <th>
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterUsersLog('UserName','@ViewBag.SortDirection');">User Name:</a>
+            </th>
+            <th>
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterUsersLog('FirstName','@ViewBag.SortDirection');">First Name:</a>
+            </th>
+            <th>
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterUsersLog('LastName','@ViewBag.SortDirection');">Last Name:</a>
+            </th>
+            <th>
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterUsersLog('AuditType','@ViewBag.SortDirection');">Change Type:</a>
+            </th>
+            <th>
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterUsersLog('AuditDate','@ViewBag.SortDirection');">Change Date:</a>
+            </th>
+            <th>
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterUsersLog('AuditBy','@ViewBag.SortDirection');">Changed By:</a>
+            </th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td style="text-align: left;">
+                    @Html.DisplayFor(modelItem => item.Username)
+                </td>
+                <td style="text-align: left;">
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td style="text-align: left;">
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td style="text-align: left;">
+                    @Html.DisplayFor(modelItem => item.ChangeType)
+                </td>
+                <td style="text-align: left;">
+                    @{ String changeDate = item.ChangeDate.ToString("MM/dd/yyyy hh:mm tt"); }
+                    @changeDate
+                </td>
+                <td style="text-align: left;">
+                    @Html.DisplayFor(modelItem => item.User.Username)
+                </td>
+            </tr>
+        }
+
+    </table>
+}
+
+<div id="divPager">
+    @if (Model.PageCount > 1)
+    {
+        @:Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+        @Html.PagedListPager(Model, page => Url.Action("GetUsersLog", new
+   {
+       sortOrder = ViewBag.CurrentSort,
+       CurrentSort = ViewBag.CurrentSort,
+       page = page,
+       UserName = ViewBag.UserName,
+       FirstName = ViewBag.FirstName,
+       LastName = ViewBag.LastName,
+       AuditUser = ViewBag.AuditUser,
+       AuditDateFrom = ViewBag.AuditDateFrom,
+       AuditDateTo = ViewBag.AuditDateTo,
+       ChangeType = ViewBag.ChangeType
+   }), PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions() { HttpMethod = "GET", UpdateTargetId = "divMainLogs" }))}
+</div>
+
+
+

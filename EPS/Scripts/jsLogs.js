@@ -46,7 +46,7 @@ function FilterEmployeeLog(sortOrder, sortDir) {
     sortOrder = sortOrder === undefined ? '' : sortOrder;
     sortDir = sortDir === undefined ? '' : sortDir;
 
-    LoadLogs('GetEmployeesLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&Username=' + un + '&FirstName=' + fn + '&LastName=' + ln +
+    LoadLogs('GetEmployeesLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&Username=' + encodeURIComponent(un) + '&FirstName=' + encodeURIComponent(fn) + '&LastName=' + encodeURIComponent(ln) +
         '&AuditUser=' + user + '&AuditDateFrom=' + dateFrom + '&AuditDateTo=' + dateTo + '&ChangeType=' + type);
 }
 
@@ -65,7 +65,7 @@ function FilterWorkflowRunLog(sortOrder, sortDir) {
     sortOrder = sortOrder === undefined ? '' : sortOrder;
     sortDir = sortDir === undefined ? '' : sortDir;
 
-    LoadLogs('GetWorkflowRunLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&ItemID=' + iid + '&FirstName=' + fn + '&LastName=' + ln +
+    LoadLogs('GetWorkflowRunLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&ItemID=' + iid + '&FirstName=' + encodeURIComponent(fn) + '&LastName=' + encodeURIComponent(ln) +
         '&ResultID=' + rid + '&WorkflowID=' + wfid +
         '&AuditUser=' + user + '&AuditDateFrom=' + dateFrom + '&AuditDateTo=' + dateTo + '&ChangeType=' + type);
 }
@@ -82,7 +82,7 @@ function FilterWorkflowLog(sortOrder, sortDir) {
     sortOrder = sortOrder === undefined ? '' : sortOrder;
     sortDir = sortDir === undefined ? '' : sortDir;
 
-    LoadLogs('GetWorkflowLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&ItemType=' + it + '&ItemName=' + iname +
+    LoadLogs('GetWorkflowLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&ItemType=' + encodeURIComponent(it) + '&ItemName=' + encodeURIComponent(iname) +
         '&AuditUser=' + user + '&AuditDateFrom=' + dateFrom + '&AuditDateTo=' + dateTo + '&ChangeType=' + type);
 }
 
@@ -97,7 +97,7 @@ function FilterParametersLog(sortOrder, sortDir) {
     sortOrder = sortOrder === undefined ? '' : sortOrder;
     sortDir = sortDir === undefined ? '' : sortDir;
 
-    LoadLogs('GetParametersLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&ParamName=' + pn + 
+    LoadLogs('GetParametersLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&ParamName=' + encodeURIComponent(pn) + 
         '&AuditUser=' + user + '&AuditDateFrom=' + dateFrom + '&AuditDateTo=' + dateTo + '&ChangeType=' + type);
 }
 
@@ -114,6 +114,6 @@ function FilterUsersLog(sortOrder, sortDir) {
     sortOrder = sortOrder === undefined ? '' : sortOrder;
     sortDir = sortDir === undefined ? '' : sortDir;
 
-    LoadLogs('GetUsersLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&Username=' + un + '&FirstName=' + fn + '&LastName=' + ln +
+    LoadLogs('GetUsersLog?sortOrder=' + sortOrder + '&SortDirection=' + sortDir + '&page=' + page + '&Username=' + encodeURIComponent(un) + '&FirstName=' + encodeURIComponent(fn) + '&LastName=' + encodeURIComponent(ln) +
         '&AuditUser=' + user + '&AuditDateFrom=' + dateFrom + '&AuditDateTo=' + dateTo + '&ChangeType=' + type);
 }

@@ -1379,6 +1379,55 @@ namespace EPS.Controllers
                         else
                             emps = emps.OrderBy(m => m.LastName).ThenBy(m => m.LogID).ToList();
                         break;
+
+                    case "Email":
+                        if (SortDirection == "desc")
+                            emps = emps.OrderByDescending(m => m.Email).ThenBy(m => m.LogID).ToList();
+                        else
+                            emps = emps.OrderBy(m => m.Email).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "Manager":
+                        if (SortDirection == "desc")
+                            emps = emps.OrderByDescending(m => m.IsManager).ThenBy(m => m.LogID).ToList();
+                        else
+                            emps = emps.OrderBy(m => m.IsManager).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "ReportsTo":
+                        if (SortDirection == "desc")
+                            emps = emps.OrderByDescending(m => m.ReportsTo).ThenBy(m => m.LogID).ToList();
+                        else
+                            emps = emps.OrderBy(m => m.ReportsTo).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "EmpNum":
+                        if (SortDirection == "desc")
+                            emps = emps.OrderByDescending(m => m.EmpNum).ThenBy(m => m.LogID).ToList();
+                        else
+                            emps = emps.OrderBy(m => m.EmpNum).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "AuditType":
+                        if (SortDirection == "desc")
+                            emps = emps.OrderByDescending(m => m.ChangeType).ThenBy(m => m.LogID).ToList();
+                        else
+                            emps = emps.OrderBy(m => m.ChangeType).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "AuditDate":
+                        if (SortDirection == "desc")
+                            emps = emps.OrderByDescending(m => m.ChangeDate).ThenBy(m => m.LogID).ToList();
+                        else
+                            emps = emps.OrderBy(m => m.ChangeDate).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "AuditBy":
+                        if (SortDirection == "desc")
+                            emps = emps.OrderByDescending(m => m.ChangedBy).ThenBy(m => m.LogID).ToList();
+                        else
+                            emps = emps.OrderBy(m => m.ChangedBy).ThenBy(m => m.LogID).ToList();
+                        break;
                 }
 
                 List<User> users = db.Users.OrderBy(u => u.FirstName).ToList();
@@ -1440,33 +1489,56 @@ namespace EPS.Controllers
                         (auditDateTo.Value.Year == 0001 || e.ChangeDate < auditDateTo) &&
                         (String.IsNullOrEmpty(ChangeType) || e.ChangeType.Contains(ChangeType))
                         ).OrderBy(e => e.ParamName).ToList();
-
+                
                 ViewBag.ParamName = ParamName;
                 ViewBag.AuditUser = AuditUser;
                 ViewBag.AuditDateFrom = AuditDateFrom;
                 ViewBag.AuditDateTo = AuditDateTo;
                 ViewBag.ChangeType = ChangeType;
 
-                if (SortDirection == "desc")
+                switch (sortOrder)
                 {
-                    logs = logs.OrderByDescending(m => m.ParamName).ThenBy(m => m.LogID).ToList();
+                    case "ParamName":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ParamName).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ParamName).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "AuditType":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ChangeType).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ChangeType).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "AuditDate":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ChangeDate).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ChangeDate).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "AuditBy":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ChangedBy).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ChangedBy).ThenBy(m => m.LogID).ToList();
+                        break;
                 }
-                else
+
+                List<Parameter> prm = db.Parameters.OrderBy(u => u.ParamName).ToList();
+                List<SelectListItem> paramList = new List<SelectListItem> { new SelectListItem { Text = "", Value = "", Selected = true } };
+                foreach (Parameter e in prm)
                 {
-                    logs = logs.OrderBy(m => m.ParamName).ThenBy(m => m.LogID).ToList();
+                    paramList.Add(new SelectListItem { Text = String.Format("{0}", e.ParamName), Value = e.ParamID.ToString() });
                 }
 
                 List<User> users = db.Users.OrderBy(u => u.FirstName).ToList();
-                List<SelectListItem> userList = new List<SelectListItem>();
-                SelectListItem iempty = new SelectListItem { Text = "", Value = "", Selected = true };
-                userList.Add(iempty);
-
+                List<SelectListItem> userList = new List<SelectListItem> { new SelectListItem { Text = "", Value = "", Selected = true } };
                 foreach (User e in users)
                 {
-                    SelectListItem i = new SelectListItem();
-                    i.Text = String.Format("{0} {1}", e.FirstName, e.LastName);
-                    i.Value = e.UserID.ToString();
-                    userList.Add(i);
+                    userList.Add(new SelectListItem { Text = String.Format("{0} {1}", e.FirstName, e.LastName), Value = e.UserID.ToString() });
                 }
 
                 List<SelectListItem> changeTypes = new List<SelectListItem> {
@@ -1476,6 +1548,7 @@ namespace EPS.Controllers
                     new SelectListItem { Text = "Delete", Value = "Delete" }
                 };
 
+                ViewBag.ParamList = paramList;
                 ViewBag.ChangeTypes = changeTypes;
                 ViewBag.Users = userList;
                 ViewBag.SortDirection = SortDirection == "asc" ? "desc" : "asc";
@@ -1544,6 +1617,27 @@ namespace EPS.Controllers
                             logs = logs.OrderByDescending(m => m.LastName).ThenBy(m => m.LogID).ToList();
                         else
                             logs = logs.OrderBy(m => m.LastName).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "AuditType":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ChangeType).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ChangeType).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "AuditDate":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ChangeDate).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ChangeDate).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "AuditBy":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ChangedBy).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ChangedBy).ThenBy(m => m.LogID).ToList();
                         break;
                 }
 
@@ -1634,6 +1728,26 @@ namespace EPS.Controllers
                         else
                             logs = logs.OrderBy(m => m.ItemName).ThenBy(m => m.LogID).ToList();
                         break;
+                    case "AuditType":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ChangeType).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ChangeType).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "AuditDate":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ChangeDate).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ChangeDate).ThenBy(m => m.LogID).ToList();
+                        break;
+
+                    case "AuditBy":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.ChangedBy).ThenBy(m => m.LogID).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.ChangedBy).ThenBy(m => m.LogID).ToList();
+                        break;
                 }
 
                 List<SelectListItem> itemTypes = new List<SelectListItem> {
@@ -1650,6 +1764,22 @@ namespace EPS.Controllers
                     new SelectListItem { Text = "Delete", Value = "Delete" }
                 };
 
+                List<String> itemNames = (from w in db.Workflow_Log select w.ItemName).Distinct().ToList();
+                List<SelectListItem> itemNameList = new List<SelectListItem> { new SelectListItem { Text = "", Value = "", Selected = true } };
+                foreach (String n in itemNames)
+                {
+                    itemNameList.Add(new SelectListItem { Text = n, Value = n });
+                }
+
+                List<User> users = db.Users.OrderBy(u => u.FirstName).ToList();
+                List<SelectListItem> userList = new List<SelectListItem> { new SelectListItem { Text = "", Value = "", Selected = true } };
+                foreach (User e in users)
+                {
+                    userList.Add(new SelectListItem { Text = String.Format("{0} {1}", e.FirstName, e.LastName), Value = e.UserID.ToString() });
+                }
+
+                ViewBag.ItemNames = itemNameList;
+                ViewBag.Users = userList;
                 ViewBag.ChangeTypes = changeTypes;
                 ViewBag.ItemTypes = itemTypes;
                 ViewBag.SortDirection = SortDirection == "asc" ? "desc" : "asc";

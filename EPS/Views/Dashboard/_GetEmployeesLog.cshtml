@@ -81,51 +81,51 @@ else
                 <a style="cursor: pointer; text-decoration: underline;" onclick="FilterEmployeeLog('LastName','@ViewBag.SortDirection');">Last Name:</a>
             </th>
             <th>
-                Email
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterEmployeeLog('Email','@ViewBag.SortDirection');">Email:</a>                
             </th>
             <th>
-                Manager?
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterEmployeeLog('Manager','@ViewBag.SortDirection');">Manager?</a>                
             </th>
             <th>
-                Reports to
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterEmployeeLog('ReportsTo','@ViewBag.SortDirection');">Reports to:</a>
             </th>
             <th>
-                Employee Number
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterEmployeeLog('EmpNum','@ViewBag.SortDirection');">Employee Number:</a>                
             </th>
             <th>
-                Audit Type
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterEmployeeLog('AuditType','@ViewBag.SortDirection');">Audit Type:</a>                
             </th>
             <th>
-                Audit Date
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterEmployeeLog('AuditDate','@ViewBag.SortDirection');">Audit Date:</a>                
             </th>
             <th>
-                Audit By
+                <a style="cursor: pointer; text-decoration: underline;" onclick="FilterEmployeeLog('AuditBy','@ViewBag.SortDirection');">Audit By:</a>                
             </th>
         </tr>
 
         @foreach (var item in Model)
         {
             <tr>
-                <td>
+                <td style="text-align: left;">
                     @Html.DisplayFor(modelItem => item.Username)
                 </td>
-                <td>
+                <td style="text-align: left;">
                     @Html.DisplayFor(modelItem => item.FirstName)
                 </td>
-                <td>
+                <td style="text-align: left;">
                     @Html.DisplayFor(modelItem => item.LastName)
                 </td>
-                <td>
+                <td style="text-align: left;">
                     @Html.DisplayFor(modelItem => item.Email)
                 </td>
-                <td>
+                <td style="text-align: left;">
                     @if (item.IsManager != null)
                     {
                         Boolean isManager = Convert.ToBoolean(item.IsManager);
                         @Html.CheckBox(item.LogID.ToString(), isManager)
                     }
                 </td>
-                <td>
+                <td style="text-align: left;">
                     @{ String reportTo = ""; }
                     @if (item.ReportsTo != null && item.ReportsTo != 0)
                     {
@@ -135,25 +135,22 @@ else
                     @reportTo
                 </td>
 
-                <td>
+                <td style="text-align: left;">
                     @Html.DisplayFor(modelItem => item.EmpNum)
                 </td>
 
-                <td>
+                <td style="text-align: left;">
                     @Html.DisplayFor(modelItem => item.ChangeType)
                 </td>
 
-                <td>
+                <td style="text-align: left;">
                     @{ String auditDate = item.ChangeDate.ToString("MM/dd/yyyy hh:mm tt"); }
                     @auditDate
                 </td>
 
-
-                <td>
+                <td style="text-align: left;">
                     @Html.DisplayFor(modelItem => item.User.Username)
                 </td>
-
-
             </tr>
         }
 
