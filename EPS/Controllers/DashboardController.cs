@@ -113,14 +113,29 @@ namespace EPS.Controllers
             }
         }
 
-        public ActionResult GetRuns()
+        public ActionResult GetRuns(Boolean FutureRuns = false)
         {
             try
             {
                 DateTime checkTime = DateTime.Now.AddMinutes(-5);
 
-                List<vwRunWorkflow> runs = db.vwRunWorkflows.
-                    Where(r => (r.RunStatus == "Pending" || r.StartTime >= checkTime)).OrderBy(e => e.StartTime).ToList();
+                List<vwRunWorkflow> runs = new List<vwRunWorkflow>();
+
+                if (FutureRuns == false)
+                {
+                    String today = DateTime.Now.Date.ToShortDateString();
+
+                    runs = db.vwRunWorkflows.
+                        Where(r => (r.RunStatus == "Pending" || r.StartTime >= checkTime)
+                        && (r.RunDate == "" || r.RunDate == today))
+                        .OrderBy(e => e.StartTime).ToList();
+                }
+                else
+                {
+                    runs = db.vwRunWorkflows.
+                        Where(r => (r.RunStatus == "Pending" || r.StartTime >= checkTime))
+                        .OrderBy(e => e.StartTime).ToList();
+                }
 
                 List<int> RunIDs = runs.Select(r => r.RunID).Distinct().ToList();
                 List<RunResult> Results = db.RunResults.Where(r => RunIDs.Contains(r.RunID)).ToList();
@@ -156,11 +171,14 @@ namespace EPS.Controllers
                         RunStatusColor = statusColor,
                         StartTime = wf.StartTime,
                         Username = wf.Username,
-                        WorkflowID = wf.WorkflowID
+                        WorkflowID = wf.WorkflowID,
+                        RunDate = wf.RunDate
                     };
 
                     model.Add(m);
                 }
+
+                ViewBag.FutureRuns = FutureRuns;
 
                 return PartialView("_GetRuns", model);
             }
@@ -508,7 +526,7 @@ namespace EPS.Controllers
         }
 
         [HttpPost]
-        public JsonResult RunWorkflow(int EmpID, int WorkflowID, int[] ItemIDs, String[] HtmlOptions)
+        public JsonResult RunWorkflow(int EmpID, int WorkflowID, int[] ItemIDs, String[] HtmlOptions, String RunDate)
         {
             using (var tran = db.Database.BeginTransaction())
             {
@@ -523,6 +541,11 @@ namespace EPS.Controllers
                         StartTime = DateTime.Now,
                         WorkflowID = WorkflowID
                     };
+
+                    if (!String.IsNullOrEmpty(RunDate))
+                    {
+                        run.RunDate = Convert.ToDateTime(RunDate);
+                    }
 
                     db.RunWorkflows.Add(run);
                     db.SaveChanges();
@@ -546,7 +569,11 @@ namespace EPS.Controllers
                     tran.Commit();
 
                     RunWorkflows.ExecuteWorkflows exec = new RunWorkflows.ExecuteWorkflows();
-                    Task.Run(() => exec.RunWorkflow(run.RunID));
+
+                    if (String.IsNullOrEmpty(RunDate) || Convert.ToDateTime(RunDate).Date == DateTime.Now.Date)
+                    {
+                        Task.Run(() => exec.RunWorkflow(run.RunID));
+                    }
 
                     return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
                 }
@@ -559,6 +586,58 @@ namespace EPS.Controllers
 
                     String error = util.ParseError(ex);
                     util.WriteErrorToLog("Dashboard/RunWorkflow", ex, String.Format("Emp ID: {0}", EmpID));
+
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+        [HttpPost]
+        public JsonResult CancelWorkflowRun(int RunID)
+        {
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    User CurrentUser = util.GetLoggedOnUser();
+
+                    RunWorkflow run = db.RunWorkflows.Where(w => w.RunID == RunID).FirstOrDefault();
+
+                    String wfName = run.Workflow.WorkflowName;
+                    String fName = run.Employee.FirstName;
+                    String lName = run.Employee.LastName;
+                    String runDate = run.RunDate.Value.ToShortDateString();
+
+                    db.RunWorkflows.Remove(run);
+                    db.SaveChanges();
+
+                    Workflow_Log log = new Workflow_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeText = String.Format("Workflow Run: {0} that was scheduled for {1} on user {2} {3} was Cancelled.", wfName, runDate, fName, lName),
+                        ChangeType = "Delete",
+                        ItemID = RunID,
+                        ItemName = wfName,
+                        ItemType = "Workflow Run"
+                    };
+
+                    db.Workflow_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    if (tran.UnderlyingTransaction.Connection != null)
+                    {
+                        tran.Rollback();
+                    }
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/CancelWorkflowRun", ex, String.Format("Workflow Run ID: {0}", RunID));
 
                     return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
                 }
@@ -1489,7 +1568,7 @@ namespace EPS.Controllers
                         (auditDateTo.Value.Year == 0001 || e.ChangeDate < auditDateTo) &&
                         (String.IsNullOrEmpty(ChangeType) || e.ChangeType.Contains(ChangeType))
                         ).OrderBy(e => e.ParamName).ToList();
-                
+
                 ViewBag.ParamName = ParamName;
                 ViewBag.AuditUser = AuditUser;
                 ViewBag.AuditDateFrom = AuditDateFrom;
@@ -1885,6 +1964,13 @@ namespace EPS.Controllers
                             logs = logs.OrderByDescending(m => m.TimeCompleted).ToList();
                         else
                             logs = logs.OrderBy(m => m.TimeCompleted).ToList();
+                        break;
+
+                    case "RunDate":
+                        if (SortDirection == "desc")
+                            logs = logs.OrderByDescending(m => m.RunDateFullDate).ToList();
+                        else
+                            logs = logs.OrderBy(m => m.RunDateFullDate).ToList();
                         break;
                 }
 

@@ -9,6 +9,8 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $.validator.unobtrusive.parse($('#divSyncADModal'));
+
+        $('#txtRunDate').datepicker();
     });
 </script>
 
@@ -122,6 +124,12 @@ else
         @:Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
 
 
+
+
+
+
+
+
         @Html.PagedListPager(Model, page => Url.Action("GetEmployees", new
    {
        sortOrder = ViewBag.CurrentSort,
@@ -139,19 +147,31 @@ else
     <input type="image" src="~/Images/Close.png" class="CloseModal" alt="Close" align="right" onclick="PopModal($('#divLoadRunWorkflowModal'), 'hide', '0'); " />
     <div style="border: medium ridge #C0C0C0; margin: 10px; background-color: #FFFFFF; border-radius: 5px; text-align: center; padding: 10px;">
         <div id="divLoadRunWorkflowContent">
-            <label for="selWorkflowsToRun">Select a workflow to run:</label>
             <br />
             <table>
                 <tr>
                     <td>
+                        <label for="selWorkflowsToRun">Select a workflow to run:</label>
+                    </td>
+                    <td>
+                        <label for="txtRunDate">Select a date for it to run<br />(run immediately if blank):</label>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
                         <select id="selWorkflowsToRun" onchange="GetWorkflowItems($(this).val());"></select>
+                    </td>
+                    <td>
+                        <input type="text" id="txtRunDate" style="width: 100px;" />
+                    </td>
                     <td>
                         <input type="button" value="Run Workflow" id="btnRunWorkflow" onclick="RunWorkflow();" />
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2">
-                        <div id="divWorkflowItems" style="text-align: left;"></div>                        
+                    <td colspan="3">
+                        <div id="divWorkflowItems" style="text-align: left;"></div>
                         <input type="hidden" id="hidRunWorkflowEmpID" />
                     </td>
                 </tr>

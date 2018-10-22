@@ -29,5 +29,7 @@ namespace DataLayer
         public string RunByUser { get; set; }
         public int RunByUserID { get; set; }
         public int WorkflowID { get; set; }
+        public string RunDate { get; set; }
+        public Nullable<System.DateTime> RunDateFullDate { get; set; }
     }
 }

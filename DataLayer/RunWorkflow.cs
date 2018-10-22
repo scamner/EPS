@@ -26,6 +26,7 @@ namespace DataLayer
         public int WorkflowID { get; set; }
         public System.DateTime StartTime { get; set; }
         public int RunByUserID { get; set; }
+        public Nullable<System.DateTime> RunDate { get; set; }
     
         public virtual Employee Employee { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

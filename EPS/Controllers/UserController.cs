@@ -27,10 +27,11 @@ namespace EPS.Controllers
             {
                 User user = db.Users.Where(u => u.Username == Username).FirstOrDefault();
                 Boolean isGood = false;
+                String Domain = db.Parameters.Where(p => p.ParamName == "ADDomain").FirstOrDefault().ParamValue;
 
                 if (user != null)
                 {
-                    using (PrincipalContext pc = new PrincipalContext(ContextType.Domain, ConfigurationManager.AppSettings["ADDomain"].ToString()))
+                    using (PrincipalContext pc = new PrincipalContext(ContextType.Domain, Domain))
                     {
                         isGood = pc.ValidateCredentials(Username, Password);
                     }

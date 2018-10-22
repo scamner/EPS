@@ -210,6 +210,7 @@ function RunWorkflow() {
     var wfid = $('#selWorkflowsToRun').val();
     var itemIDs = new Array();
     var htmlOptions = new Array();
+    var runDate = $('#txtRunDate').val();
 
     $('.WorkflowItemsToRun:checkbox:checked').map(function () {
         itemIDs.push($(this).val());
@@ -233,7 +234,7 @@ function RunWorkflow() {
 
     $.ajax({
         url: '/Dashboard/RunWorkflow',
-        data: { EmpID: empID, WorkflowID: wfid, ItemIDs: itemIDs, HtmlOptions: htmlOptions },
+        data: { EmpID: empID, WorkflowID: wfid, ItemIDs: itemIDs, HtmlOptions: htmlOptions, RunDate: runDate },
         type: 'POST',
         datatype: 'json',
         cache: false,

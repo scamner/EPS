@@ -38,7 +38,7 @@ namespace RunWorkflows
                       BindingFlags.Default | BindingFlags.InvokeMethod,
                       null,
                       instanceOfMyType,
-                      new Object[] { run.EmpID, db.Database.Connection.ConnectionString, pl == null ? "" : Newtonsoft.Json.JsonConvert.SerializeObject(pl) });
+                      new Object[] { run.EmpID, pl == null ? "" : Newtonsoft.Json.JsonConvert.SerializeObject(pl) });
 
                     IEnumerable<PropertyInfo> props = result.GetType().GetRuntimeProperties();
 

@@ -24,6 +24,30 @@
 
         $('#lblLastCheck').text("Last Check: " + strTime);
     });
+
+    function CancelWorkflowRun(runID) {
+        var conf = confirm("Are you sure you want to cancel that run?");
+        if (conf === false) {
+            return;
+        }
+
+        $.ajax({
+            url: '/Dashboard/CancelWorkflowRun',
+            type: 'POST',
+            data: { RunID: runID },
+            datatype: 'json',
+            cache: false,
+            success: function (data) {
+                if (data.Error === "") {
+                    var tab = $('#GetRuns');
+                    SetTab(tab);
+                }
+                else {
+                    ShowMessage(data.Error, 'show');
+                }
+            }
+        });
+    }
 </script>
 
 @if (Model.Count() == 0)
@@ -34,6 +58,11 @@ else
 {
     <div style="color: red; text-align: left; font-size: x-small;"><label id="lblLastCheck"></label></div>
 
+    <div style="text-align: center; padding: 10px;">
+        Include future runs?
+        @Html.CheckBox("chkFutureRuns", (Boolean)ViewBag.FutureRuns, new { @id = "chkFutureRuns", @onclick = "SetTab($('#GetRuns'));" })
+    </div>
+
     <table class="webgrid-table">
         <tr>
             <th>Run By:</th>
@@ -42,6 +71,7 @@ else
             <th>Employee Last Name:</th>
             <th>Item Count:</th>
             <th>Status:</th>
+            <th>Run Date:</th>
         </tr>
         @foreach (var item in Model)
         {
@@ -65,9 +95,16 @@ else
                 <td style="text-align: left; @item.RunStatusColor">
                     @Html.DisplayFor(modelItem => item.RunStatus)
                 </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RunDate)
+                    @if (item.RunDate != "")
+                    {
+                        <input type="button" class="RedButton" style="margin-left: 5px;" value="Cancel" onclick="CancelWorkflowRun('@item.RunID');" />
+                    }
+                </td>
             </tr>
             <tr>
-                <td style="padding-left: 25px; padding-top: 10px; padding-bottom: 10px; text-align: left;" colspan="6">
+                <td style="padding-left: 25px; padding-top: 10px; padding-bottom: 10px; text-align: left;" colspan="7">
                     @if (item.ResultItems.Count() == 0)
                     {
                         <p style="text-align: center; color: red;">No workflow items completed yet.</p>
@@ -83,10 +120,10 @@ else
                             </tr>
                             @foreach (DataLayer.RunResult i in item.ResultItems)
                             {
-                                string itemStartTime = i.TimeStarted.ToString("MM/dd/yyyy hh:mm tt"); 
-                                string itemEndTime = i.TimeCompleted.ToString("MM/dd/yyyy hh:mm tt"); 
-                                
-                            <tr>
+                                string itemStartTime = i.TimeStarted.ToString("MM/dd/yyyy hh:mm tt");
+                                string itemEndTime = i.TimeCompleted.ToString("MM/dd/yyyy hh:mm tt");
+
+                                <tr>
                                     <td style="text-align: left;">@i.WorkflowItem.LibraryItem.ItemDesc</td>
                                     <td>@itemStartTime</td>
                                     <td>@itemEndTime</td>

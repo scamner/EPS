@@ -11,10 +11,6 @@ namespace EPS.Controllers
     {
         public ActionResult Index()
         {
-            ExecuteWorkflows exec = new ExecuteWorkflows();
-
-            exec.RunWorkflow(1);
-
             return View();
         }
     }
