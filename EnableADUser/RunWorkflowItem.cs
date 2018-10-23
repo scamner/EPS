@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Linq;
-using System.DirectoryServices.AccountManagement;
 using System.Linq;
+using System.DirectoryServices.AccountManagement;
 
 namespace ItemToRun
 {
@@ -38,15 +38,15 @@ namespace ItemToRun
                     return new ItemRunResult { ResultID = 4, ResultText = String.Format("{0} could not be found in Active Directory.", emp.Username), TimeDone = DateTime.Now, RunPayload = jsonPL };
                 }
 
-                if (user.Enabled == false)
+                if (user.Enabled == true)
                 {
-                    return new ItemRunResult { ResultID = 5, ResultText = String.Format("{0} was already disabled in Active Directory.", emp.Username), TimeDone = DateTime.Now, RunPayload = jsonPL };
+                    return new ItemRunResult { ResultID = 5, ResultText = String.Format("{0} was already enabled in Active Directory.", emp.Username), TimeDone = DateTime.Now, RunPayload = jsonPL };
                 }
 
-                user.Enabled = false;
+                user.Enabled = true;
                 user.Save();
 
-                return new ItemRunResult { ResultID = 2, ResultText = String.Format("Employee: {0} {1} was disabled in Active Directory.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now, RunPayload = jsonPL };
+                return new ItemRunResult { ResultID = 2, ResultText = String.Format("Employee: {0} {1} was enabled in Active Directory.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now, RunPayload = jsonPL };
             }
             catch (Exception ex)
             {
@@ -55,7 +55,5 @@ namespace ItemToRun
         }
     }
 }
-
-
 
 

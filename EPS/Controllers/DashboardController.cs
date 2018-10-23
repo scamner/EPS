@@ -127,13 +127,15 @@ namespace EPS.Controllers
 
                     runs = db.vwRunWorkflows.
                         Where(r => (r.RunStatus == "Pending" || r.StartTime >= checkTime)
-                        && (r.RunDate == "" || r.RunDate == today))
+                        && (r.RunDate == "" || r.RunDate == today)
+                        && r.RunStatus != "Cancelled")
                         .OrderBy(e => e.StartTime).ToList();
                 }
                 else
                 {
                     runs = db.vwRunWorkflows.
-                        Where(r => (r.RunStatus == "Pending" || r.StartTime >= checkTime))
+                        Where(r => (r.RunStatus == "Pending" || r.StartTime >= checkTime)
+                        && r.RunStatus != "Cancelled")
                         .OrderBy(e => e.StartTime).ToList();
                 }
 
@@ -157,6 +159,10 @@ namespace EPS.Controllers
                     else if (wf.RunStatus == "Completed with Errors")
                     {
                         statusColor = "color: red; font-weight: bold;";
+                    }
+                    else if (wf.RunStatus == "Completed with Messages")
+                    {
+                        statusColor = "color: red;";
                     }
 
                     GetWorkflowModel m = new GetWorkflowModel
@@ -552,12 +558,12 @@ namespace EPS.Controllers
 
                     foreach (int itemID in ItemIDs)
                     {
-                        String htmlOption = HtmlOptions.Where(h => h.ToString()
-                        .StartsWith(String.Format("{0}:", itemID))).FirstOrDefault().ToString();
+                        var htmlOption = HtmlOptions.Where(h => h.ToString()
+                                .StartsWith(String.Format("{0}:", itemID))).FirstOrDefault();
 
                         RunItem ri = new RunItem
                         {
-                            HtmlAnswers = htmlOption,
+                            HtmlAnswers = htmlOption == null ? "" : htmlOption.ToString(),
                             RunID = run.RunID,
                             WFItemID = itemID
                         };
@@ -606,24 +612,23 @@ namespace EPS.Controllers
                     String wfName = run.Workflow.WorkflowName;
                     String fName = run.Employee.FirstName;
                     String lName = run.Employee.LastName;
-                    String runDate = run.RunDate.Value.ToShortDateString();
+                    String runDate = run.RunDate == null ? "" : run.RunDate.Value.ToShortDateString();
 
-                    db.RunWorkflows.Remove(run);
-                    db.SaveChanges();
-
-                    Workflow_Log log = new Workflow_Log
+                    foreach (RunItem ri in run.RunItems)
                     {
-                        ChangeDate = DateTime.Now,
-                        ChangedBy = CurrentUser.UserID,
-                        ChangeText = String.Format("Workflow Run: {0} that was scheduled for {1} on user {2} {3} was Cancelled.", wfName, runDate, fName, lName),
-                        ChangeType = "Delete",
-                        ItemID = RunID,
-                        ItemName = wfName,
-                        ItemType = "Workflow Run"
-                    };
+                        RunResult rr = new RunResult
+                        {
+                            ResultString = String.Format("Workflow Run: {0} {1}on user {2} {3} was Cancelled.", wfName, runDate == "" ? "" : "that was scheduled for " + runDate + " ", fName, lName),
+                            RunID = RunID,
+                            ResultID = 6,
+                            TimeCompleted = DateTime.Now,
+                            TimeStarted = run.StartTime,
+                            WFItemID = Convert.ToInt32(ri.WFItemID)
+                        };
 
-                    db.Workflow_Log.Add(log);
-                    db.SaveChanges();
+                        db.RunResults.Add(rr);
+                        db.SaveChanges();
+                    }
 
                     tran.Commit();
 
@@ -900,7 +905,7 @@ namespace EPS.Controllers
                 LibraryItem li = new LibraryItem
                 {
                     Disabled = false,
-                    HtmlOptions = model.HtmlOptions,
+                    HtmlOptions = model.HtmlOptions == null ? "" : model.HtmlOptions,
                     ItemDesc = model.ItemDesc,
                     ItemName = model.ItemName,
                     LibraryPath = fullPath

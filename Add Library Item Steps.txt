@@ -1,0 +1,10 @@
+Add Class Library
+Rename "Class1" to "RunWorkflowItem"
+Change Default Namespace to "ItemToRun"
+Nuget: Newtonsoft.Json
+Add References to:
+	DataLayer
+	EntityFramework	- C:\Users\scamner\source\repos\EPS\DisableUser\bin\Debug\EntityFramework.dll
+	System.Data.Linq
+Insert snippet
+Add "ItemRunResult" class and load from snippet

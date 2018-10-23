@@ -173,11 +173,12 @@ namespace EPS.Models
             DataLayer.EPSEntities db = new DataLayer.EPSEntities();
 
             List<ADUser> lstUsers = new List<ADUser>();
-            //string Domain = ConfigurationManager.AppSettings["ADDomain"].ToString();
             String Domain = db.Parameters.Where(p => p.ParamName == "ADDomain").FirstOrDefault().ParamValue;
+            Parameter adminName = db.Parameters.Where(p => p.ParamName == "ADUsername").FirstOrDefault();
+            Parameter password = db.Parameters.Where(p => p.ParamName == "ADPassword").FirstOrDefault();
 
             string strRootForest = "LDAP://" + Domain;
-            System.DirectoryServices.DirectoryEntry root = new System.DirectoryServices.DirectoryEntry(strRootForest);
+            System.DirectoryServices.DirectoryEntry root = new System.DirectoryServices.DirectoryEntry(strRootForest, adminName.ParamValue, password.ParamValue);
 
             System.DirectoryServices.DirectorySearcher searcher = new System.DirectoryServices.DirectorySearcher(root);
             searcher.SearchScope = SearchScope.Subtree;
