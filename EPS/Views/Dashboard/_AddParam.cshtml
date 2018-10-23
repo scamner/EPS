@@ -6,23 +6,24 @@
         <tr>
             <td>Parameter Name</td>
             <td style="text-align: left;">
-                @Html.TextBoxFor(model => model.ParamName, new { @style = "width: 75px;", @maxlength = "10" })
+                @Html.TextBoxFor(model => model.ParamName, new { @style = "width: 175px;", @maxlength = "25" })
                 <br />@Html.ValidationMessageFor(model => model.ParamName)
             </td>
             <td>Parameter Description</td>
             <td style="text-align: left;">
-                @Html.TextBoxFor(model => model.ParamDesc, new { @style = "width: 300px;", @maxlength = "200" })
+                @Html.TextBoxFor(model => model.ParamDesc, new { @style = "width: 200px;", @maxlength = "200" })
                 <br />@Html.ValidationMessageFor(model => model.ParamDesc)
             </td>
             <td>
-                <input type="submit" value="Add Parameter" />
+                <input type="submit" value="Add Parameter" onclick="$('#hidParamValue').val(encodeURIComponent($('#taParamValue').val()));" />
             </td>
         </tr>
         <tr>
             <td>Value</td>
             <td style="text-align: left;" colspan="4">
-                @Html.TextBoxFor(model => model.ParamValue, new { @style = "width: 560px;" })
+                @Html.TextAreaFor(model => model.ParamValue, new { @style = "width: 560px; height: 100px;", @id = "taParamValue" })
                 <br />@Html.ValidationMessageFor(model => model.ParamValue)
+                <input type="hidden" id="hidParamValue" name="EncodedParamValue" />
             </td>
         </tr>
     </table>

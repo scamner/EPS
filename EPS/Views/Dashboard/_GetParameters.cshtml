@@ -26,17 +26,17 @@
 
 @foreach (var item in Model) {
     <tr>
-        <td>
+        <td style="text-align: left;">
             <label class="NoEdit_@item.ParamID">@item.ParamName</label>
-            <input type="text" class="Edit_@item.ParamID" style="display: none; width: 75px;" maxlength="10" id="txtParamName_@item.ParamID" value="@item.ParamName" />
+            <input type="text" class="Edit_@item.ParamID" style="display: none; width: 150px;" maxlength="25" id="txtParamName_@item.ParamID" value="@item.ParamName" />
         </td>
-        <td>
+        <td style="text-align: left;">
             <label class="NoEdit_@item.ParamID">@item.ParamDesc</label>
             <input type="text" class="Edit_@item.ParamID" style="display: none; width: 200px;" maxlength="200" id="txtParamDesc_@item.ParamID" value="@item.ParamDesc" />
         </td>
-        <td>
+        <td style="text-align: left;">
             <label class="NoEdit_@item.ParamID">@item.ParamValue</label>
-            <input type="text" class="Edit_@item.ParamID" style="display: none; width: 200px;" id="txtParamValue_@item.ParamID" value="@item.ParamValue" />
+            <textarea class="Edit_@item.ParamID" style="display: none; width: 200px; height: 100px;" id="txtParamValue_@item.ParamID">@item.ParamValue</textarea>
         </td>
         <td nowrap>
             <input type="button" class="NoEdit_@item.ParamID" onclick="SetParamEdit(true, '@item.ParamID');" value="Edit" />

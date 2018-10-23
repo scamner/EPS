@@ -10,8 +10,6 @@
         <EntityTypeShape EntityType="EPSModel.ErrorLog" Width="1.5" PointX="0.75" PointY="1.5" />
         <EntityTypeShape EntityType="EPSModel.LibraryItem" Width="1.5" PointX="3.75" PointY="27.5" />
         <EntityTypeShape EntityType="EPSModel.Login" Width="1.5" PointX="3" PointY="20.5" />
-        <EntityTypeShape EntityType="EPSModel.Parameter" Width="1.5" PointX="5.75" PointY="1.5" />
-        <EntityTypeShape EntityType="EPSModel.Parameters_Log" Width="1.5" PointX="3" PointY="23.125" />
         <EntityTypeShape EntityType="EPSModel.RunItem" Width="1.5" PointX="8.25" PointY="12.625" />
         <EntityTypeShape EntityType="EPSModel.RunPayload" Width="1.5" PointX="8.25" PointY="15.75" />
         <EntityTypeShape EntityType="EPSModel.RunResult" Width="1.5" PointX="8.25" PointY="27.25" />
@@ -29,7 +27,6 @@
         <AssociationConnector Association="EPSModel.FK_Employees_Log_Users" />
         <AssociationConnector Association="EPSModel.FK_WorkflowItems_LibraryItems" />
         <AssociationConnector Association="EPSModel.FK_Logins_Users" />
-        <AssociationConnector Association="EPSModel.FK_Parameters_Log_Users" />
         <AssociationConnector Association="EPSModel.FK_RunItems_WorkflowItems" />
         <AssociationConnector Association="EPSModel.FK_RunItems_WorkflowRun" />
         <AssociationConnector Association="EPSModel.FK_RunPayload_RunWorkflow" />
@@ -41,6 +38,9 @@
         <AssociationConnector Association="EPSModel.FK_Workflow_Log_Users" />
         <AssociationConnector Association="EPSModel.FK_WorkflowItems_Workflows" />
         <EntityTypeShape EntityType="EPSModel.vwRunWorkflow" Width="1.5" PointX="8.375" PointY="4.75" />
+        <EntityTypeShape EntityType="EPSModel.Parameter" Width="1.5" PointX="8.375" PointY="8.75" />
+        <EntityTypeShape EntityType="EPSModel.Parameters_Log" Width="1.5" PointX="3" PointY="23.375" />
+        <AssociationConnector Association="EPSModel.FK_Parameters_Log_Users" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

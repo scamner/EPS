@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer", "DataLayer\Data
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnableADUser", "EnableADUser\EnableADUser.csproj", "{A856AAD4-FAFF-4ABE-AB68-B42778670469}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailManagerForDisable", "EmailManagerForDisable\EmailManagerForDisable.csproj", "{DACEAEF5-5246-43B8-97B5-836409ED6261}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{A856AAD4-FAFF-4ABE-AB68-B42778670469}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A856AAD4-FAFF-4ABE-AB68-B42778670469}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A856AAD4-FAFF-4ABE-AB68-B42778670469}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DACEAEF5-5246-43B8-97B5-836409ED6261}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DACEAEF5-5246-43B8-97B5-836409ED6261}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DACEAEF5-5246-43B8-97B5-836409ED6261}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DACEAEF5-5246-43B8-97B5-836409ED6261}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,6 +57,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{3AC60103-F187-48BF-B857-E39AD647697B} = {3659EE2F-1950-4216-B848-D4990154AD9C}
 		{A856AAD4-FAFF-4ABE-AB68-B42778670469} = {3659EE2F-1950-4216-B848-D4990154AD9C}
+		{DACEAEF5-5246-43B8-97B5-836409ED6261} = {3659EE2F-1950-4216-B848-D4990154AD9C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C13BB5A-4F02-4A18-BD4E-A277D1C492C3}

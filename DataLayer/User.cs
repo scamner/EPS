@@ -19,10 +19,10 @@ namespace DataLayer
         {
             this.Employees_Log = new HashSet<Employees_Log>();
             this.Logins = new HashSet<Login>();
-            this.Parameters_Log = new HashSet<Parameters_Log>();
             this.RunWorkflows = new HashSet<RunWorkflow>();
             this.User_Log = new HashSet<User_Log>();
             this.Workflow_Log = new HashSet<Workflow_Log>();
+            this.Parameters_Log = new HashSet<Parameters_Log>();
         }
     
         public int UserID { get; set; }
@@ -36,12 +36,12 @@ namespace DataLayer
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Login> Logins { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Parameters_Log> Parameters_Log { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RunWorkflow> RunWorkflows { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<User_Log> User_Log { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Workflow_Log> Workflow_Log { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Parameters_Log> Parameters_Log { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace EPS.Controllers
     public class DashboardController : Controller
     {
         DataLayer.EPSEntities db = new DataLayer.EPSEntities();
-        Utilities util = new Utilities();
+        Models.Utilities util = new Models.Utilities();
 
         public ActionResult Index(String TabToOpen = "")
         {
@@ -1262,13 +1262,15 @@ namespace EPS.Controllers
             return PartialView("_AddParam", new AddParamModel());
         }
 
-        public ActionResult NewParam(String ParamName, String ParamDesc, String ParamValue)
+        public ActionResult NewParam(String ParamName, String ParamDesc, String EncodedParamValue)
         {
+            EncodedParamValue = HttpUtility.UrlDecode(EncodedParamValue);
+
             using (var tran = db.Database.BeginTransaction())
             {
                 try
                 {
-                    Parameter p = new Parameter { ParamName = ParamName, ParamDesc = ParamDesc, ParamValue = ParamValue };
+                    Parameter p = new Parameter { ParamName = ParamName, ParamDesc = ParamDesc, ParamValue = EncodedParamValue };
                     db.Parameters.Add(p);
                     db.SaveChanges();
 
@@ -1281,7 +1283,7 @@ namespace EPS.Controllers
                         ChangeType = "Insert",
                         ParamDesc = ParamDesc,
                         ParamName = ParamName,
-                        ParamValue = ParamValue
+                        ParamValue = EncodedParamValue
                     };
 
                     db.Parameters_Log.Add(log);
@@ -1306,6 +1308,10 @@ namespace EPS.Controllers
         [HttpPost]
         public JsonResult EditParam(int ParamID, String ParamName, String ParamDesc, String ParamValue)
         {
+            ParamName = HttpUtility.UrlDecode(ParamName);
+            ParamDesc = HttpUtility.UrlDecode(ParamDesc);
+            ParamValue = HttpUtility.UrlDecode(ParamValue);
+
             using (var tran = db.Database.BeginTransaction())
             {
                 try
@@ -1403,6 +1409,55 @@ namespace EPS.Controllers
 
                     String error = util.ParseError(ex);
                     util.WriteErrorToLog("Dashboard/NewParam", ex, String.Format("Parameter Name: {0}", logp.ParamName));
+
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+        [HttpPost]
+        public JsonResult RemoveItemFromWF(int WFItemID)
+        {
+            String workflowName = "";
+            String libraryItemName = "";
+
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    WorkflowItem wfi = db.WorkflowItems.Where(w => w.WFItemID == WFItemID).FirstOrDefault();
+                    workflowName = wfi.Workflow.WorkflowName;
+                    libraryItemName = wfi.LibraryItem.ItemName;
+
+                    db.WorkflowItems.Remove(wfi);
+                    db.SaveChanges();
+
+                    User CurrentUser = util.GetLoggedOnUser();
+
+                    Workflow_Log log = new Workflow_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeText = String.Format("'{0}' was removed form the workflow '{1}'.", libraryItemName, workflowName),
+                        ChangeType = "Delete",
+                        ItemID = WFItemID,
+                        ItemName = libraryItemName,
+                        ItemType = "Workflow Item"
+                    };
+
+                    db.Workflow_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/RemoveItemFromWF", ex, String.Format("Library Item Name: {0}, Workflow Name: {1}", libraryItemName, workflowName));
 
                     return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
                 }

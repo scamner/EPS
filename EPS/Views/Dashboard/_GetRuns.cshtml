@@ -100,7 +100,7 @@ else
                     @Html.DisplayFor(modelItem => item.RunDate)
                 </td>
                 <td>
-                    @if (item.RunDate != "")
+                    @if (item.RunDate != "" || (item.RunStatus == "Pending" && item.StartTime < DateTime.Now.AddHours(-1)))
                     {
                         <input type="button" class="RedButton" style="margin-left: 5px;" value="Cancel" onclick="CancelWorkflowRun('@item.RunID');" />
                     }

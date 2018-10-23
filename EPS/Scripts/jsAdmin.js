@@ -124,7 +124,7 @@ function SaveParam(id) {
     $.ajax({
         url: '/Dashboard/EditParam',
         type: 'POST',
-        data: { ParamID: id, ParamName: name, ParamDesc: desc, ParamValue: value },
+        data: { ParamID: id, ParamName: encodeURIComponent(name), ParamDesc: encodeURIComponent(desc), ParamValue: encodeURIComponent(value) },
         datatype: 'json',
         cache: false,
         success: function (data) {

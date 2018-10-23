@@ -149,3 +149,26 @@ function ChangeRunOrder(wfItemID, direction, focusItem) {
         }
     });
 }
+
+function RemoveItemFromWF(wfItemID) {
+    var conf = confirm("Are you sure you want to remove that item from the workflow? Any audit log entries will be removed as well.");
+    if (conf === false) {
+        return;
+    }
+
+    $.ajax({
+        url: '/Dashboard/RemoveItemFromWF',
+        type: 'POST',
+        data: { WFItemID: wfItemID },
+        datatype: 'json',
+        cache: false,
+        success: function (data) {
+            if (data.Error === "") {
+                $('#trWFItem_' + wfItemID).remove();
+            }
+            else {
+                ShowMessage(data.Error, 'show');
+            }
+        }
+    });
+}

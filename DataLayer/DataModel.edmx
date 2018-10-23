@@ -70,7 +70,7 @@
             <PropertyRef Name="ParamID" />
           </Key>
           <Property Name="ParamID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ParamName" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="ParamName" Type="varchar" MaxLength="25" Nullable="false" />
           <Property Name="ParamDesc" Type="varchar" MaxLength="200" Nullable="false" />
           <Property Name="ParamValue" Type="varchar(max)" Nullable="false" />
         </EntityType>
@@ -79,7 +79,7 @@
             <PropertyRef Name="LogID" />
           </Key>
           <Property Name="LogID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ParamName" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="ParamName" Type="varchar" MaxLength="25" Nullable="false" />
           <Property Name="ParamDesc" Type="varchar" MaxLength="200" Nullable="false" />
           <Property Name="ParamValue" Type="varchar(max)" Nullable="false" />
           <Property Name="ChangeType" Type="varchar" MaxLength="20" Nullable="false" />
@@ -364,7 +364,9 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_RunResult_WorkflowItems">
-          <End Role="WorkflowItems" Type="Self.WorkflowItems" Multiplicity="1" />
+          <End Role="WorkflowItems" Type="Self.WorkflowItems" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="RunResult" Type="Self.RunResult" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="WorkflowItems">
@@ -602,8 +604,6 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <EntitySet Name="ErrorLogs" EntityType="EPSModel.ErrorLog" />
           <EntitySet Name="LibraryItems" EntityType="EPSModel.LibraryItem" />
           <EntitySet Name="Logins" EntityType="EPSModel.Login" />
-          <EntitySet Name="Parameters" EntityType="EPSModel.Parameter" />
-          <EntitySet Name="Parameters_Log" EntityType="EPSModel.Parameters_Log" />
           <EntitySet Name="RunItems" EntityType="EPSModel.RunItem" />
           <EntitySet Name="RunPayloads" EntityType="EPSModel.RunPayload" />
           <EntitySet Name="RunResults" EntityType="EPSModel.RunResult" />
@@ -632,10 +632,6 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <AssociationSet Name="FK_Logins_Users" Association="EPSModel.FK_Logins_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="Login" EntitySet="Logins" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Parameters_Log_Users" Association="EPSModel.FK_Parameters_Log_Users">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Parameters_Log" EntitySet="Parameters_Log" />
           </AssociationSet>
           <AssociationSet Name="FK_RunItems_WorkflowItems" Association="EPSModel.FK_RunItems_WorkflowItems">
             <End Role="WorkflowItem" EntitySet="WorkflowItems" />
@@ -678,6 +674,12 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             <End Role="WorkflowItem" EntitySet="WorkflowItems" />
           </AssociationSet>
           <EntitySet Name="vwRunWorkflows" EntityType="EPSModel.vwRunWorkflow" />
+          <EntitySet Name="Parameters" EntityType="EPSModel.Parameter" />
+          <EntitySet Name="Parameters_Log" EntityType="EPSModel.Parameters_Log" />
+          <AssociationSet Name="FK_Parameters_Log_Users" Association="EPSModel.FK_Parameters_Log_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Parameters_Log" EntitySet="Parameters_Log" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Employee">
           <Key>
@@ -742,28 +744,6 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <Property Name="UserID" Type="Int32" Nullable="false" />
           <Property Name="LoginDate" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="User" Relationship="EPSModel.FK_Logins_Users" FromRole="Login" ToRole="User" />
-        </EntityType>
-        <EntityType Name="Parameter">
-          <Key>
-            <PropertyRef Name="ParamID" />
-          </Key>
-          <Property Name="ParamID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParamName" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="ParamDesc" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="ParamValue" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="Parameters_Log">
-          <Key>
-            <PropertyRef Name="LogID" />
-          </Key>
-          <Property Name="LogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParamName" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="ParamDesc" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="ParamValue" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ChangeType" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ChangedBy" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="EPSModel.FK_Parameters_Log_Users" FromRole="Parameters_Log" ToRole="User" />
         </EntityType>
         <EntityType Name="RunItem">
           <Key>
@@ -848,10 +828,10 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Employees_Log" Relationship="EPSModel.FK_Employees_Log_Users" FromRole="User" ToRole="Employees_Log" />
           <NavigationProperty Name="Logins" Relationship="EPSModel.FK_Logins_Users" FromRole="User" ToRole="Login" />
-          <NavigationProperty Name="Parameters_Log" Relationship="EPSModel.FK_Parameters_Log_Users" FromRole="User" ToRole="Parameters_Log" />
           <NavigationProperty Name="RunWorkflows" Relationship="EPSModel.FK_RunWorkflow_Users" FromRole="User" ToRole="RunWorkflow" />
           <NavigationProperty Name="User_Log" Relationship="EPSModel.FK_User_Log_Users" FromRole="User" ToRole="User_Log" />
           <NavigationProperty Name="Workflow_Log" Relationship="EPSModel.FK_Workflow_Log_Users" FromRole="User" ToRole="Workflow_Log" />
+          <NavigationProperty Name="Parameters_Log" Relationship="EPSModel.FK_Parameters_Log_Users" FromRole="User" ToRole="Parameters_Log" />
         </EntityType>
         <EntityType Name="Workflow_Log">
           <Key>
@@ -996,18 +976,6 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             </Principal>
             <Dependent Role="Login">
               <PropertyRef Name="UserID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Parameters_Log_Users">
-          <End Type="EPSModel.User" Role="User" Multiplicity="1" />
-          <End Type="EPSModel.Parameters_Log" Role="Parameters_Log" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="UserID" />
-            </Principal>
-            <Dependent Role="Parameters_Log">
-              <PropertyRef Name="ChangedBy" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1161,6 +1129,40 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="RunDate" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="Parameter">
+          <Key>
+            <PropertyRef Name="ParamID" />
+          </Key>
+          <Property Name="ParamID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParamName" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="ParamDesc" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="ParamValue" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Parameters_Log">
+          <Key>
+            <PropertyRef Name="LogID" />
+          </Key>
+          <Property Name="LogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParamName" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="ParamDesc" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="ParamValue" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ChangeType" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ChangedBy" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="EPSModel.FK_Parameters_Log_Users" FromRole="Parameters_Log" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Parameters_Log_Users">
+          <End Type="EPSModel.User" Role="User" Multiplicity="1" />
+          <End Type="EPSModel.Parameters_Log" Role="Parameters_Log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="Parameters_Log">
+              <PropertyRef Name="ChangedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1229,29 +1231,6 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
                 <ScalarProperty Name="LoginDate" ColumnName="LoginDate" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
                 <ScalarProperty Name="LoginID" ColumnName="LoginID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Parameters">
-            <EntityTypeMapping TypeName="EPSModel.Parameter">
-              <MappingFragment StoreEntitySet="Parameters">
-                <ScalarProperty Name="ParamValue" ColumnName="ParamValue" />
-                <ScalarProperty Name="ParamDesc" ColumnName="ParamDesc" />
-                <ScalarProperty Name="ParamName" ColumnName="ParamName" />
-                <ScalarProperty Name="ParamID" ColumnName="ParamID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Parameters_Log">
-            <EntityTypeMapping TypeName="EPSModel.Parameters_Log">
-              <MappingFragment StoreEntitySet="Parameters_Log">
-                <ScalarProperty Name="ChangedBy" ColumnName="ChangedBy" />
-                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
-                <ScalarProperty Name="ChangeType" ColumnName="ChangeType" />
-                <ScalarProperty Name="ParamValue" ColumnName="ParamValue" />
-                <ScalarProperty Name="ParamDesc" ColumnName="ParamDesc" />
-                <ScalarProperty Name="ParamName" ColumnName="ParamName" />
-                <ScalarProperty Name="LogID" ColumnName="LogID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1420,6 +1399,29 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
                 <ScalarProperty Name="WorkflowID" ColumnName="WorkflowID" />
                 <ScalarProperty Name="EmpID" ColumnName="EmpID" />
                 <ScalarProperty Name="RunID" ColumnName="RunID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Parameters">
+            <EntityTypeMapping TypeName="EPSModel.Parameter">
+              <MappingFragment StoreEntitySet="Parameters">
+                <ScalarProperty Name="ParamValue" ColumnName="ParamValue" />
+                <ScalarProperty Name="ParamDesc" ColumnName="ParamDesc" />
+                <ScalarProperty Name="ParamName" ColumnName="ParamName" />
+                <ScalarProperty Name="ParamID" ColumnName="ParamID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Parameters_Log">
+            <EntityTypeMapping TypeName="EPSModel.Parameters_Log">
+              <MappingFragment StoreEntitySet="Parameters_Log">
+                <ScalarProperty Name="ChangedBy" ColumnName="ChangedBy" />
+                <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
+                <ScalarProperty Name="ChangeType" ColumnName="ChangeType" />
+                <ScalarProperty Name="ParamValue" ColumnName="ParamValue" />
+                <ScalarProperty Name="ParamDesc" ColumnName="ParamDesc" />
+                <ScalarProperty Name="ParamName" ColumnName="ParamName" />
+                <ScalarProperty Name="LogID" ColumnName="LogID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

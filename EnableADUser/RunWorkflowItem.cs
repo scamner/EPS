@@ -13,6 +13,7 @@ namespace ItemToRun
         {
             List<RunPayloadModel> pl = new List<RunPayloadModel>();
             DataLayer.EPSEntities db = new DataLayer.EPSEntities();
+            Utilities util = new Utilities();
 
             String jsonPL = String.IsNullOrEmpty(RunPayload) ? "" : Newtonsoft.Json.JsonConvert.SerializeObject(pl);
 
@@ -25,11 +26,11 @@ namespace ItemToRun
                 }
 
                 Employee emp = db.Employees.Where(e => e.EmpID == EmpID).FirstOrDefault();
-                Parameter domain = db.Parameters.Where(p => p.ParamName == "ADDomain").FirstOrDefault();
-                Parameter adminName = db.Parameters.Where(p => p.ParamName == "ADUsername").FirstOrDefault();
-                Parameter password = db.Parameters.Where(p => p.ParamName == "ADPassword").FirstOrDefault();
+                String domain = util.GetParam("ADDomain", "Active Directory domain");
+                String adminName = util.GetParam("ADUsername", "Active Directory admin user");
+                String password = util.GetParam("ADPassword", "Active Directory admin user password");
 
-                PrincipalContext context = new PrincipalContext(ContextType.Domain, domain.ParamValue, adminName.ParamValue, password.ParamValue);
+                PrincipalContext context = new PrincipalContext(ContextType.Domain, domain, adminName, password);
                 UserPrincipal user = UserPrincipal.FindByIdentity
                         (context, emp.Username);
 

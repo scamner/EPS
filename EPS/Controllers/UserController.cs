@@ -14,7 +14,7 @@ namespace EPS.Controllers
     public class UserController : Controller
     {
         DataLayer.EPSEntities db = new DataLayer.EPSEntities();
-        Utilities util = new Utilities();
+        Models.Utilities util = new Models.Utilities();
 
         public ActionResult Index()
         {
