@@ -1,4 +1,9 @@
 ﻿function LoadSyncAD() {
+    $('#FirstName').val('');
+    $('#LastName').val('');
+
+    $('#divSearchADUsersResult').html('');
+
     PopModal($('#divSyncADModal'), 'show', 'auto', true, false, 'FirstName');
 }
 

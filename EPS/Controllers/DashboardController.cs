@@ -129,14 +129,14 @@ namespace EPS.Controllers
                         Where(r => (r.RunStatus == "Pending" || r.StartTime >= checkTime)
                         && (r.RunDate == "" || r.RunDate == today)
                         && r.RunStatus != "Cancelled")
-                        .OrderBy(e => e.StartTime).ToList();
+                        .OrderByDescending(e => e.StartTime).ToList();
                 }
                 else
                 {
                     runs = db.vwRunWorkflows.
                         Where(r => (r.RunStatus == "Pending" || r.StartTime >= checkTime)
                         && r.RunStatus != "Cancelled")
-                        .OrderBy(e => e.StartTime).ToList();
+                        .OrderByDescending(e => e.StartTime).ToList();
                 }
 
                 List<int> RunIDs = runs.Select(r => r.RunID).Distinct().ToList();
@@ -578,7 +578,16 @@ namespace EPS.Controllers
 
                     if (String.IsNullOrEmpty(RunDate) || Convert.ToDateTime(RunDate).Date == DateTime.Now.Date)
                     {
-                        Task.Run(() => exec.RunWorkflow(run.RunID));
+                        var syncTask = new Task<RunWorkflows.WorkflowResult>(() => {
+                            RunWorkflows.WorkflowResult res = exec.RunWorkflow(run.RunID);
+                            return res;
+                        });
+                        syncTask.RunSynchronously();
+
+                        if(syncTask.Result.Success == false)
+                        {
+                            throw syncTask.Result.FullError;
+                        }
                     }
 
                     return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);

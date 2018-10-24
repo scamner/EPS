@@ -7,4 +7,3 @@ Add References to:
 	EntityFramework	- C:\Users\scamner\source\repos\EPS\DisableUser\bin\Debug\EntityFramework.dll
 	System.Data.Linq
 Insert snippet
-Add "ItemRunResult" class and load from snippet

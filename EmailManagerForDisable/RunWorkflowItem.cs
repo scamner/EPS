@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Linq;
 using System.Linq;
+using System.Reflection;
 
 namespace ItemToRun
 {
@@ -41,14 +42,21 @@ namespace ItemToRun
                 String emailServer = util.GetParam("EmailServer", "smtp (email) server name");
                 String from = util.GetParam("EmailFrom", "email address to send from");
                 String to = manager.Email;
-                String body = util.GetParam("DisabledNotify", "message to managers to notify them of a disabled employee");
+                String body = util.GetParam("DisabledNotifyBody", "message to managers to notify them of a disabled employee");
+                String subject = util.GetParam("DisabledNotifySubject", "subject line for the email to send managers to notify them of a disabled employee");
 
                 body = body.Replace("[FirstName]", emp.FirstName);
                 body = body.Replace("[LastName]", emp.LastName);
 
-                util.SendEmail(from, to, null, null, "Disabled or Terminated Employee", body);
+                foreach (PropertyInfo prop in typeof(Employee).GetProperties())
+                {
+                    body = body.Replace(String.Format("[{0}]", prop.Name), prop.GetValue(emp).ToString());
+                    subject = subject.Replace(String.Format("[{0}]", prop.Name), prop.GetValue(emp).ToString());
+                }
 
-                return new ItemRunResult { ResultID = 2, ResultText = String.Format(""), TimeDone = DateTime.Now, RunPayload = jsonPL };
+                util.SendEmail(from, to, null, null, subject, body);
+
+                return new ItemRunResult { ResultID = 2, ResultText = String.Format("The email was sent to {0} {1}.", manager.FirstName, manager.LastName), TimeDone = DateTime.Now, RunPayload = jsonPL };
             }
             catch (Exception ex)
             {
