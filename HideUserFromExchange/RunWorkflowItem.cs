@@ -17,9 +17,10 @@ namespace ItemToRun
 
             Employee emp = db.Employees.Where(e => e.EmpID == EmpID).FirstOrDefault();
             String domain = util.GetParam("ADDomain", "Active Directory Domain name");
-            String emailServer = util.GetParam("ExchangePS_URL", "email server powershell URL");
 
             String jsonPL = String.IsNullOrEmpty(RunPayload) ? "" : Newtonsoft.Json.JsonConvert.SerializeObject(pl);
+
+            String finalScript = "";
 
             try
             {
@@ -31,19 +32,9 @@ namespace ItemToRun
 
                 StringBuilder sbScript = new StringBuilder();
 
-                //Must run Add-WindowsFeature RSAT-AD-PowerShell to make sure AD Powershell is active
-
-                sbScript.Append("$username = \"Shawntest\\Administrator\"" + Environment.NewLine);
-                sbScript.Append("$password = \"Nin^2020\"" + Environment.NewLine);
-                sbScript.Append("$secstr = New-Object -TypeName System.Security.SecureString" + Environment.NewLine);
-                sbScript.Append("$password.ToCharArray() | ForEach-Object {$secstr.AppendChar($_)}" + Environment.NewLine);
-                sbScript.Append("$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username, $secstr" + Environment.NewLine);
-
-                sbScript.Append("$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://testserver.shawntest.local/powershell/ -Credential $cred -Authentication Basic -AllowRedirection" + Environment.NewLine);
-               
                 sbScript.Append("Set-ADUser silcamner -Add @{msExchHideFromAddressLists=\"TRUE\"}");
 
-                String finalScript = sbScript.ToString();
+                finalScript = sbScript.ToString();
 
                 String result = util.RunPSScript(finalScript);
 
@@ -51,7 +42,7 @@ namespace ItemToRun
             }
             catch (Exception ex)
             {
-                return new ItemRunResult { ResultID = 4, ResultText = String.Format("Error: {0}", ex.Message), TimeDone = DateTime.Now, RunPayload = jsonPL };
+                return new ItemRunResult { ResultID = 4, ResultText = String.Format("Error: {0}... Script Run: {1}", ex.Message, finalScript), TimeDone = DateTime.Now, RunPayload = jsonPL };
             }
         }
     }

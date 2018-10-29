@@ -62,7 +62,7 @@ namespace DataLayer
         {
             String AD_Admin = GetParam("ADUsername", "Active Directory Administrator username");
             String AD_Password = GetParam("ADPassword", "Active Directory Administrator password");
-            String ExchangePS_URL = GetParam("ExchangePS_URL", "Exchange Server Powershell URL");
+            String ExchangeServer = GetParam("ExchangeServer", "Exchange Server Powershell URL");
 
             var secure = new SecureString();
 
@@ -73,21 +73,29 @@ namespace DataLayer
 
             PSCredential credential = new PSCredential(AD_Admin, secure);
 
-            WSManConnectionInfo connectionInfo = new WSManConnectionInfo(new Uri(ExchangePS_URL), "http://schemas.microsoft.com/powershell/Microsoft.Exchange", credential);
-            connectionInfo.AuthenticationMechanism = AuthenticationMechanism.Basic;
-            connectionInfo.SkipCACheck = true;
-            connectionInfo.SkipCNCheck = true;
+            int iRemotePort = 5985;
+            string strShellURI = @"http://schemas.microsoft.com/powershell/Microsoft.PowerShell";
+            string strAppName = @"/wsman";
 
-            Runspace runspace = System.Management.Automation.Runspaces.RunspaceFactory.CreateRunspace(connectionInfo);
-            PowerShell powershell = PowerShell.Create();
-            PSCommand command = new PSCommand();
-            command.AddCommand("Out-String");
-            powershell.Commands = command;
-            powershell.Commands.AddScript(scriptText);
+            AuthenticationMechanism auth = AuthenticationMechanism.Negotiate;
 
+            WSManConnectionInfo ci = new WSManConnectionInfo(
+                false,
+                ExchangeServer,
+                iRemotePort,
+                strAppName,
+                strShellURI,
+                credential);
+
+            ci.AuthenticationMechanism = auth;
+
+            Runspace runspace = RunspaceFactory.CreateRunspace(ci);
             runspace.Open();
-            powershell.Runspace = runspace;
-            Collection<PSObject> results = powershell.Invoke();
+
+            PowerShell psh = PowerShell.Create();
+            psh.Commands.AddScript(scriptText);
+            psh.Runspace = runspace;
+            Collection<PSObject> results = psh.Invoke();
 
             StringBuilder stringBuilder = new StringBuilder();
             foreach (PSObject obj in results)
