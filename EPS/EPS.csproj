@@ -173,6 +173,7 @@
     <Content Include="Images\Loading.gif" />
     <Content Include="Images\upArrow.png" />
     <Content Include="Scripts\globalFunctions.js" />
+    <None Include="Properties\PublishProfiles\DEV.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />

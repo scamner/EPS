@@ -4,48 +4,56 @@
     @{ Html.RenderPartial("_AddLibraryItem", new EPS.Models.NewLibraryItemModel());}
 </p>
 
-<table class="webgrid-table">
-    <tr>
-        <th>
-            <label>Item Name</label>
-        </th>
-        <th>
-            <label>Description</label>
-        </th>
-        <th>
-            <label>Disabled?</label>
-        </th>
-        <th>
-            <label>HTML Optional Questions</label>
-        </th>
-        <th nowrap></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            <label class="NoEdit_@item.ItemID">@item.ItemName</label>
-            <input type="text" class="Edit_@item.ItemID" style="display: none;" id="txtItemName_@item.ItemID" value="@item.ItemName" />
-        </td>
-        <td>
-            <label class="NoEdit_@item.ItemID">@item.ItemDesc</label>
-            <input type="text" class="Edit_@item.ItemID" style="display: none; width: 250px;" id="txtItemDesc_@item.ItemID" value="@item.ItemDesc" />
-        </td>
-        <td style="text-align: center;">
-            @Html.CheckBoxFor(modelItem => item.Disabled, new { @onclick = "return false;", @class = "NoEdit_" + item.ItemID })
-            @{ String isChecked = item.Disabled == true ? "checked=checked" : ""; }
-            <input type="checkbox" class="Edit_@item.ItemID" style="display: none;" id="chkDisabled_@item.ItemID" @isChecked />
-        </td>
-        <td>
-            <label class="NoEdit_@item.ItemID">@item.HtmlOptions</label>
-            <textarea class="Edit_@item.ItemID" style="display: none; width: 250px; height: 75px;" id="txtHtmlOptions_@item.ItemID">@item.HtmlOptions</textarea>
-        </td>
-        <td nowrap>
-            <input type="button" class="NoEdit_@item.ItemID" onclick="SetManageWFItemEdit(true, '@item.ItemID');" value="Edit" />
-            <input type="button" class="Edit_@item.ItemID" style="display: none;" onclick="SaveWFItem(@item.ItemID);" value="Save" />
-            <input type="button" class="Edit_@item.ItemID RedButton" style="display: none;" onclick="SetManageWFItemEdit(false, @item.ItemID);" value="Cancel" />
-        </td>
-    </tr>
+@if (Model.Count() == 0)
+{
+    <p style="color: red; text-align: center;">No Workflow Items have been added</p>
 }
+else
+{
+    <table class="webgrid-table">
+        <tr>
+            <th>
+                <label>Item Name</label>
+            </th>
+            <th>
+                <label>Description</label>
+            </th>
+            <th>
+                <label>Disabled?</label>
+            </th>
+            <th>
+                <label>HTML Optional Questions</label>
+            </th>
+            <th nowrap></th>
+        </tr>
 
-</table>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <label class="NoEdit_@item.ItemID">@item.ItemName</label>
+                    <input type="text" class="Edit_@item.ItemID" style="display: none;" id="txtItemName_@item.ItemID" value="@item.ItemName" />
+                </td>
+                <td>
+                    <label class="NoEdit_@item.ItemID">@item.ItemDesc</label>
+                    <input type="text" class="Edit_@item.ItemID" style="display: none; width: 250px;" id="txtItemDesc_@item.ItemID" value="@item.ItemDesc" />
+                </td>
+                <td style="text-align: center;">
+                    @Html.CheckBoxFor(modelItem => item.Disabled, new { @onclick = "return false;", @class = "NoEdit_" + item.ItemID })
+                    @{ String isChecked = item.Disabled == true ? "checked=checked" : ""; }
+                    <input type="checkbox" class="Edit_@item.ItemID" style="display: none;" id="chkDisabled_@item.ItemID" @isChecked />
+                </td>
+                <td>
+                    <label class="NoEdit_@item.ItemID">@item.HtmlOptions</label>
+                    <textarea class="Edit_@item.ItemID" style="display: none; width: 250px; height: 75px;" id="txtHtmlOptions_@item.ItemID">@item.HtmlOptions</textarea>
+                </td>
+                <td nowrap>
+                    <input type="button" class="NoEdit_@item.ItemID" onclick="SetManageWFItemEdit(true, '@item.ItemID');" value="Edit" />
+                    <input type="button" class="Edit_@item.ItemID" style="display: none;" onclick="SaveWFItem(@item.ItemID);" value="Save" />
+                    <input type="button" class="Edit_@item.ItemID RedButton" style="display: none;" onclick="SetManageWFItemEdit(false, @item.ItemID);" value="Cancel" />
+                </td>
+            </tr>
+                        }
+
+    </table>
+                        }

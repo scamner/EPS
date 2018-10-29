@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using System.Security;
 
 namespace DataLayer
 {
@@ -59,17 +60,34 @@ namespace DataLayer
 
         public String RunPSScript(string scriptText)
         {
-            Runspace runspace = RunspaceFactory.CreateRunspace();
+            String AD_Admin = GetParam("ADUsername", "Active Directory Administrator username");
+            String AD_Password = GetParam("ADPassword", "Active Directory Administrator password");
+            String ExchangePS_URL = GetParam("ExchangePS_URL", "Exchange Server Powershell URL");
+
+            var secure = new SecureString();
+
+            foreach (char c in AD_Password.ToCharArray())
+            {
+                secure.AppendChar(c);
+            }
+
+            PSCredential credential = new PSCredential(AD_Admin, secure);
+
+            WSManConnectionInfo connectionInfo = new WSManConnectionInfo(new Uri(ExchangePS_URL), "http://schemas.microsoft.com/powershell/Microsoft.Exchange", credential);
+            connectionInfo.AuthenticationMechanism = AuthenticationMechanism.Basic;
+            connectionInfo.SkipCACheck = true;
+            connectionInfo.SkipCNCheck = true;
+
+            Runspace runspace = System.Management.Automation.Runspaces.RunspaceFactory.CreateRunspace(connectionInfo);
+            PowerShell powershell = PowerShell.Create();
+            PSCommand command = new PSCommand();
+            command.AddCommand("Out-String");
+            powershell.Commands = command;
+            powershell.Commands.AddScript(scriptText);
+
             runspace.Open();
-
-            Pipeline pipeline = runspace.CreatePipeline();
-            pipeline.Commands.AddScript(scriptText);
-
-            pipeline.Commands.Add("Out-String");
-
-            Collection<PSObject> results = pipeline.Invoke();
-
-            runspace.Close();
+            powershell.Runspace = runspace;
+            Collection<PSObject> results = powershell.Invoke();
 
             StringBuilder stringBuilder = new StringBuilder();
             foreach (PSObject obj in results)

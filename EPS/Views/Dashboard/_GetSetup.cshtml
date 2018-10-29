@@ -61,47 +61,53 @@
             </tr>
             <tr>
                 <td colspan="4" style="text-align: left; padding: 10px;">
-                    <table class="webgrid-table-sub-header" style="width: 95%;">
-                        <tr>
-                            <th nowrap>Item Name</th>
-                            <th nowrap>Item Description</th>
-                            <th nowrap>Disabled?</th>
-                            <th nowrap>Run Order</th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-
-                        @{ int itemCount = wf.WorkflowItems.Count(); }
-
-                        @foreach (DataLayer.WorkflowItem i in wf.WorkflowItems.OrderBy(i => i.RunOrder))
-                        {
-                            <tr id="trWFItem_@i.WFItemID">
-                                <td style="vertical-align: middle; text-align: left;" nowrap>@i.LibraryItem.ItemName</td>
-                                <td style="width: 100%; vertical-align: middle; text-align: left;">@i.LibraryItem.ItemDesc</td>
-                                <td style="text-align: center; vertical-align: middle;" nowrap>@Html.CheckBox("WorkflowItemDisabled", i.Disabled, new { @onchange = "SetWorkflowItemDisabled('" + i.WFItemID + "', $(this).is(':checked'));" })</td>
-                                <td style="text-align: center; vertical-align: middle;" nowrap>@i.RunOrder</td>
-                                <td style="text-align: center; vertical-align: middle;">
-                                    @if (i.RunOrder == 1)
-                                    {
-                                        <input type="image" src="~/Images/downArrow.png" onclick="ChangeRunOrder(@i.WFItemID, 'down', $(this));" />
-                                    }
-                                    else if (i.RunOrder == itemCount)
-                                    {
-                                        <input type="image" src="~/Images/upArrow.png" onclick="ChangeRunOrder(@i.WFItemID, 'up', $(this));" />
-                                    }
-                                    else
-                                    {
-                                        <input type="image" src="~/Images/upArrow.png" onclick="ChangeRunOrder(@i.WFItemID, 'up', $(this));" />
-                                        <br />
-                                        <input type="image" src="~/Images/downArrow.png" onclick="ChangeRunOrder(@i.WFItemID, 'down', $(this));" />
-                                    }
-                                </td>
-                                <td>
-                                    <input type="image" src="~/Images/Delete.png" onclick="RemoveItemFromWF('@i.WFItemID');"/>
-                                </td>
+                    @{ int itemCount = wf.WorkflowItems.Count(); }
+                    @if (itemCount == 0)
+                    {
+                        <p style="color: red; text-align: center;">No Workflow Items have been added</p>
+                    }
+                    else
+                    {
+                        <table class="webgrid-table-sub-header" style="width: 95%;">
+                            <tr>
+                                <th nowrap>Item Name</th>
+                                <th nowrap>Item Description</th>
+                                <th nowrap>Disabled?</th>
+                                <th nowrap>Run Order</th>
+                                <th></th>
+                                <th></th>
                             </tr>
-                        }
-                    </table>
+
+                            @foreach (DataLayer.WorkflowItem i in wf.WorkflowItems.OrderBy(i => i.RunOrder))
+                            {
+                                <tr id="trWFItem_@i.WFItemID">
+                                    <td style="vertical-align: middle; text-align: left;" nowrap>@i.LibraryItem.ItemName</td>
+                                    <td style="width: 100%; vertical-align: middle; text-align: left;">@i.LibraryItem.ItemDesc</td>
+                                    <td style="text-align: center; vertical-align: middle;" nowrap>@Html.CheckBox("WorkflowItemDisabled", i.Disabled, new { @onchange = "SetWorkflowItemDisabled('" + i.WFItemID + "', $(this).is(':checked'));" })</td>
+                                    <td style="text-align: center; vertical-align: middle;" nowrap>@i.RunOrder</td>
+                                    <td style="text-align: center; vertical-align: middle;">
+                                        @if (i.RunOrder == 1)
+                                        {
+                                            <input type="image" src="~/Images/downArrow.png" onclick="ChangeRunOrder(@i.WFItemID, 'down', $(this));" />
+                                        }
+                                        else if (i.RunOrder == itemCount)
+                                        {
+                                            <input type="image" src="~/Images/upArrow.png" onclick="ChangeRunOrder(@i.WFItemID, 'up', $(this));" />
+                                        }
+                                        else
+                                        {
+                                            <input type="image" src="~/Images/upArrow.png" onclick="ChangeRunOrder(@i.WFItemID, 'up', $(this));" />
+                                            <br />
+                                            <input type="image" src="~/Images/downArrow.png" onclick="ChangeRunOrder(@i.WFItemID, 'down', $(this));" />
+                                        }
+                                    </td>
+                                    <td>
+                                        <input type="image" src="~/Images/Delete.png" onclick="RemoveItemFromWF('@i.WFItemID');" />
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    }
                 </td>
             </tr>
 

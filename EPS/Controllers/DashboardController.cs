@@ -965,7 +965,7 @@ namespace EPS.Controllers
 
                     StringBuilder sbItemLog = new StringBuilder();
 
-                    if (LibraryItem.Count() > 0)
+                    if (LibraryItem != null && LibraryItem.Count() > 0)
                     {
                         int count = 1;
 
@@ -1026,15 +1026,16 @@ namespace EPS.Controllers
         [HttpPost]
         public JsonResult AddWorflowItemToWF(int WorkflowID, int ItemID)
         {
-            User CurrentUser = util.GetLoggedOnUser();
-            LibraryItem li = db.LibraryItems.Where(l => l.ItemID == ItemID).FirstOrDefault();
-            Workflow wf = db.Workflows.Where(w => w.WorkflowID == WorkflowID).FirstOrDefault();
-            int newOrderNum = db.WorkflowItems.Where(w => w.WorkflowID == WorkflowID).OrderByDescending(w => w.RunOrder).FirstOrDefault().RunOrder + 1;
-
             using (var tran = db.Database.BeginTransaction())
             {
                 try
                 {
+                    User CurrentUser = util.GetLoggedOnUser();
+                    LibraryItem li = db.LibraryItems.Where(l => l.ItemID == ItemID).FirstOrDefault();
+                    Workflow wf = db.Workflows.Where(w => w.WorkflowID == WorkflowID).FirstOrDefault();
+                    int newOrderNum = db.WorkflowItems.Where(w => w.WorkflowID == WorkflowID).Any() == false ? 1 :
+                        db.WorkflowItems.Where(w => w.WorkflowID == WorkflowID).OrderByDescending(w => w.RunOrder).FirstOrDefault().RunOrder + 1;
+
                     WorkflowItem wfi = new WorkflowItem
                     {
                         Disabled = false,
@@ -1327,7 +1328,9 @@ namespace EPS.Controllers
                 {
                     Parameter p = db.Parameters.Where(pa => pa.ParamID == ParamID).FirstOrDefault();
 
-                    Parameter logp = p;
+                    String beforeParamDesc = p.ParamDesc;
+                    String beforeParamName = p.ParamName;
+                    String beforeParamValue = p.ParamValue;
 
                     p.ParamDesc = ParamDesc;
                     p.ParamName = ParamName;
@@ -1341,9 +1344,9 @@ namespace EPS.Controllers
                         ChangeDate = DateTime.Now,
                         ChangedBy = CurrentUser.UserID,
                         ChangeType = "Before Update",
-                        ParamDesc = logp.ParamDesc,
-                        ParamName = logp.ParamName,
-                        ParamValue = logp.ParamValue,
+                        ParamDesc = beforeParamDesc,
+                        ParamName = beforeParamName,
+                        ParamValue = beforeParamValue,
                     };
 
                     db.Parameters_Log.Add(logB);
