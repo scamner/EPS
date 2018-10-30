@@ -16,6 +16,15 @@ function OpenNewWorkflowModal() {
     });        
 }
 
+function OpenChangeLibraryItemFileModal(itemID) {
+    $('#divReplaceLibraryItemFileContent').load('Dashboard/ChangeLibraryItemFile?ItemID=' + itemID, function (response) {
+        if (response.indexOf("<script type='text/javascript'>ShowMessage") !== 0) {
+            $.validator.unobtrusive.parse($('#divReplaceLibraryItemFileModal'));
+            PopModal($('#divReplaceLibraryItemFileModal'), 'show', 'auto');
+        }
+    });
+}
+
 function WorkflowAdded() {
     PopModal($('#divNewWorkflowModal'), 'hide', 'auto');
 

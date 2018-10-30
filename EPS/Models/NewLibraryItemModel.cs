@@ -18,4 +18,10 @@ namespace EPS.Models
         [Required(ErrorMessage = "A library file (dll) is required.")]
         public HttpPostedFileBase LibraryPathFile { get; set; }
     }
+
+    public class UpdateLibraryItemModel : LibraryItem
+    {
+        [Required(ErrorMessage = "A library file (dll) is required.")]
+        public HttpPostedFileBase LibraryPathFile { get; set; }
+    }
 }

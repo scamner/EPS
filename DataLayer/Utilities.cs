@@ -93,6 +93,7 @@ namespace DataLayer
             runspace.Open();
 
             PowerShell psh = PowerShell.Create();
+            psh.AddCommand("Out-String");
             psh.Commands.AddScript(scriptText);
             psh.Runspace = runspace;
             Collection<PSObject> results = psh.Invoke();

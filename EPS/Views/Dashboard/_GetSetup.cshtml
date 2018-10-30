@@ -73,7 +73,6 @@
                                 <th nowrap>Item Name</th>
                                 <th nowrap>Item Description</th>
                                 <th nowrap>Disabled?</th>
-                                <th nowrap>Run Order</th>
                                 <th></th>
                                 <th></th>
                             </tr>
@@ -84,7 +83,6 @@
                                     <td style="vertical-align: middle; text-align: left;" nowrap>@i.LibraryItem.ItemName</td>
                                     <td style="width: 100%; vertical-align: middle; text-align: left;">@i.LibraryItem.ItemDesc</td>
                                     <td style="text-align: center; vertical-align: middle;" nowrap>@Html.CheckBox("WorkflowItemDisabled", i.Disabled, new { @onchange = "SetWorkflowItemDisabled('" + i.WFItemID + "', $(this).is(':checked'));" })</td>
-                                    <td style="text-align: center; vertical-align: middle;" nowrap>@i.RunOrder</td>
                                     <td style="text-align: center; vertical-align: middle;">
                                         @if (i.RunOrder == 1)
                                         {
@@ -131,3 +129,4 @@
         <div id="divNewWorkflowContent"></div>
     </div>
 </div>
+

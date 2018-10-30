@@ -827,6 +827,56 @@ namespace EPS.Controllers
             }
         }
 
+        public ActionResult ChangeLibraryItemFile(int ItemID)
+        {
+            return PartialView("_ChangeLibraryItemFile", new UpdateLibraryItemModel { ItemID = ItemID });
+        }
+
+        public ActionResult ReplaceLibraryItemFile(UpdateLibraryItemModel model)
+        {
+            try
+            {
+                FileInfo fi = new FileInfo(model.LibraryPathFile.FileName);
+
+                if (fi.Extension != ".dll")
+                {
+                    throw new Exception("You must upload a .dll file.");
+                }
+
+                Byte[] file;
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    model.LibraryPathFile.InputStream.CopyTo(memoryStream);
+
+                    file = memoryStream.ToArray();
+                    memoryStream.Close();
+                    memoryStream.Dispose();
+                }
+
+                string binPath = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "bin");
+                string fullPath = String.Format("{0}\\{1}", binPath, fi.Name);
+
+                if (System.IO.File.Exists(fullPath))
+                {
+                    System.IO.File.Delete(fullPath);
+                }
+
+                System.IO.File.WriteAllBytes(fullPath, file);
+
+                String fullURLRoot = string.Format("{0}://{1}{2}", System.Web.HttpContext.Current.Request.Url.Scheme, System.Web.HttpContext.Current.Request.Url.Authority, VirtualPathUtility.ToAbsolute("~"));
+
+                return Redirect(String.Format("{0}Dashboard?TabToOpen=GetSetup", fullURLRoot));
+            }
+            catch (Exception ex)
+            {
+                String error = util.ParseError(ex);
+                util.WriteErrorToLog("Dashboard/ReplaceLibraryItemFile", ex, "");
+
+                return Content(String.Format("<script type='text/javascript'>alert('{0}');</script>", error));
+            }
+        }
+
         [HttpPost]
         public JsonResult SaveWorkflow(int WorkflowID, String WorkflowName, String WorkflowDesc, Boolean Disabled)
         {
@@ -1440,9 +1490,18 @@ namespace EPS.Controllers
                     WorkflowItem wfi = db.WorkflowItems.Where(w => w.WFItemID == WFItemID).FirstOrDefault();
                     workflowName = wfi.Workflow.WorkflowName;
                     libraryItemName = wfi.LibraryItem.ItemName;
+                    int pos = wfi.RunOrder;
+                    int workflowID = wfi.WorkflowID;
 
                     db.WorkflowItems.Remove(wfi);
                     db.SaveChanges();
+
+                    List<WorkflowItem> higherWFIs = db.WorkflowItems.Where(w => w.RunOrder > pos && w.WorkflowID == workflowID).ToList();
+                    foreach(WorkflowItem wr in higherWFIs)
+                    {
+                        wr.RunOrder = wr.RunOrder - 1;
+                        db.SaveChanges();
+                    }
 
                     User CurrentUser = util.GetLoggedOnUser();
 

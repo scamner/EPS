@@ -25,6 +25,7 @@ else
                 <label>HTML Optional Questions</label>
             </th>
             <th nowrap></th>
+            <th></th>
         </tr>
 
         @foreach (var item in Model)
@@ -52,8 +53,18 @@ else
                     <input type="button" class="Edit_@item.ItemID" style="display: none;" onclick="SaveWFItem(@item.ItemID);" value="Save" />
                     <input type="button" class="Edit_@item.ItemID RedButton" style="display: none;" onclick="SetManageWFItemEdit(false, @item.ItemID);" value="Cancel" />
                 </td>
+                <td nowrap>
+                    <input type="button" value="Upload new file" onclick="OpenChangeLibraryItemFileModal('@item.ItemID');"/>
+                </td>
             </tr>
                         }
 
     </table>
                         }
+
+    <div id="divReplaceLibraryItemFileModal" style="display: none; padding: 10px;">
+        <input type="image" src="~/Images/Close.png" class="CloseModal" alt="Close" align="right" onclick="PopModal($('#divReplaceLibraryItemFileModal'), 'hide', '0');" />
+        <div style="border: medium ridge #C0C0C0; margin: 10px; background-color: #FFFFFF; border-radius: 5px; text-align: center; padding: 10px;">
+            <div id="divReplaceLibraryItemFileContent"></div>
+        </div>
+    </div>

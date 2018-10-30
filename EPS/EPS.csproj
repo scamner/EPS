@@ -243,6 +243,7 @@
     <Content Include="Views\Dashboard\_GetUsersLog.cshtml" />
     <Content Include="Views\Dashboard\_GetWorkflowLog.cshtml" />
     <Content Include="Views\Dashboard\_GetWorkflowRunLog.cshtml" />
+    <Content Include="Views\Dashboard\_ChangeLibraryItemFile.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

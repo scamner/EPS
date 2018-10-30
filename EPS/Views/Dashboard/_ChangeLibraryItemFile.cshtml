@@ -1,0 +1,22 @@
+﻿@model EPS.Models.UpdateLibraryItemModel
+
+@using (Html.BeginForm("ReplaceLibraryItemFile", "Dashboard", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <table>
+        <tr>
+            <td style="text-align: left;">Select the library file:</td>
+        </tr>
+        <tr>            
+            <td colspan="3" style="text-align: left;">
+                @Html.TextBoxFor(model => model.LibraryPathFile, new { @style = "width: 500px;", @type = "file", @accept = ".dll" })
+                <br />@Html.ValidationMessageFor(model => model.LibraryPathFile)
+                @Html.HiddenFor(model => model.ItemID)
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">
+                <input type="submit" value="Replace Workflow Item File" />
+            </td>
+        </tr>
+    </table>
+}

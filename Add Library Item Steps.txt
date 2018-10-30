@@ -1,4 +1,3 @@
-Add Class Library
 Rename "Class1" to "RunWorkflowItem"
 Change Default Namespace to "ItemToRun"
 Nuget: Newtonsoft.Json
