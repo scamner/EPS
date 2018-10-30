@@ -30,11 +30,11 @@ else
         @foreach (var item in Model)
         {
             <tr>
-                <td>
+                <td style="text-align: left;">
                     <label class="NoEdit_@item.ItemID">@item.ItemName</label>
                     <input type="text" class="Edit_@item.ItemID" style="display: none;" id="txtItemName_@item.ItemID" value="@item.ItemName" />
                 </td>
-                <td>
+                <td style="text-align: left;">
                     <label class="NoEdit_@item.ItemID">@item.ItemDesc</label>
                     <input type="text" class="Edit_@item.ItemID" style="display: none; width: 250px;" id="txtItemDesc_@item.ItemID" value="@item.ItemDesc" />
                 </td>
@@ -43,7 +43,7 @@ else
                     @{ String isChecked = item.Disabled == true ? "checked=checked" : ""; }
                     <input type="checkbox" class="Edit_@item.ItemID" style="display: none;" id="chkDisabled_@item.ItemID" @isChecked />
                 </td>
-                <td>
+                <td style="text-align: left;">
                     <label class="NoEdit_@item.ItemID">@item.HtmlOptions</label>
                     <textarea class="Edit_@item.ItemID" style="display: none; width: 250px; height: 75px;" id="txtHtmlOptions_@item.ItemID">@item.HtmlOptions</textarea>
                 </td>

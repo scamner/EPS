@@ -30,11 +30,11 @@ namespace ItemToRun
                     pl.Add(new RunPayloadModel());
                 }
 
-                Script = "Set-ADUser " + emp.Username + " -Replace @{msExchHideFromAddressLists=\"TRUE\"}";
+                Script = "Set-ADUser " + emp.Username + " -Replace @{msExchHideFromAddressLists=\"FALSE\"}";
 
                 String result = util.RunPSScript(Script);
 
-                return new ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1} was hidden from the Exchange address lists.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now, RunPayload = jsonPL };
+                return new ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1} was un-hidden from the Exchange address lists.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now, RunPayload = jsonPL };
             }
             catch (Exception ex)
             {
