@@ -25,6 +25,7 @@ namespace ItemToRun
                 String adminName = util.GetParam("ADUsername", "Active Directory admin user");
                 String password = util.GetParam("ADPassword", "Active Directory admin user password");
                 String ou = util.GetParam("DisabledUsersOU", "Active Directory Disabled Users OU path");
+                String defCN = util.GetParam("DefaultUsersCN", "Active Directory default Users container path");
 
                 PrincipalContext context = new PrincipalContext(ContextType.Domain, domain, adminName, password);
                 UserPrincipal user = UserPrincipal.FindByIdentity(context, emp.Username);
@@ -37,21 +38,21 @@ namespace ItemToRun
                 Boolean isInOUAlready = false;
 
                 DirectoryEntry userOU = new DirectoryEntry("LDAP://" + user.DistinguishedName, adminName, password);
-                DirectoryEntry disabledOU = new DirectoryEntry("LDAP://" + ou, adminName, password);
+                DirectoryEntry defaultCN = new DirectoryEntry("LDAP://" + defCN, adminName, password);
 
                 String OUCheckUser = userOU.Path.ToString();
 
-                if (OUCheckUser.EndsWith(ou))
+                if (OUCheckUser.EndsWith(defCN))
                 {
                     isInOUAlready = true;
                 }
 
                 if (isInOUAlready == true)
                 {
-                    return new ItemRunResult { ResultID = 5, ResultText = String.Format("{0} is already in the Disabled Users OU.", emp.Username), TimeDone = DateTime.Now, RunPayload = jsonPL };
+                    return new ItemRunResult { ResultID = 5, ResultText = String.Format("{0} is already in the default Users container.", emp.Username), TimeDone = DateTime.Now, RunPayload = jsonPL };
                 }
 
-                userOU.MoveTo(disabledOU);
+                userOU.MoveTo(defaultCN);
                 userOU.Close();
 
                 if (!String.IsNullOrEmpty(RunPayload))
@@ -60,7 +61,7 @@ namespace ItemToRun
                     pl.Add(new RunPayloadModel());
                 }
 
-                return new ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1} was moved to the Disabled Users OU in Active Directory.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now, RunPayload = jsonPL };
+                return new ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1} was moved to the default Users container in Active Directory.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now, RunPayload = jsonPL };
             }
             catch (Exception ex)
             {
