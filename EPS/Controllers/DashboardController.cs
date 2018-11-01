@@ -560,12 +560,12 @@ namespace EPS.Controllers
                     {
                         WorkflowItem wfi = db.WorkflowItems.Where(w => w.WFItemID == itemID).FirstOrDefault();
 
-                        var htmlOption = HtmlOptions.Where(h => h.ToString()
+                        var htmlOption = HtmlOptions == null ? "" : HtmlOptions.Where(h => h.ToString()
                                 .StartsWith(String.Format("{0}:", wfi.ItemID))).FirstOrDefault();
 
                         RunItem ri = new RunItem
                         {
-                            HtmlAnswers = htmlOption == null ? "" : htmlOption.ToString(),
+                            HtmlAnswers = htmlOption,
                             RunID = run.RunID,
                             WFItemID = itemID
                         };
