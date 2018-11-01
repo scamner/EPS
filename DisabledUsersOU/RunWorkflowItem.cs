@@ -10,13 +10,10 @@ namespace ItemToRun
 {
     public class RunWorkflowItem
     {
-        public ItemRunResult RunItem(int EmpID, String RunPayload)
+        public Utilities.ItemRunResult RunItem(int EmpID, RunPayload RunPayload)
         {
-            List<RunPayloadModel> pl = new List<RunPayloadModel>();
             DataLayer.EPSEntities db = new DataLayer.EPSEntities();
             Utilities util = new Utilities();
-
-            String jsonPL = String.IsNullOrEmpty(RunPayload) ? "" : Newtonsoft.Json.JsonConvert.SerializeObject(pl);
 
             try
             {
@@ -31,7 +28,7 @@ namespace ItemToRun
 
                 if (user == null)
                 {
-                    return new ItemRunResult { ResultID = 4, ResultText = String.Format("{0} could not be found in Active Directory.", emp.Username), TimeDone = DateTime.Now, RunPayload = jsonPL };
+                    return new Utilities.ItemRunResult { ResultID = 4, ResultText = String.Format("{0} could not be found in Active Directory.", emp.Username), TimeDone = DateTime.Now};
                 }
 
                 Boolean isInOUAlready = false;
@@ -48,39 +45,18 @@ namespace ItemToRun
 
                 if (isInOUAlready == true)
                 {
-                    return new ItemRunResult { ResultID = 5, ResultText = String.Format("{0} is already in the Disabled Users OU.", emp.Username), TimeDone = DateTime.Now, RunPayload = jsonPL };
+                    return new Utilities.ItemRunResult { ResultID = 5, ResultText = String.Format("{0} is already in the Disabled Users OU.", emp.Username), TimeDone = DateTime.Now};
                 }
 
                 userOU.MoveTo(disabledOU);
                 userOU.Close();
 
-                if (!String.IsNullOrEmpty(RunPayload))
-                {
-                    pl = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RunPayloadModel>>(RunPayload);
-                    pl.Add(new RunPayloadModel());
-                }
-
-                return new ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1} was moved to the Disabled Users OU in Active Directory.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now, RunPayload = jsonPL };
+                return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1} was moved to the Disabled Users OU in Active Directory.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now};
             }
             catch (Exception ex)
             {
-                return new ItemRunResult { ResultID = 4, ResultText = String.Format("Error: {0}", ex.Message), TimeDone = DateTime.Now, RunPayload = jsonPL };
+                return new Utilities.ItemRunResult { ResultID = 4, ResultText = String.Format("Error: {0}", ex.Message), TimeDone = DateTime.Now};
             }
         }
-    }
-
-    public class ItemRunResult
-    {
-        public int ResultID { get; set; }
-        public String ResultText { get; set; }
-        public DateTime TimeDone { get; set; }
-        public String RunPayload { get; set; }
-    }
-
-    public class RunPayloadModel
-    {
-        public String TargetLibraryName { get; set; }
-        public String PayloadParent { get; set; }
-        public String TargetPayload { get; set; }
     }
 }

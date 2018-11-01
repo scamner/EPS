@@ -18,6 +18,7 @@ namespace DataLayer
         public LibraryItem()
         {
             this.WorkflowItems = new HashSet<WorkflowItem>();
+            this.RunPayloadItems = new HashSet<RunPayloadItem>();
         }
     
         public int ItemID { get; set; }
@@ -29,5 +30,7 @@ namespace DataLayer
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WorkflowItem> WorkflowItems { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RunPayloadItem> RunPayloadItems { get; set; }
     }
 }

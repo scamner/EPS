@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisabledUsersOU", "Disabled
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoveUserOutOfDisabledOU", "MoveUserOutOfDisabledOU\MoveUserOutOfDisabledOU.csproj", "{397C6A68-845A-413F-9855-85F6374D68C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateADDesc", "UpdateADDesc\UpdateADDesc.csproj", "{7E36818C-03D3-44A3-9100-7378387D852F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -92,6 +94,10 @@ Global
 		{397C6A68-845A-413F-9855-85F6374D68C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{397C6A68-845A-413F-9855-85F6374D68C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{397C6A68-845A-413F-9855-85F6374D68C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E36818C-03D3-44A3-9100-7378387D852F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E36818C-03D3-44A3-9100-7378387D852F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E36818C-03D3-44A3-9100-7378387D852F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E36818C-03D3-44A3-9100-7378387D852F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -107,6 +113,7 @@ Global
 		{A22C45F7-527E-4886-9669-F18B88244072} = {3659EE2F-1950-4216-B848-D4990154AD9C}
 		{163EB125-8BFE-4DC7-831D-62DFD886C9AD} = {3659EE2F-1950-4216-B848-D4990154AD9C}
 		{397C6A68-845A-413F-9855-85F6374D68C5} = {3659EE2F-1950-4216-B848-D4990154AD9C}
+		{7E36818C-03D3-44A3-9100-7378387D852F} = {3659EE2F-1950-4216-B848-D4990154AD9C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C13BB5A-4F02-4A18-BD4E-A277D1C492C3}

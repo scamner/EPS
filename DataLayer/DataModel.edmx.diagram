@@ -11,7 +11,6 @@
         <EntityTypeShape EntityType="EPSModel.LibraryItem" Width="1.5" PointX="3.75" PointY="27.5" />
         <EntityTypeShape EntityType="EPSModel.Login" Width="1.5" PointX="3" PointY="20.5" />
         <EntityTypeShape EntityType="EPSModel.RunItem" Width="1.5" PointX="8.25" PointY="12.625" />
-        <EntityTypeShape EntityType="EPSModel.RunPayload" Width="1.5" PointX="8.25" PointY="15.75" />
         <EntityTypeShape EntityType="EPSModel.RunResult" Width="1.5" PointX="8.25" PointY="27.25" />
         <EntityTypeShape EntityType="EPSModel.RunResultStatu" Width="1.5" PointX="6" PointY="24.875" />
         <EntityTypeShape EntityType="EPSModel.RunWorkflow" Width="1.5" PointX="6" PointY="12.25" />
@@ -29,7 +28,6 @@
         <AssociationConnector Association="EPSModel.FK_Logins_Users" />
         <AssociationConnector Association="EPSModel.FK_RunItems_WorkflowItems" />
         <AssociationConnector Association="EPSModel.FK_RunItems_WorkflowRun" />
-        <AssociationConnector Association="EPSModel.FK_RunPayload_RunWorkflow" />
         <AssociationConnector Association="EPSModel.FK_RunResult_RunResultStatus" />
         <AssociationConnector Association="EPSModel.FK_RunResult_WorkflowItems" />
         <AssociationConnector Association="EPSModel.FK_RunWorkflow_Users" />
@@ -41,6 +39,11 @@
         <EntityTypeShape EntityType="EPSModel.Parameter" Width="1.5" PointX="8.375" PointY="8.75" />
         <EntityTypeShape EntityType="EPSModel.Parameters_Log" Width="1.5" PointX="3" PointY="23.375" />
         <AssociationConnector Association="EPSModel.FK_Parameters_Log_Users" />
+        <EntityTypeShape EntityType="EPSModel.RunPayload" Width="1.5" PointX="8.25" PointY="15.875" />
+        <AssociationConnector Association="EPSModel.FK_RunPayload_RunWorkflow" />
+        <EntityTypeShape EntityType="EPSModel.RunPayloadItem" Width="1.5" PointX="10.5" PointY="21.75" />
+        <AssociationConnector Association="EPSModel.FK_RunPayloadItems_LibraryItems" />
+        <AssociationConnector Association="EPSModel.FK_RunPayloadItems_RunPayload" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

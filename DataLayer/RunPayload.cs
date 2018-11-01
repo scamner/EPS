@@ -14,10 +14,17 @@ namespace DataLayer
     
     public partial class RunPayload
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public RunPayload()
+        {
+            this.RunPayloadItems = new HashSet<RunPayloadItem>();
+        }
+    
         public int PayloadID { get; set; }
         public int RunID { get; set; }
-        public string RunPayload1 { get; set; }
     
         public virtual RunWorkflow RunWorkflow { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RunPayloadItem> RunPayloadItems { get; set; }
     }
 }

@@ -101,7 +101,16 @@
           </Key>
           <Property Name="PayloadID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="RunID" Type="int" Nullable="false" />
-          <Property Name="RunPayload" Type="varchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RunPayloadItems">
+          <Key>
+            <PropertyRef Name="RunPLItemID" />
+          </Key>
+          <Property Name="RunPLItemID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PayloadID" Type="int" Nullable="false" />
+          <Property Name="ItemID" Type="int" Nullable="false" />
+          <Property Name="ElementID" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ElementValue" Type="varchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="RunResult">
           <Key>
@@ -248,6 +257,7 @@ warning 6002: The table/view 'EPS.dbo.vwRunItems' does not have a primary key de
           <Property Name="RunID" Type="int" Nullable="false" />
           <Property Name="ItemID" Type="int" Nullable="false" />
           <Property Name="RunOrder" Type="int" Nullable="false" />
+          <Property Name="HtmlAnswers" Type="varchar(max)" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -348,6 +358,30 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             </Principal>
             <Dependent Role="RunPayload">
               <PropertyRef Name="RunID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RunPayloadItems_LibraryItems">
+          <End Role="LibraryItems" Type="Self.LibraryItems" Multiplicity="1" />
+          <End Role="RunPayloadItems" Type="Self.RunPayloadItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LibraryItems">
+              <PropertyRef Name="ItemID" />
+            </Principal>
+            <Dependent Role="RunPayloadItems">
+              <PropertyRef Name="ItemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RunPayloadItems_RunPayload">
+          <End Role="RunPayload" Type="Self.RunPayload" Multiplicity="1" />
+          <End Role="RunPayloadItems" Type="Self.RunPayloadItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RunPayload">
+              <PropertyRef Name="PayloadID" />
+            </Principal>
+            <Dependent Role="RunPayloadItems">
+              <PropertyRef Name="PayloadID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -477,6 +511,7 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <EntitySet Name="Parameters_Log" EntityType="Self.Parameters_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RunItems" EntityType="Self.RunItems" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RunPayload" EntityType="Self.RunPayload" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RunPayloadItems" EntityType="Self.RunPayloadItems" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RunResult" EntityType="Self.RunResult" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RunResultStatus" EntityType="Self.RunResultStatus" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RunWorkflow" EntityType="Self.RunWorkflow" Schema="dbo" store:Type="Tables" />
@@ -516,7 +551,8 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             <DefiningQuery>SELECT 
     [vwRunItems].[RunID] AS [RunID], 
     [vwRunItems].[ItemID] AS [ItemID], 
-    [vwRunItems].[RunOrder] AS [RunOrder]
+    [vwRunItems].[RunOrder] AS [RunOrder], 
+    [vwRunItems].[HtmlAnswers] AS [HtmlAnswers]
     FROM [dbo].[vwRunItems] AS [vwRunItems]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vwRunWorkflow" EntityType="Self.vwRunWorkflow" store:Type="Views" store:Schema="dbo">
@@ -556,6 +592,14 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <AssociationSet Name="FK_RunPayload_RunWorkflow" Association="Self.FK_RunPayload_RunWorkflow">
             <End Role="RunWorkflow" EntitySet="RunWorkflow" />
             <End Role="RunPayload" EntitySet="RunPayload" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RunPayloadItems_LibraryItems" Association="Self.FK_RunPayloadItems_LibraryItems">
+            <End Role="LibraryItems" EntitySet="LibraryItems" />
+            <End Role="RunPayloadItems" EntitySet="RunPayloadItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RunPayloadItems_RunPayload" Association="Self.FK_RunPayloadItems_RunPayload">
+            <End Role="RunPayload" EntitySet="RunPayload" />
+            <End Role="RunPayloadItems" EntitySet="RunPayloadItems" />
           </AssociationSet>
           <AssociationSet Name="FK_RunResult_RunResultStatus" Association="Self.FK_RunResult_RunResultStatus">
             <End Role="RunResultStatus" EntitySet="RunResultStatus" />
@@ -605,7 +649,6 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <EntitySet Name="LibraryItems" EntityType="EPSModel.LibraryItem" />
           <EntitySet Name="Logins" EntityType="EPSModel.Login" />
           <EntitySet Name="RunItems" EntityType="EPSModel.RunItem" />
-          <EntitySet Name="RunPayloads" EntityType="EPSModel.RunPayload" />
           <EntitySet Name="RunResults" EntityType="EPSModel.RunResult" />
           <EntitySet Name="RunResultStatus" EntityType="EPSModel.RunResultStatu" />
           <EntitySet Name="RunWorkflows" EntityType="EPSModel.RunWorkflow" />
@@ -641,10 +684,6 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             <End Role="RunWorkflow" EntitySet="RunWorkflows" />
             <End Role="RunItem" EntitySet="RunItems" />
           </AssociationSet>
-          <AssociationSet Name="FK_RunPayload_RunWorkflow" Association="EPSModel.FK_RunPayload_RunWorkflow">
-            <End Role="RunWorkflow" EntitySet="RunWorkflows" />
-            <End Role="RunPayload" EntitySet="RunPayloads" />
-          </AssociationSet>
           <AssociationSet Name="FK_RunResult_RunResultStatus" Association="EPSModel.FK_RunResult_RunResultStatus">
             <End Role="RunResultStatu" EntitySet="RunResultStatus" />
             <End Role="RunResult" EntitySet="RunResults" />
@@ -679,6 +718,20 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <AssociationSet Name="FK_Parameters_Log_Users" Association="EPSModel.FK_Parameters_Log_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="Parameters_Log" EntitySet="Parameters_Log" />
+          </AssociationSet>
+          <EntitySet Name="RunPayloads" EntityType="EPSModel.RunPayload" />
+          <AssociationSet Name="FK_RunPayload_RunWorkflow" Association="EPSModel.FK_RunPayload_RunWorkflow">
+            <End Role="RunWorkflow" EntitySet="RunWorkflows" />
+            <End Role="RunPayload" EntitySet="RunPayloads" />
+          </AssociationSet>
+          <EntitySet Name="RunPayloadItems" EntityType="EPSModel.RunPayloadItem" />
+          <AssociationSet Name="FK_RunPayloadItems_LibraryItems" Association="EPSModel.FK_RunPayloadItems_LibraryItems">
+            <End Role="LibraryItem" EntitySet="LibraryItems" />
+            <End Role="RunPayloadItem" EntitySet="RunPayloadItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RunPayloadItems_RunPayload" Association="EPSModel.FK_RunPayloadItems_RunPayload">
+            <End Role="RunPayload" EntitySet="RunPayloads" />
+            <End Role="RunPayloadItem" EntitySet="RunPayloadItems" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Employee">
@@ -735,6 +788,7 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <Property Name="LibraryPath" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="HtmlOptions" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="WorkflowItems" Relationship="EPSModel.FK_WorkflowItems_LibraryItems" FromRole="LibraryItem" ToRole="WorkflowItem" />
+          <NavigationProperty Name="RunPayloadItems" Relationship="EPSModel.FK_RunPayloadItems_LibraryItems" FromRole="LibraryItem" ToRole="RunPayloadItem" />
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -755,15 +809,6 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <Property Name="HtmlAnswers" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="WorkflowItem" Relationship="EPSModel.FK_RunItems_WorkflowItems" FromRole="RunItem" ToRole="WorkflowItem" />
           <NavigationProperty Name="RunWorkflow" Relationship="EPSModel.FK_RunItems_WorkflowRun" FromRole="RunItem" ToRole="RunWorkflow" />
-        </EntityType>
-        <EntityType Name="RunPayload">
-          <Key>
-            <PropertyRef Name="PayloadID" />
-          </Key>
-          <Property Name="PayloadID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RunID" Type="Int32" Nullable="false" />
-          <Property Name="RunPayload1" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="RunWorkflow" Relationship="EPSModel.FK_RunPayload_RunWorkflow" FromRole="RunPayload" ToRole="RunWorkflow" />
         </EntityType>
         <EntityType Name="RunResult">
           <Key>
@@ -798,10 +843,10 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <Property Name="RunByUserID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Employee" Relationship="EPSModel.FK_WorkflowRun_Employees" FromRole="RunWorkflow" ToRole="Employee" />
           <NavigationProperty Name="RunItems" Relationship="EPSModel.FK_RunItems_WorkflowRun" FromRole="RunWorkflow" ToRole="RunItem" />
-          <NavigationProperty Name="RunPayloads" Relationship="EPSModel.FK_RunPayload_RunWorkflow" FromRole="RunWorkflow" ToRole="RunPayload" />
           <NavigationProperty Name="User" Relationship="EPSModel.FK_RunWorkflow_Users" FromRole="RunWorkflow" ToRole="User" />
           <NavigationProperty Name="Workflow" Relationship="EPSModel.FK_WorkflowRun_Workflows" FromRole="RunWorkflow" ToRole="Workflow" />
           <Property Name="RunDate" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="RunPayloads" Relationship="EPSModel.FK_RunPayload_RunWorkflow" FromRole="RunWorkflow" ToRole="RunPayload" />
         </EntityType>
         <EntityType Name="User_Log">
           <Key>
@@ -926,6 +971,7 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <Property Name="RunID" Type="Int32" Nullable="false" />
           <Property Name="ItemID" Type="Int32" Nullable="false" />
           <Property Name="RunOrder" Type="Int32" Nullable="false" />
+          <Property Name="HtmlAnswers" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_WorkflowRun_Employees">
           <End Type="EPSModel.Employee" Role="Employee" Multiplicity="1">
@@ -1003,20 +1049,6 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
               <PropertyRef Name="RunID" />
             </Principal>
             <Dependent Role="RunItem">
-              <PropertyRef Name="RunID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RunPayload_RunWorkflow">
-          <End Type="EPSModel.RunWorkflow" Role="RunWorkflow" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="EPSModel.RunPayload" Role="RunPayload" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RunWorkflow">
-              <PropertyRef Name="RunID" />
-            </Principal>
-            <Dependent Role="RunPayload">
               <PropertyRef Name="RunID" />
             </Dependent>
           </ReferentialConstraint>
@@ -1163,6 +1195,65 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="RunPayload">
+          <Key>
+            <PropertyRef Name="PayloadID" />
+          </Key>
+          <Property Name="PayloadID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RunID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="RunWorkflow" Relationship="EPSModel.FK_RunPayload_RunWorkflow" FromRole="RunPayload" ToRole="RunWorkflow" />
+          <NavigationProperty Name="RunPayloadItems" Relationship="EPSModel.FK_RunPayloadItems_RunPayload" FromRole="RunPayload" ToRole="RunPayloadItem" />
+        </EntityType>
+        <Association Name="FK_RunPayload_RunWorkflow">
+          <End Type="EPSModel.RunWorkflow" Role="RunWorkflow" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="EPSModel.RunPayload" Role="RunPayload" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RunWorkflow">
+              <PropertyRef Name="RunID" />
+            </Principal>
+            <Dependent Role="RunPayload">
+              <PropertyRef Name="RunID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RunPayloadItem">
+          <Key>
+            <PropertyRef Name="RunPLItemID" />
+          </Key>
+          <Property Name="RunPLItemID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PayloadID" Type="Int32" Nullable="false" />
+          <Property Name="ItemID" Type="Int32" Nullable="false" />
+          <Property Name="ElementID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ElementValue" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="LibraryItem" Relationship="EPSModel.FK_RunPayloadItems_LibraryItems" FromRole="RunPayloadItem" ToRole="LibraryItem" />
+          <NavigationProperty Name="RunPayload" Relationship="EPSModel.FK_RunPayloadItems_RunPayload" FromRole="RunPayloadItem" ToRole="RunPayload" />
+        </EntityType>
+        <Association Name="FK_RunPayloadItems_LibraryItems">
+          <End Type="EPSModel.LibraryItem" Role="LibraryItem" Multiplicity="1" />
+          <End Type="EPSModel.RunPayloadItem" Role="RunPayloadItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LibraryItem">
+              <PropertyRef Name="ItemID" />
+            </Principal>
+            <Dependent Role="RunPayloadItem">
+              <PropertyRef Name="ItemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RunPayloadItems_RunPayload">
+          <End Type="EPSModel.RunPayload" Role="RunPayload" Multiplicity="1" />
+          <End Type="EPSModel.RunPayloadItem" Role="RunPayloadItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RunPayload">
+              <PropertyRef Name="PayloadID" />
+            </Principal>
+            <Dependent Role="RunPayloadItem">
+              <PropertyRef Name="PayloadID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1241,15 +1332,6 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
                 <ScalarProperty Name="WFItemID" ColumnName="WFItemID" />
                 <ScalarProperty Name="RunID" ColumnName="RunID" />
                 <ScalarProperty Name="RunItemID" ColumnName="RunItemID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="RunPayloads">
-            <EntityTypeMapping TypeName="EPSModel.RunPayload">
-              <MappingFragment StoreEntitySet="RunPayload">
-                <ScalarProperty Name="RunPayload1" ColumnName="RunPayload" />
-                <ScalarProperty Name="RunID" ColumnName="RunID" />
-                <ScalarProperty Name="PayloadID" ColumnName="PayloadID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1380,6 +1462,7 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <EntitySetMapping Name="vwRunItems">
             <EntityTypeMapping TypeName="EPSModel.vwRunItem">
               <MappingFragment StoreEntitySet="vwRunItems">
+                <ScalarProperty Name="HtmlAnswers" ColumnName="HtmlAnswers" />
                 <ScalarProperty Name="RunOrder" ColumnName="RunOrder" />
                 <ScalarProperty Name="ItemID" ColumnName="ItemID" />
                 <ScalarProperty Name="RunID" ColumnName="RunID" />
@@ -1422,6 +1505,25 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
                 <ScalarProperty Name="ParamDesc" ColumnName="ParamDesc" />
                 <ScalarProperty Name="ParamName" ColumnName="ParamName" />
                 <ScalarProperty Name="LogID" ColumnName="LogID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RunPayloads">
+            <EntityTypeMapping TypeName="EPSModel.RunPayload">
+              <MappingFragment StoreEntitySet="RunPayload">
+                <ScalarProperty Name="RunID" ColumnName="RunID" />
+                <ScalarProperty Name="PayloadID" ColumnName="PayloadID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RunPayloadItems">
+            <EntityTypeMapping TypeName="EPSModel.RunPayloadItem">
+              <MappingFragment StoreEntitySet="RunPayloadItems">
+                <ScalarProperty Name="ElementValue" ColumnName="ElementValue" />
+                <ScalarProperty Name="ElementID" ColumnName="ElementID" />
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="PayloadID" ColumnName="PayloadID" />
+                <ScalarProperty Name="RunPLItemID" ColumnName="RunPLItemID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

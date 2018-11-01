@@ -9,6 +9,7 @@ namespace RunWorkflows
     public class ExecuteWorkflows
     {
         DataLayer.EPSEntities db = new DataLayer.EPSEntities();
+        Utilities util = new Utilities();
 
         public WorkflowResult RunWorkflow(int RunID)
         {
@@ -22,9 +23,14 @@ namespace RunWorkflows
                 RunPayload pl = run.RunPayloads.FirstOrDefault();
 
                 foreach (vwRunItem item in items)
-                {                    
+                {
                     DateTime StartTime = DateTime.Now;
                     LibraryItem li = db.LibraryItems.Where(l => l.ItemID == item.ItemID).FirstOrDefault();
+
+                    if (!String.IsNullOrEmpty(item.HtmlAnswers))
+                    {
+                        pl = util.SetPayload(RunID, li.ItemID, item.HtmlAnswers);
+                    }
 
                     LastItemRun = li.ItemName;
 
@@ -38,29 +44,13 @@ namespace RunWorkflows
                       BindingFlags.Default | BindingFlags.InvokeMethod,
                       null,
                       instanceOfMyType,
-                      new Object[] { run.EmpID, pl == null ? "" : Newtonsoft.Json.JsonConvert.SerializeObject(pl) });
+                      new Object[] { run.EmpID, pl == null ? new RunPayload() : pl });
 
                     IEnumerable<PropertyInfo> props = result.GetType().GetRuntimeProperties();
 
                     int ResultID = Convert.ToInt32(props.ElementAt(0).GetValue(result, null));
                     String ResultText = props.ElementAt(1).GetValue(result, null).ToString();
                     DateTime TimeDone = Convert.ToDateTime(props.ElementAt(2).GetValue(result, null));
-                    String RunPayload = props.ElementAt(3).GetValue(result, null).ToString();
-
-                    if (!String.IsNullOrEmpty(RunPayload))
-                    {
-                        if (pl == null)
-                        {
-                            RunPayload plAdd = new RunPayload { RunID = RunID, RunPayload1 = RunPayload };
-                            db.RunPayloads.Add(plAdd);
-                            db.SaveChanges();
-                        }
-                        else
-                        {
-                            pl.RunPayload1 = RunPayload;
-                            db.SaveChanges();
-                        }
-                    }
 
                     RunResult rr = new RunResult
                     {

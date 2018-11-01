@@ -558,8 +558,10 @@ namespace EPS.Controllers
 
                     foreach (int itemID in ItemIDs)
                     {
+                        WorkflowItem wfi = db.WorkflowItems.Where(w => w.WFItemID == itemID).FirstOrDefault();
+
                         var htmlOption = HtmlOptions.Where(h => h.ToString()
-                                .StartsWith(String.Format("{0}:", itemID))).FirstOrDefault();
+                                .StartsWith(String.Format("{0}:", wfi.ItemID))).FirstOrDefault();
 
                         RunItem ri = new RunItem
                         {

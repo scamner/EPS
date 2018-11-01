@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Security;
+using System.Web.Script.Serialization;
+using Newtonsoft;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace DataLayer
 {
@@ -105,6 +109,48 @@ namespace DataLayer
             }
 
             return stringBuilder.ToString();
+        }
+
+        public RunPayload SetPayload(int RunID, int ItemID, String HtmlAnswers)
+        {
+            RunPayload pl = db.RunPayloads.Where(r => r.RunID == RunID).FirstOrDefault();
+
+            if (pl == null)
+            {
+                RunPayload newRPL = new RunPayload { RunID = RunID };
+                db.RunPayloads.Add(newRPL);
+                db.SaveChanges();
+
+                pl = db.RunPayloads.Where(r => r.RunID == RunID).FirstOrDefault();
+            }
+
+            int colonIndex = HtmlAnswers.IndexOf(":");
+            String itemID = HtmlAnswers.Substring(0, colonIndex);
+            String elemHtml = HtmlAnswers.Substring(colonIndex + 1, HtmlAnswers.Length - (colonIndex + 1));
+
+            String[] elems = elemHtml.Split('&');
+
+            foreach (string e in elems)
+            {
+                int eqIndex = e.IndexOf("=");
+                String elemID = e.Substring(0, eqIndex);
+                String elemValue = e.Substring(eqIndex + 1, e.Length - (eqIndex + 1));
+
+                RunPayloadItem pli = new RunPayloadItem { ElementID = elemID, ElementValue = elemValue, ItemID = ItemID, PayloadID = pl.PayloadID };
+                db.RunPayloadItems.Add(pli);
+                db.SaveChanges();
+            }
+
+            pl = db.RunPayloads.Where(r => r.RunID == RunID).FirstOrDefault();
+
+            return pl;
+        }
+
+        public class ItemRunResult
+        {
+            public int ResultID { get; set; }
+            public String ResultText { get; set; }
+            public DateTime TimeDone { get; set; }
         }
     }
 }

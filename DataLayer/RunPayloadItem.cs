@@ -12,11 +12,15 @@ namespace DataLayer
     using System;
     using System.Collections.Generic;
     
-    public partial class vwRunItem
+    public partial class RunPayloadItem
     {
-        public int RunID { get; set; }
+        public int RunPLItemID { get; set; }
+        public int PayloadID { get; set; }
         public int ItemID { get; set; }
-        public int RunOrder { get; set; }
-        public string HtmlAnswers { get; set; }
+        public string ElementID { get; set; }
+        public string ElementValue { get; set; }
+    
+        public virtual LibraryItem LibraryItem { get; set; }
+        public virtual RunPayload RunPayload { get; set; }
     }
 }

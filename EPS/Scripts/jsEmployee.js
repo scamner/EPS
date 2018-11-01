@@ -187,7 +187,7 @@ function GetWorkflowItems(wfid) {
                 var htmlOptions = libItems.HtmlOptions;
 
                 $('#divWorkflowItems').append('<div title="' + libDesc + '"><input type="checkbox" id="chkItem_' + libItemID + '" class="WorkflowItemsToRun" checked="checked" value="' + wfItemID + '" />' +
-                    '<label>' + libName + '</label><div class="divHtmlOptions" id="divOptions_' + libItemID + '" style="text-align: left; padding-left: 15px; margin-top: 5px;"></div></div>');
+                    '<label>' + libName + '</label><div class="divHtmlOptions" data-val-id="' + libItemID + '" id="divOptions_' + libItemID + '" style="text-align: left; padding-left: 15px; margin-top: 5px;"></div></div>');
 
                 $('#chkItem_' + libItemID).click(function () {
                     if ($(this).is(':checked')) {
@@ -219,7 +219,7 @@ function RunWorkflow() {
 
     $('.WorkflowItemsToRun:checkbox:checked').map(function () {
         itemIDs.push($(this).val());
-    })
+    });
 
     if (itemIDs.length === 0) {
         ShowMessage('You must select at least one workflow item.', 'show');
@@ -228,10 +228,25 @@ function RunWorkflow() {
 
     $('.divHtmlOptions').each(function () {
         if ($(this).is(':visible')) {
-            var id = $(this).attr("id").replace('divOptions_', '');
-            var data = $(this).children().serialize();
 
-            htmlOptions.push(id + ':' + data);
+            $(this).find(':input').each(function () {
+                if ($(this).val().indexOf("&") > -1) {
+                    ShowMessage('You cannot include "&" in the data, that is a reserved character.', 'show');
+                    return false;
+                }
+
+                if ($(this).val().indexOf("=") > -1) {
+                    ShowMessage('You cannot include "=" in the data, that is a reserved character.', 'show');
+                    return false;
+                }
+            });
+
+            var id = $(this).attr("data-val-id");
+            var data = $(this).find(':input').serialize();
+
+            if (data !== "") {
+                htmlOptions.push(id + ':' + data);
+            }
         }
     });
 
