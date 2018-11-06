@@ -181,3 +181,48 @@ function RemoveItemFromWF(wfItemID) {
         }
     });
 }
+
+function EditWorkflow(id) {
+    $('.NoEdit_' + id).each(function () { $(this).css('display', 'none'); });
+    $('.Edit_' + id).each(function () { $(this).css('display', 'inline-block'); });
+}
+
+function SaveWorkflow(id) {
+    var name = $('#txtWFName_' + id).val();
+    var desc = $('#txtWFDesc_' + id).val();
+
+    if (name === '') {
+        ShowMessage('You must enter a workflow name.', 'show');
+        return false;
+    }
+
+    if (desc === '') {
+        ShowMessage('You must enter a workflow description.', 'show');
+        return false;
+    }
+
+    $.ajax({
+        url: '/Dashboard/UpdateWorkflow',
+        type: 'POST',
+        data: { WorkflowID: id, WorkflowName: encodeURIComponent(name), WorkflowDesc: encodeURIComponent(desc) },
+        datatype: 'json',
+        cache: false,
+        success: function (data) {
+            if (data.Error === "") {
+                $('#lblWFName_' + id).text(name);
+                $('#lblWFDesc_' + id).text(desc);
+
+                $('.NoEdit_' + id).each(function () { $(this).css('display', 'inline-block'); });
+                $('.Edit_' + id).each(function () { $(this).css('display', 'none'); });
+            }
+            else {
+                ShowMessage(data.Error, 'show');
+            }
+        }
+    });
+}
+
+function CancelEditWorkflow(id) {
+    $('.NoEdit_' + id).each(function () { $(this).css('display', 'inline-block'); });
+    $('.Edit_' + id).each(function () { $(this).css('display', 'none'); });
+}

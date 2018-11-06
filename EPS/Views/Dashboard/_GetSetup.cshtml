@@ -19,16 +19,19 @@
             <th>Workflow Description</th>
             <th>Disabled?</th>
             <th>Workflow Items to add</th>
+            <th></th>
         </tr>
 
         @foreach (DataLayer.Workflow wf in Model)
         {
             <tr>
                 <td style="text-align: left;">
-                    @wf.WorkflowName
+                    <label class="NoEdit_@wf.WorkflowID" id="lblWFName_@wf.WorkflowID">@wf.WorkflowName</label>
+                    <input type="text" id="txtWFName_@wf.WorkflowID" value="@wf.WorkflowName" class="Edit_@wf.WorkflowID" style="display: none;" />
                 </td>
                 <td style="text-align: left;">
-                    @wf.WorkflowDesc
+                    <label class="NoEdit_@wf.WorkflowID" id="lblWFDesc_@wf.WorkflowID">@wf.WorkflowDesc</label>
+                    <input type="text" id="txtWFDesc_@wf.WorkflowID" value="@wf.WorkflowDesc" class="Edit_@wf.WorkflowID" style="display: none;" />
                 </td>
                 <td>
                     @Html.CheckBox("WorkflowDisabled", wf.Disabled, new { @onchange = "SetWorkflowDisabled('" + wf.WorkflowID + "', $(this).is(':checked'));" })
@@ -58,9 +61,14 @@
                         <label>No items to add</label>
                     }
                 </td>
+                <td nowrap>
+                    <input type="button" class="NoEdit_@wf.WorkflowID" value="Edit Workflow" onclick="EditWorkflow('@wf.WorkflowID');" />
+                    <input type="button" style="display: none;" class="Edit_@wf.WorkflowID" value="Save Workflow" onclick="SaveWorkflow('@wf.WorkflowID');" />
+                    <input type="button" style="display: none;" class="Edit_@wf.WorkflowID RedButton" value="Cancel Edit" onclick="CancelEditWorkflow('@wf.WorkflowID');" />
+                </td>
             </tr>
             <tr>
-                <td colspan="4" style="text-align: left; padding: 10px;">
+                <td colspan="5" style="text-align: left; padding: 10px;">
                     @{ int itemCount = wf.WorkflowItems.Count(); }
                     @if (itemCount == 0)
                     {
@@ -110,7 +118,7 @@
             </tr>
 
             <tr>
-                <td style="border: none; height: 10px;" colspan="4"></td>
+                <td style="border: none; height: 10px;" colspan="5"></td>
             </tr>
         }
     </table>

@@ -1080,6 +1080,56 @@ namespace EPS.Controllers
         }
 
         [HttpPost]
+        public JsonResult UpdateWorkflow(int WorkflowID, String WorkflowName, String WorkflowDesc)
+        {
+            WorkflowName = HttpUtility.UrlDecode(WorkflowName);
+            WorkflowDesc = HttpUtility.UrlDecode(WorkflowDesc);
+
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    User CurrentUser = util.GetLoggedOnUser();
+                    Workflow wf = db.Workflows.Where(w => w.WorkflowID == WorkflowID).FirstOrDefault();
+
+                    String beforeName = wf.WorkflowName;
+                    String beforeDesc = wf.WorkflowDesc;
+
+                    wf.WorkflowName = WorkflowName;
+                    wf.WorkflowDesc = WorkflowDesc;
+                    db.SaveChanges();
+
+                    Workflow_Log log = new Workflow_Log
+                    {
+                        ChangeDate = DateTime.Now,
+                        ChangedBy = CurrentUser.UserID,
+                        ChangeText = String.Format("Workflow Name: {0} was set to {1} and Description was set to {2}.", beforeName, WorkflowName, WorkflowDesc),
+                        ChangeType = "Update",
+                        ItemID = wf.WorkflowID,
+                        ItemName = wf.WorkflowName,
+                        ItemType = "Workflow"
+                    };
+
+                    db.Workflow_Log.Add(log);
+                    db.SaveChanges();
+
+                    tran.Commit();
+
+                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+
+                    String error = util.ParseError(ex);
+                    util.WriteErrorToLog("Dashboard/UpdateWorkflow", ex, String.Format("Workflow ID: {0}, Name: {1}, Desc {2}", WorkflowID, WorkflowName, WorkflowDesc));
+
+                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+        [HttpPost]
         public JsonResult AddWorflowItemToWF(int WorkflowID, int ItemID)
         {
             using (var tran = db.Database.BeginTransaction())
