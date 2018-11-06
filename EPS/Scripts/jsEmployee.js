@@ -270,3 +270,16 @@ function RunWorkflow() {
         }
     });
 }
+
+function AddDays() {
+    var numDays = $('#txtAddDays').val();
+    var dateToday = new Date(new Date().getTime() + (numDays * 24 * 60 * 60 * 1000));
+
+    var dd = dateToday.getDate();
+    var mm = dateToday.getMonth() + 1;
+    var y = dateToday.getFullYear();
+
+    var finalDate = mm + '/' + dd + '/' + y;
+
+    $('#txtRunDate').val(finalDate);
+}
