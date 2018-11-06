@@ -34,9 +34,14 @@ namespace ItemToRun
                     return new Utilities.ItemRunResult { ResultID = 5, ResultText = String.Format("{0} was already expired in Active Directory.", emp.Username), TimeDone = DateTime.Now};
                 }
 
-                user.AccountExpirationDate = DateTime.Now.AddDays(-1);
+                user.AccountExpirationDate = DateTime.Now;                
                 user.Save();
-                
+
+                String pwGuid = String.Format("AA{0}^", Guid.NewGuid().ToString());
+
+                user.SetPassword(pwGuid);
+                user.Save();
+
                 return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1} was set to expired in Active Directory.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now};
             }
             catch (Exception ex)

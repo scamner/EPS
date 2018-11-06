@@ -40,7 +40,9 @@ namespace ItemToRun
                     return new Utilities.ItemRunResult { ResultID = 4, ResultText = String.Format("{0} could not be found in Active Directory.", emp.Username), TimeDone = DateTime.Now};
                 }
 
-                user.Description = String.Format("Disabled on {0} by {1}. Ticket Number: {2}", DateTime.Now.ToString("MM/dd/yyyy"), techName, ticketNumber);
+                String CurrentDesc = user.Description;
+
+                user.Description = String.Format("{3} ** Disabled on {0} by {1}. Ticket Number: {2} **", DateTime.Now.ToString("MM/dd/yyyy"), techName, ticketNumber, CurrentDesc);
                 user.Save();
 
                 return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("Employee: {0} {1} had the description updated in Active Directory.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now};

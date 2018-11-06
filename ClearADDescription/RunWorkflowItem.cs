@@ -30,8 +30,22 @@ namespace ItemToRun
                     return new Utilities.ItemRunResult { ResultID = 4, ResultText = String.Format("{0} could not be found in Active Directory.", emp.Username), TimeDone = DateTime.Now };
                 }
 
-                user.Description = " ";
-                user.Save();
+                int firstIndex = user.Description.IndexOf("**");
+
+                if (firstIndex > -1)
+                {
+                    int lastIndex = user.Description.IndexOf("**", firstIndex + 3) + 2;
+
+                    if (lastIndex > -1)
+                    {
+                        int count = lastIndex - firstIndex;
+
+                        String newDesc = user.Description.Remove(firstIndex, count);
+
+                        user.Description = newDesc;
+                        user.Save();
+                    }
+                }
 
                 return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("Employee: {0} {1} had the description cleared in Active Directory.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now };
             }

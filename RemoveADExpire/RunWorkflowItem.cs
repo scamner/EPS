@@ -20,6 +20,7 @@ namespace ItemToRun
                 String domain = util.GetParam("ADDomain", "Active Directory domain");
                 String adminName = util.GetParam("ADUsername", "Active Directory admin user");
                 String password = util.GetParam("ADPassword", "Active Directory admin user password");
+                String defaultPassword = util.GetParam("DefaultPassword", "default password for re-enabled users");
 
                 PrincipalContext context = new PrincipalContext(ContextType.Domain, domain, adminName, password);
                 UserPrincipal user = UserPrincipal.FindByIdentity(context, emp.Username);
@@ -35,6 +36,10 @@ namespace ItemToRun
                 }
 
                 user.AccountExpirationDate = null;
+                user.Save();
+
+                user.SetPassword(defaultPassword);
+                user.ExpirePasswordNow();
                 user.Save();
 
                 return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1} was removed from expiration in Active Directory.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now };
