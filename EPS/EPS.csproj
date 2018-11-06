@@ -212,7 +212,6 @@
     <Compile Include="Models\AddParamModel.cs" />
     <Compile Include="Models\AddWorkflowModel.cs" />
     <Compile Include="Models\AdminModel.cs" />
-    <Compile Include="Models\ADUser.cs" />
     <Compile Include="Models\GetWorkflowModel.cs" />
     <Compile Include="Models\LoadRunWorkflowsModel.cs" />
     <Compile Include="Models\NewLibraryItemModel.cs" />

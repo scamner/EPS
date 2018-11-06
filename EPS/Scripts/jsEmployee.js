@@ -7,13 +7,13 @@
     PopModal($('#divSyncADModal'), 'show', 'auto', true, false, 'FirstName');
 }
 
-function AddEmployee(ADGUID, Email, FirstName, LastName, Username) {
+function AddEmployee(ADGUID, Email, FirstName, LastName, Username, EmpNum) {
     var isManager = $('#IsManager_' + Username).is(':checked');
     var reportsTo = $('#ddlReportTo_' + Username).val();
 
     $.ajax({
         url: '/Dashboard/AddEmployee?ADGUID=' + ADGUID + '&Email=' + Email + '&FirstName=' + FirstName + '&LastName=' + LastName + '&Username=' + Username +
-            '&IsManager=' + isManager + '&ManagerID=' + reportsTo,
+            '&IsManager=' + isManager + '&ManagerID=' + reportsTo + '&EmpNum=' + EmpNum,
         type: 'POST',
         datatype: 'json',
         cache: false,

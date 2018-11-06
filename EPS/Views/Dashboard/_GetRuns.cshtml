@@ -48,7 +48,36 @@
             }
         });
     }
+
+    function RunWorkflowNow(runID) {
+        var conf = confirm("Are you sure you want to start that scheduled run now?");
+        if (conf === false) {
+            return;
+        }
+
+        $.ajax({
+            url: '/Dashboard/RunWorkflowNow',
+            type: 'POST',
+            data: { RunID: runID },
+            datatype: 'json',
+            cache: false,
+            success: function (data) {
+                if (data.Error === "") {
+                    var tab = $('#GetRuns');
+                    SetTab(tab);
+                }
+                else {
+                    ShowMessage(data.Error, 'show');
+                }
+            }
+        });
+    }
 </script>
+
+<div style="text-align: center; padding: 10px;">
+    See future runs?
+    @Html.CheckBox("chkFutureRuns", (Boolean)ViewBag.FutureRuns, new { @id = "chkFutureRuns", @onclick = "SetTab($('#GetRuns'));" })
+</div>
 
 @if (Model.Count() == 0)
 {
@@ -57,11 +86,6 @@
 else
 {
     <div style="color: red; text-align: left; font-size: x-small;"><label id="lblLastCheck"></label></div>
-
-    <div style="text-align: center; padding: 10px;">
-        Include future runs?
-        @Html.CheckBox("chkFutureRuns", (Boolean)ViewBag.FutureRuns, new { @id = "chkFutureRuns", @onclick = "SetTab($('#GetRuns'));" })
-    </div>
 
     <table class="webgrid-table">
         <tr>
@@ -103,6 +127,11 @@ else
                     @if (item.RunDate != "" || (item.RunStatus == "Pending" && item.StartTime < DateTime.Now.AddHours(-1)))
                     {
                         <input type="button" class="RedButton" style="margin-left: 5px;" value="Cancel" onclick="CancelWorkflowRun('@item.RunID');" />
+                    }
+
+                    @if (item.RunDate != "")
+                    {
+                        <input type="button" style="margin-left: 5px;" value="Run Now" onclick="RunWorkflowNow('@item.RunID');" />
                     }
                 </td>
             </tr>

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EPS.Models.ADUser>
+﻿@model IEnumerable<DataLayer.ADUser>
 
 <hr />
 
@@ -46,12 +46,13 @@
             @if (ViewBag.ForUser == false)
             {
                 <td>
-                    <input type="checkbox" name="IsManager" id="IsManager_@item.Username" />
+                    @{ String isAManager = item.IsManager == true ? "checked=\"checked\"" : ""; }
+                    <input type="checkbox" name="IsManager" id="IsManager_@item.Username" @isAManager />
                 </td>
                 <td>
                     @if (item.Exists == false)
                     {
-                        @Html.DropDownList("ManagerID", new SelectList(ViewBag.Managers, "Value", "Text"), new { @id = "ddlReportTo_" + item.Username })
+                        @Html.DropDownList("ManagerID", new SelectList(ViewBag.Managers, "Value", "Text", item.ManagerID), new { @id = "ddlReportTo_" + item.Username })
                     }
                 </td>
             }
@@ -67,7 +68,7 @@
 
                     if (ViewBag.ForUser == false)
                     {
-                        <input type="button" id="btnAddEmp_@item.Username" value="Add Employee" onclick="AddEmployee('@item.ADGUID', '@item.Email', '@item.FirstName', '@item.LastName', '@item.Username');" />
+                        <input type="button" id="btnAddEmp_@item.Username" value="Add Employee" onclick="AddEmployee('@item.ADGUID', '@item.Email', '@item.FirstName', '@item.LastName', '@item.Username', '@item.EmpNum');" />
                     }
                     else
                     {

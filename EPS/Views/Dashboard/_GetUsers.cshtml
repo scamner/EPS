@@ -47,6 +47,6 @@
 <div id="divSyncADAdminModal" style="display: none; padding: 10px;">
     <input type="image" src="~/Images/Close.png" class="CloseModal" alt="Close" align="right" onclick="PopModal($('#divSyncADAdminModal'), 'hide', '0'); " />
     <div style="border: medium ridge #C0C0C0; margin: 10px; background-color: #FFFFFF; border-radius: 5px; text-align: center; padding: 10px;">
-        @{ Html.RenderPartial("_SearchAD", new EPS.Models.ADUser { ForUser = true }); }
+        @{ Html.RenderPartial("_SearchAD", new DataLayer.ADUser { ForUser = true }); }
     </div>
 </div>

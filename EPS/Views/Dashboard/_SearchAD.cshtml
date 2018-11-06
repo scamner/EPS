@@ -1,4 +1,4 @@
-﻿@model EPS.Models.ADUser
+﻿@model DataLayer.ADUser
 
 @using (Ajax.BeginForm("SearchADForUsers", new AjaxOptions { UpdateTargetId = Model.ForUser == false ? "divSearchADUsersResult" : "divSearchADUsersResultAdmin", OnComplete = Model.ForUser == false ? "$('#divSearchADUsersResult').css('display', 'block');" : "$('#divSearchADUsersResultAdmin').css('display', 'block');" }))
 {

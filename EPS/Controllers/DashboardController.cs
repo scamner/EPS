@@ -259,7 +259,19 @@ namespace EPS.Controllers
         {
             try
             {
-                List<ADUser> users = util.SearchAD(FirstName, LastName, ForUser);
+                EmployeeFunctions ef = new EmployeeFunctions();
+                int AuditUserID = util.GetLoggedOnUser().UserID;
+
+                List<ADUser> users = ef.SearchAD(FirstName, LastName, ForUser, AuditUserID);
+
+                foreach (ADUser u in users)
+                {
+                    if (!String.IsNullOrEmpty(u.ManagerPath))
+                    {
+                        ef.AddMissingManagers(u.ManagerPath, AuditUserID);
+                    }
+                }
+
                 List<Employee> managers = db.Employees.Where(e => e.IsManager == true).ToList();
 
                 List<SelectListItem> managerList = new List<SelectListItem>();
@@ -289,66 +301,24 @@ namespace EPS.Controllers
             }
         }
 
-        public JsonResult AddEmployee(String ADGUID, String Email, String FirstName, String LastName, String Username, String IsManager, String ManagerID)
+        public JsonResult AddEmployee(String ADGUID, String Email, String FirstName, String LastName, String Username, String IsManager, String ManagerID, String EmpNum)
         {
-            using (var tran = db.Database.BeginTransaction())
+            try
             {
-                try
-                {
-                    Employee emp = new Employee
-                    {
-                        ADGUID = new Guid(ADGUID),
-                        Email = Email,
-                        FirstName = FirstName,
-                        EmpNum = "",
-                        LastName = LastName,
-                        Username = Username,
-                        IsManager = Convert.ToBoolean(IsManager)
-                    };
+                EmployeeFunctions emp = new EmployeeFunctions();
 
-                    if (!String.IsNullOrEmpty(ManagerID) && ManagerID != "0")
-                    {
-                        emp.ReportsTo = Convert.ToInt32(ManagerID);
-                    }
+                int UserID = util.GetLoggedOnUser().UserID;
 
-                    db.Employees.Add(emp);
-                    db.SaveChanges();
+                emp.AddEmployee(ADGUID, Email, FirstName, LastName, Username, IsManager, ManagerID, EmpNum, UserID);
 
-                    Employees_Log log = new Employees_Log
-                    {
-                        ADGUID = new Guid(ADGUID),
-                        Email = Email,
-                        FirstName = FirstName,
-                        EmpNum = "",
-                        LastName = LastName,
-                        Username = Username,
-                        IsManager = Convert.ToBoolean(IsManager),
-                        EmpID = emp.EmpID,
-                        ChangeDate = DateTime.Now,
-                        ChangedBy = util.GetLoggedOnUser().UserID,
-                        ChangeType = "Insert"
-                    };
+                return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                String error = util.ParseError(ex);
+                util.WriteErrorToLog("Dashboard/AddEmployee", ex, String.Format("First Name: {0}, Last Name: {1}", FirstName, LastName));
 
-                    if (!String.IsNullOrEmpty(ManagerID) && ManagerID != "0")
-                    {
-                        log.ReportsTo = Convert.ToInt32(ManagerID);
-                    }
-
-                    db.Employees_Log.Add(log);
-                    db.SaveChanges();
-
-                    tran.Commit();
-
-                    return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
-                }
-                catch (Exception ex)
-                {
-                    tran.Rollback();
-                    String error = util.ParseError(ex);
-                    util.WriteErrorToLog("Dashboard/AddEmployee", ex, String.Format("First Name: {0}, Last Name: {1}", FirstName, LastName));
-
-                    return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
-                }
+                return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -580,13 +550,14 @@ namespace EPS.Controllers
 
                     if (String.IsNullOrEmpty(RunDate) || Convert.ToDateTime(RunDate).Date == DateTime.Now.Date)
                     {
-                        var syncTask = new Task<RunWorkflows.WorkflowResult>(() => {
+                        var syncTask = new Task<RunWorkflows.WorkflowResult>(() =>
+                        {
                             RunWorkflows.WorkflowResult res = exec.RunWorkflow(run.RunID);
                             return res;
                         });
                         syncTask.RunSynchronously();
 
-                        if(syncTask.Result.Success == false)
+                        if (syncTask.Result.Success == false)
                         {
                             throw syncTask.Result.FullError;
                         }
@@ -606,6 +577,39 @@ namespace EPS.Controllers
 
                     return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
                 }
+            }
+        }
+
+        public JsonResult RunWorkflowNow(int RunID)
+        {
+            try
+            {
+                RunWorkflow run = db.RunWorkflows.Where(r => r.RunID == RunID).FirstOrDefault();
+                run.RunDate = null;
+                db.SaveChanges();
+
+                RunWorkflows.ExecuteWorkflows exec = new RunWorkflows.ExecuteWorkflows();
+
+                var syncTask = new Task<RunWorkflows.WorkflowResult>(() =>
+                {
+                    RunWorkflows.WorkflowResult res = exec.RunWorkflow(RunID);
+                    return res;
+                });
+                syncTask.RunSynchronously();
+
+                if (syncTask.Result.Success == false)
+                {
+                    throw syncTask.Result.FullError;
+                }
+
+                return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                String error = util.ParseError(ex);
+                util.WriteErrorToLog("Dashboard/RunWorkflowNow", ex, String.Format("Run ID: {0}", RunID));
+
+                return Json(new { Error = error }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -1499,7 +1503,7 @@ namespace EPS.Controllers
                     db.SaveChanges();
 
                     List<WorkflowItem> higherWFIs = db.WorkflowItems.Where(w => w.RunOrder > pos && w.WorkflowID == workflowID).ToList();
-                    foreach(WorkflowItem wr in higherWFIs)
+                    foreach (WorkflowItem wr in higherWFIs)
                     {
                         wr.RunOrder = wr.RunOrder - 1;
                         db.SaveChanges();
