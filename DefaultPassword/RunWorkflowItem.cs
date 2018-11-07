@@ -20,28 +20,30 @@ namespace ItemToRun
                 String domain = util.GetParam("ADDomain", "Active Directory domain");
                 String adminName = util.GetParam("ADUsername", "Active Directory admin user");
                 String password = util.GetParam("ADPassword", "Active Directory admin user password");
+                String defaultPassword = util.GetParam("DefaultPassword", "default password for re-enabled users");
 
                 PrincipalContext context = new PrincipalContext(ContextType.Domain, domain, adminName, password);
-                UserPrincipal user = UserPrincipal.FindByIdentity (context, emp.Username);
+                UserPrincipal user = UserPrincipal.FindByIdentity(context, emp.Username);
 
                 if (user == null)
                 {
-                    return new Utilities.ItemRunResult { ResultID = 4, ResultText = String.Format("{0} could not be found in Active Directory.", emp.Username), TimeDone = DateTime.Now};
+                    return new Utilities.ItemRunResult { ResultID = 4, ResultText = String.Format("{0} could not be found in Active Directory.", emp.Username), TimeDone = DateTime.Now };
                 }
 
-                if (user.AccountExpirationDate <= DateTime.Now)
+                if (user.AccountExpirationDate == null)
                 {
-                    return new Utilities.ItemRunResult { ResultID = 5, ResultText = String.Format("{0} was already expired in Active Directory.", emp.Username), TimeDone = DateTime.Now};
+                    return new Utilities.ItemRunResult { ResultID = 5, ResultText = String.Format("{0} was not expired in Active Directory.", emp.Username), TimeDone = DateTime.Now };
                 }
 
-                user.AccountExpirationDate = DateTime.Now;                
+                user.SetPassword(defaultPassword);
+                user.ExpirePasswordNow();
                 user.Save();
 
-                return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1} was set to expired in Active Directory.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now};
+                return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1} had their password set to the default in Active Directory.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now };
             }
             catch (Exception ex)
             {
-                return new Utilities.ItemRunResult { ResultID = 4, ResultText = String.Format("Error: {0}", ex.Message), TimeDone = DateTime.Now};
+                return new Utilities.ItemRunResult { ResultID = 4, ResultText = String.Format("Error: {0}", ex.Message), TimeDone = DateTime.Now };
             }
         }
     }
