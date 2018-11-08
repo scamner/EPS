@@ -44,6 +44,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefaultPassword", "DefaultP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentADGroups", "DocumentADGroups\DocumentADGroups.csproj", "{536DF46C-4B38-42AC-849E-9BDD1E883D62}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoveUserFilesToDisabled", "MoveUserFilesToDisabled\MoveUserFilesToDisabled.csproj", "{936E18DA-F157-4807-BB68-0C6BE30FF135}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoveUserFilesFromDisabled", "MoveUserFilesFromDisabled\MoveUserFilesFromDisabled.csproj", "{EDDDA48C-6B84-4FC8-9FCE-BD398969D905}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -122,6 +126,14 @@ Global
 		{536DF46C-4B38-42AC-849E-9BDD1E883D62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{536DF46C-4B38-42AC-849E-9BDD1E883D62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{536DF46C-4B38-42AC-849E-9BDD1E883D62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{936E18DA-F157-4807-BB68-0C6BE30FF135}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{936E18DA-F157-4807-BB68-0C6BE30FF135}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{936E18DA-F157-4807-BB68-0C6BE30FF135}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{936E18DA-F157-4807-BB68-0C6BE30FF135}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDDDA48C-6B84-4FC8-9FCE-BD398969D905}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDDDA48C-6B84-4FC8-9FCE-BD398969D905}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDDDA48C-6B84-4FC8-9FCE-BD398969D905}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDDDA48C-6B84-4FC8-9FCE-BD398969D905}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,6 +154,8 @@ Global
 		{AFACE33F-8CC1-49B2-8795-3D7B8E9B80FA} = {3659EE2F-1950-4216-B848-D4990154AD9C}
 		{500E0D0F-B913-447B-9E5D-88F51D7E21C4} = {3659EE2F-1950-4216-B848-D4990154AD9C}
 		{536DF46C-4B38-42AC-849E-9BDD1E883D62} = {3659EE2F-1950-4216-B848-D4990154AD9C}
+		{936E18DA-F157-4807-BB68-0C6BE30FF135} = {3659EE2F-1950-4216-B848-D4990154AD9C}
+		{EDDDA48C-6B84-4FC8-9FCE-BD398969D905} = {3659EE2F-1950-4216-B848-D4990154AD9C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C13BB5A-4F02-4A18-BD4E-A277D1C492C3}

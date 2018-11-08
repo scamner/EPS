@@ -119,6 +119,11 @@ else
                 </td>
                 <td style="text-align: left; @item.RunStatusColor">
                     @Html.DisplayFor(modelItem => item.RunStatus)
+
+                    @if (item.RunStatus == "Running")
+                    {
+                        <img src="~/Images/Loading.gif" style="height: 15px;" />
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.RunDate)
@@ -153,7 +158,7 @@ else
                             @foreach (DataLayer.RunResult i in item.ResultItems)
                             {
                                 string itemStartTime = i.TimeStarted.ToString("MM/dd/yyyy hh:mm tt");
-                                string itemEndTime = i.TimeCompleted.ToString("MM/dd/yyyy hh:mm tt");
+                                string itemEndTime = i.TimeCompleted == null ? "" : Convert.ToDateTime(i.TimeCompleted).ToString("MM/dd/yyyy hh:mm tt");
 
                                 <tr>
                                     <td style="text-align: left;">@i.WorkflowItem.LibraryItem.ItemName</td>

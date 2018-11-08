@@ -31,7 +31,6 @@ namespace DataLayer
         public virtual DbSet<LibraryItem> LibraryItems { get; set; }
         public virtual DbSet<Login> Logins { get; set; }
         public virtual DbSet<RunItem> RunItems { get; set; }
-        public virtual DbSet<RunResult> RunResults { get; set; }
         public virtual DbSet<RunResultStatu> RunResultStatus { get; set; }
         public virtual DbSet<RunWorkflow> RunWorkflows { get; set; }
         public virtual DbSet<User_Log> User_Log { get; set; }
@@ -47,5 +46,6 @@ namespace DataLayer
         public virtual DbSet<Parameters_Log> Parameters_Log { get; set; }
         public virtual DbSet<RunPayload> RunPayloads { get; set; }
         public virtual DbSet<RunPayloadItem> RunPayloadItems { get; set; }
+        public virtual DbSet<RunResult> RunResults { get; set; }
     }
 }

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Text;
 using System.IO;
 using System.Web;
+using System.Threading;
 
 namespace EPS.Controllers
 {
@@ -547,20 +548,13 @@ namespace EPS.Controllers
                     tran.Commit();
 
                     RunWorkflows.ExecuteWorkflows exec = new RunWorkflows.ExecuteWorkflows();
-
+                    
                     if (String.IsNullOrEmpty(RunDate) || Convert.ToDateTime(RunDate).Date == DateTime.Now.Date)
                     {
-                        var syncTask = new Task<RunWorkflows.WorkflowResult>(() =>
-                        {
-                            RunWorkflows.WorkflowResult res = exec.RunWorkflow(run.RunID);
-                            return res;
-                        });
-                        syncTask.RunSynchronously();
+                        exec.RunID = run.RunID;
+                        Task foo = Task.Run(() => exec.RunWorkflow());
 
-                        if (syncTask.Result.Success == false)
-                        {
-                            throw syncTask.Result.FullError;
-                        }
+                        System.Threading.Thread.Sleep(2000);
                     }
 
                     return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
@@ -590,17 +584,10 @@ namespace EPS.Controllers
 
                 RunWorkflows.ExecuteWorkflows exec = new RunWorkflows.ExecuteWorkflows();
 
-                var syncTask = new Task<RunWorkflows.WorkflowResult>(() =>
-                {
-                    RunWorkflows.WorkflowResult res = exec.RunWorkflow(RunID);
-                    return res;
-                });
-                syncTask.RunSynchronously();
+                exec.RunID = run.RunID;
+                Task foo = Task.Run(() => exec.RunWorkflow());
 
-                if (syncTask.Result.Success == false)
-                {
-                    throw syncTask.Result.FullError;
-                }
+                System.Threading.Thread.Sleep(2000);
 
                 return Json(new { Error = "" }, JsonRequestBehavior.AllowGet);
             }

@@ -30,8 +30,8 @@ namespace DataLayer
         public virtual LibraryItem LibraryItem { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RunItem> RunItems { get; set; }
+        public virtual Workflow Workflow { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RunResult> RunResults { get; set; }
-        public virtual Workflow Workflow { get; set; }
     }
 }

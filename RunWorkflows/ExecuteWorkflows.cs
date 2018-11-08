@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace RunWorkflows
 {
@@ -11,7 +12,9 @@ namespace RunWorkflows
         DataLayer.EPSEntities db = new DataLayer.EPSEntities();
         Utilities util = new Utilities();
 
-        public WorkflowResult RunWorkflow(int RunID)
+        public int RunID { get; set; }
+
+        public void RunWorkflow()
         {
             WorkflowResult finalResult = new WorkflowResult();
             String LastItemRun = "";
@@ -36,6 +39,18 @@ namespace RunWorkflows
 
                     WorkflowItem wfi = db.WorkflowItems.Where(w => w.ItemID == item.ItemID).FirstOrDefault();
 
+                    RunResult rr = new RunResult
+                    {
+                        ResultString = "",
+                        RunID = RunID,
+                        ResultID = 1,
+                        TimeStarted = DateTime.Now,
+                        WFItemID = wfi.WFItemID
+                    };
+
+                    db.RunResults.Add(rr);
+                    db.SaveChanges();
+
                     Assembly assembly = Assembly.LoadFrom(li.LibraryPath);
                     Type type = assembly.GetType("ItemToRun.RunWorkflowItem");
                     object instanceOfMyType = Activator.CreateInstance(type);
@@ -52,28 +67,19 @@ namespace RunWorkflows
                     String ResultText = props.ElementAt(1).GetValue(result, null).ToString();
                     DateTime TimeDone = Convert.ToDateTime(props.ElementAt(2).GetValue(result, null));
 
-                    RunResult rr = new RunResult
-                    {
-                        ResultString = ResultText,
-                        RunID = RunID,
-                        ResultID = ResultID,
-                        TimeCompleted = TimeDone,
-                        TimeStarted = StartTime,
-                        WFItemID = wfi.WFItemID
-                    };
+                    RunResult rrDone = db.RunResults.Where(r => r.RunResultID == rr.RunResultID).FirstOrDefault();
 
-                    db.RunResults.Add(rr);
+                    rrDone.TimeCompleted = DateTime.Now;
+                    rrDone.ResultID = ResultID;
+                    rrDone.ResultString = ResultText;
                     db.SaveChanges();
 
                     finalResult = new WorkflowResult { Success = true, ResultString = "" };
                 }
-
-                return finalResult;
             }
             catch (Exception ex)
             {
                 finalResult = new WorkflowResult { Success = false, ResultString = String.Format("There was an error during the run in the {0} item.", LastItemRun), FullError = ex };
-                return finalResult;
             }
         }
     }
