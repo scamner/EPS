@@ -59,23 +59,32 @@ namespace ItemToRun
                     return new Utilities.ItemRunResult { ResultID = 5, ResultText = String.Format("{0} {1}'s home folder is not set.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now };
                 }
 
-                if (!System.IO.Directory.Exists(homeFolder))
+                foreach (string dirPath in Directory.GetDirectories(userFolder, "*", SearchOption.AllDirectories))
                 {
-                    System.IO.Directory.CreateDirectory(homeFolder);
-                }
-
-                DirectoryInfo dirInfo = new DirectoryInfo(homeFolder);
-                List<String> allFiles = Directory.GetFiles(userFolder, "*.*", SearchOption.AllDirectories).ToList();
-
-                foreach (string file in allFiles)
-                {
-                    FileInfo mFile = new FileInfo(file);
-
-                    if (new FileInfo(dirInfo + "\\" + mFile.Name).Exists == false)
+                    string newPath = dirPath.Replace(userFolder, homeFolder);
+                    if (!Directory.Exists(newPath))
                     {
-                        mFile.MoveTo(dirInfo + "\\" + mFile.Name);
+                        Directory.CreateDirectory(newPath);
                     }
                 }
+
+                foreach (string oldFile in Directory.GetFiles(userFolder, "*.*", SearchOption.AllDirectories))
+                {
+                    File.SetAttributes(oldFile, System.IO.FileAttributes.Normal);
+                }
+
+                foreach (string oldFile in Directory.GetFiles(userFolder, "*.*", SearchOption.AllDirectories))
+                {
+                    String newFile = oldFile.Replace(userFolder, homeFolder);
+
+                    if (!File.Exists(newFile))
+                    {
+                        File.SetAttributes(oldFile, System.IO.FileAttributes.Normal);
+                        File.Move(oldFile, newFile);
+                    }
+                }
+
+                System.IO.Directory.Delete(userFolder, true);
 
                 return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1}'s home folder documents were moved from '{3}' to '{2}'.", emp.FirstName, emp.LastName, homeFolder, userFolder), TimeDone = DateTime.Now };
             }

@@ -64,21 +64,28 @@ namespace ItemToRun
                     return new Utilities.ItemRunResult { ResultID = 5, ResultText = String.Format("{0} {1}'s home folder is not set.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now };
                 }
 
-                foreach (string dirPath in Directory.GetDirectories(homeFolder, "*",
-                    SearchOption.AllDirectories))
+                foreach (string dirPath in Directory.GetDirectories(homeFolder, "*", SearchOption.AllDirectories))
                 {
-                    if (!Directory.Exists(dirPath))
+                    string newPath = dirPath.Replace(homeFolder, userFolder);
+                    if (!Directory.Exists(newPath))
                     {
-                        Directory.CreateDirectory(dirPath.Replace(homeFolder, userFolder));
+                        Directory.CreateDirectory(newPath);
                     }
                 }
 
-                foreach (string newPath in Directory.GetFiles(homeFolder, "*.*",
-                    SearchOption.AllDirectories))
+                foreach (string oldFile in Directory.GetFiles(homeFolder, "*.*", SearchOption.AllDirectories))
                 {
-                    if (!File.Exists(newPath))
+                    File.SetAttributes(oldFile, System.IO.FileAttributes.Normal);
+                }
+
+                foreach (string oldFile in Directory.GetFiles(homeFolder, "*.*", SearchOption.AllDirectories))
+                {
+                    String newFile = oldFile.Replace(homeFolder, userFolder);
+
+                    if (!File.Exists(newFile))
                     {
-                        File.Copy(newPath, newPath.Replace(homeFolder, userFolder), true);
+                        File.SetAttributes(oldFile, System.IO.FileAttributes.Normal);
+                        File.Move(oldFile, newFile);
                     }
                 }
 
