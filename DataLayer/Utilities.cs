@@ -19,8 +19,9 @@ namespace DataLayer
     {
         EPSEntities db = new EPSEntities();
 
-        public void SendEmail(String FromEmail, String ToEmail, String[] CC, String[] BCC, String Subject, String Body)
+        public void SendEmail(int EmpID, String FromEmail, String ToEmail, String[] CC, String[] BCC, String Subject, String Body)
         {
+            Employee emp = db.Employees.Where(e => e.EmpID == EmpID).FirstOrDefault();
             Parameter param = db.Parameters.Where(p => p.ParamName == "EmailServer").FirstOrDefault();
 
             if (param == null)
@@ -38,6 +39,12 @@ namespace DataLayer
             if (BCC != null && BCC.Length > 0)
             {
                 foreach (String e in BCC) { message.Bcc.Add(e); }
+            }
+
+            foreach (System.Reflection.PropertyInfo prop in typeof(Employee).GetProperties())
+            {
+                Body = Body.Replace(String.Format("[{0}]", prop.Name), prop.GetValue(emp).ToString());
+                Subject = Subject.Replace(String.Format("[{0}]", prop.Name), prop.GetValue(emp).ToString());
             }
 
             message.Subject = Subject;

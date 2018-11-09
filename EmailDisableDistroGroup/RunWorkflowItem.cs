@@ -1,9 +1,6 @@
 ﻿using DataLayer;
 using System;
-using System.Collections.Generic;
-using System.Data.Linq;
 using System.Linq;
-using System.Reflection;
 
 namespace ItemToRun
 {
@@ -25,13 +22,7 @@ namespace ItemToRun
                 String body = util.GetParam("DisableDistroGroupBody", "message to disable distro group to notify them of a disabled employee");
                 String subject = util.GetParam("DisableDistroGroupSubject", "subject line for the email to send the disable distro group to notify them of a disabled employee");
 
-                foreach (PropertyInfo prop in typeof(Employee).GetProperties())
-                {
-                    body = body.Replace(String.Format("[{0}]", prop.Name), prop.GetValue(emp).ToString());
-                    subject = subject.Replace(String.Format("[{0}]", prop.Name), prop.GetValue(emp).ToString());
-                }
-
-                util.SendEmail(from, to, null, null, subject, body);
+                util.SendEmail(EmpID, from, to, null, null, subject, body);
 
                 return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("The email was sent to '{0}' regarding {1} {2}.", disableGroup, emp.FirstName, emp.LastName), TimeDone = DateTime.Now};
             }

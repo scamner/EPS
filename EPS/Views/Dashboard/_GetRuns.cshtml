@@ -155,7 +155,7 @@ else
                                 <th>Run Complete:</th>
                                 <th>Result:</th>
                             </tr>
-                            @foreach (DataLayer.RunResult i in item.ResultItems)
+                            @foreach (DataLayer.RunResult i in item.ResultItems.OrderBy(r => r.WFItemID))
                             {
                                 string itemStartTime = i.TimeStarted.ToString("MM/dd/yyyy hh:mm tt");
                                 string itemEndTime = i.TimeCompleted == null ? "" : Convert.ToDateTime(i.TimeCompleted).ToString("MM/dd/yyyy hh:mm tt");
