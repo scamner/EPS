@@ -33,7 +33,7 @@ namespace ItemToRun
                 PrincipalContext context = new PrincipalContext(ContextType.Domain, domain, adminName, password);
                 UserPrincipal user = UserPrincipal.FindByIdentity(context, emp.Username);
                 DirectoryEntry DE = (DirectoryEntry)user.GetUnderlyingObject();
-                String userFolder = String.Format("{0}\\{1}\\UserFiles", disabledFolderPath, user.SamAccountName);
+                String userFolder = String.Format("{0}\\{1}\\Profile", disabledFolderPath, user.SamAccountName);
 
                 if (!System.IO.Directory.Exists(disabledFolderPath))
                 {
@@ -45,37 +45,37 @@ namespace ItemToRun
                     return new Utilities.ItemRunResult { ResultID = 4, ResultText = String.Format("{0} could not be found in Active Directory.", emp.Username), TimeDone = DateTime.Now };
                 }
 
-                var HD = DE.InvokeGet("TerminalServicesHomeDirectory");
-
-                if (HD == null)
+                if (!System.IO.Directory.Exists(userFolder))
                 {
-                    HD = user.HomeDirectory;
+                    System.IO.Directory.CreateDirectory(userFolder);
                 }
 
-                String homeFolder = HD == null ? "" : HD.ToString();
+                var profilePath = DE.InvokeGet("TerminalServicesProfilePath");
+
+                String homeFolder = profilePath == null ? "" : profilePath.ToString();
 
                 if (String.IsNullOrEmpty(homeFolder))
                 {
-                    return new Utilities.ItemRunResult { ResultID = 5, ResultText = String.Format("{0} {1}'s home folder is not set.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now };
+                    return new Utilities.ItemRunResult { ResultID = 5, ResultText = String.Format("{0} {1}'s terminal services profile folder is not set.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now };
                 }
 
-                foreach (string dirPath in Directory.GetDirectories(userFolder, "*", SearchOption.AllDirectories))
+                foreach (string dirPath in Directory.GetDirectories(homeFolder, "*", SearchOption.AllDirectories))
                 {
-                    string newPath = dirPath.Replace(userFolder, homeFolder);
+                    string newPath = dirPath.Replace(homeFolder, userFolder);
                     if (!Directory.Exists(newPath))
                     {
                         Directory.CreateDirectory(newPath);
                     }
                 }
 
-                foreach (string oldFile in Directory.GetFiles(userFolder, "*.*", SearchOption.AllDirectories))
+                foreach (string oldFile in Directory.GetFiles(homeFolder, "*.*", SearchOption.AllDirectories))
                 {
                     File.SetAttributes(oldFile, System.IO.FileAttributes.Normal);
                 }
 
-                foreach (string oldFile in Directory.GetFiles(userFolder, "*.*", SearchOption.AllDirectories))
+                foreach (string oldFile in Directory.GetFiles(homeFolder, "*.*", SearchOption.AllDirectories))
                 {
-                    String newFile = oldFile.Replace(userFolder, homeFolder);
+                    String newFile = oldFile.Replace(homeFolder, userFolder);
 
                     if (!File.Exists(newFile))
                     {
@@ -84,9 +84,9 @@ namespace ItemToRun
                     }
                 }
 
-                System.IO.Directory.Delete(userFolder, true);
+                System.IO.Directory.Delete(homeFolder, true);
 
-                return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1}'s home folder documents were moved from '{3}' to '{2}'.", emp.FirstName, emp.LastName, homeFolder, userFolder), TimeDone = DateTime.Now };
+                return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1}'s profile folder was moved from '{3}' to '{2}'.", emp.FirstName, emp.LastName, userFolder, homeFolder), TimeDone = DateTime.Now };
             }
             catch (Exception ex)
             {

@@ -212,6 +212,7 @@ function GetWorkflowItems(wfid) {
 }
 
 function RunWorkflow() {
+    var canRun = true;
     var wfid = $('#selWorkflowsToRun').val();
     var itemIDs = new Array();
     var htmlOptions = new Array();
@@ -232,17 +233,30 @@ function RunWorkflow() {
             $(this).find(':input').each(function () {
                 if ($(this).val().indexOf("&") > -1) {
                     ShowMessage('You cannot include "&" in the data, that is a reserved character.', 'show');
+                    canRun = false;
                     return false;
                 }
 
                 if ($(this).val().indexOf("=") > -1) {
                     ShowMessage('You cannot include "=" in the data, that is a reserved character.', 'show');
+                    canRun = false;
                     return false;
                 }
             });
 
             var id = $(this).attr("data-val-id");
-            var data = $(this).find(':input').serialize();
+            var data = $(this).find(':input').serialize();            
+
+            $(this).find(':input').each(function () {
+                var required = $(this).hasClass('required');
+                var thisVal = $(this).val();
+
+                if (required === true && (thisVal === null || thisVal === '')) {
+                    ShowMessage('You are missing required data.', 'show');
+                    canRun = false;
+                    return false;
+                }
+            });
 
             if (data !== "") {
                 htmlOptions.push(id + ':' + data);
@@ -252,23 +266,25 @@ function RunWorkflow() {
 
     var empID = $('#hidRunWorkflowEmpID').val();
 
-    $.ajax({
-        url: '/Dashboard/RunWorkflow',
-        data: { EmpID: empID, WorkflowID: wfid, ItemIDs: itemIDs, HtmlOptions: htmlOptions, RunDate: runDate },
-        type: 'POST',
-        datatype: 'json',
-        cache: false,
-        success: function (data) {
-            if (data.Error === "") {
-                PopModal($('#divLoadRunWorkflowModal'), 'hide');
-                var tab = $('#GetRuns');
-                SetTab(tab);
+    if (canRun === true) {
+        $.ajax({
+            url: '/Dashboard/RunWorkflow',
+            data: { EmpID: empID, WorkflowID: wfid, ItemIDs: itemIDs, HtmlOptions: htmlOptions, RunDate: runDate },
+            type: 'POST',
+            datatype: 'json',
+            cache: false,
+            success: function (data) {
+                if (data.Error === "") {
+                    PopModal($('#divLoadRunWorkflowModal'), 'hide');
+                    var tab = $('#GetRuns');
+                    SetTab(tab);
+                }
+                else {
+                    ShowMessage(data.Error, 'show');
+                }
             }
-            else {
-                ShowMessage(data.Error, 'show');
-            }
-        }
-    });
+        });
+    }
 }
 
 function AddDays() {

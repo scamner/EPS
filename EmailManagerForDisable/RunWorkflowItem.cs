@@ -42,7 +42,7 @@ namespace ItemToRun
                     subject = subject.Replace(String.Format("[{0}]", prop.Name), prop.GetValue(emp).ToString());
                 }
 
-                util.SendEmail(from, to, null, null, subject, body);
+                util.SendEmail(emp.EmpID, from, to, null, null, subject, body);
 
                 return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("The email was sent to {0} {1}.", manager.FirstName, manager.LastName), TimeDone = DateTime.Now};
             }

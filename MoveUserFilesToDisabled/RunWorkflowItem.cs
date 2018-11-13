@@ -33,7 +33,7 @@ namespace ItemToRun
                 PrincipalContext context = new PrincipalContext(ContextType.Domain, domain, adminName, password);
                 UserPrincipal user = UserPrincipal.FindByIdentity(context, emp.Username);
                 DirectoryEntry DE = (DirectoryEntry)user.GetUnderlyingObject();
-                String userFolder = String.Format("{0}\\{1}", disabledFolderPath, user.SamAccountName);
+                String userFolder = String.Format("{0}\\{1}\\UserFiles", disabledFolderPath, user.SamAccountName);
 
                 if (!System.IO.Directory.Exists(disabledFolderPath))
                 {

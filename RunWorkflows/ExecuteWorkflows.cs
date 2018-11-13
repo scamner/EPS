@@ -18,13 +18,14 @@ namespace RunWorkflows
         {
             WorkflowResult finalResult = new WorkflowResult();
             String LastItemRun = "";
+            int LastRunResultID = 0;
 
             try
             {
                 RunWorkflow run = db.RunWorkflows.Where(r => r.RunID == RunID).FirstOrDefault();
                 List<vwRunItem> items = db.vwRunItems.Where(i => i.RunID == RunID).OrderBy(i => i.RunOrder).ToList();
                 RunPayload pl = run.RunPayloads.FirstOrDefault();
-
+                
                 foreach (vwRunItem item in items)
                 {
                     DateTime StartTime = DateTime.Now;
@@ -50,6 +51,8 @@ namespace RunWorkflows
 
                     db.RunResults.Add(rr);
                     db.SaveChanges();
+
+                    LastRunResultID = rr.RunResultID;
 
                     Assembly assembly = Assembly.LoadFrom(li.LibraryPath);
                     Type type = assembly.GetType("ItemToRun.RunWorkflowItem");
@@ -80,6 +83,12 @@ namespace RunWorkflows
             catch (Exception ex)
             {
                 finalResult = new WorkflowResult { Success = false, ResultString = String.Format("There was an error during the run in the {0} item.", LastItemRun), FullError = ex };
+
+                RunResult rrError = db.RunResults.Where(r => r.RunResultID == LastRunResultID).FirstOrDefault();
+                rrError.ResultID = 4;
+                rrError.ResultString = String.Format("Error: {0}", ex.Message);
+                rrError.TimeCompleted = DateTime.Now;
+                db.SaveChanges();
             }
         }
     }

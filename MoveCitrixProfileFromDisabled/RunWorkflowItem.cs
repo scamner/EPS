@@ -33,7 +33,7 @@ namespace ItemToRun
                 PrincipalContext context = new PrincipalContext(ContextType.Domain, domain, adminName, password);
                 UserPrincipal user = UserPrincipal.FindByIdentity(context, emp.Username);
                 DirectoryEntry DE = (DirectoryEntry)user.GetUnderlyingObject();
-                String userFolder = String.Format("{0}\\{1}\\UserFiles", disabledFolderPath, user.SamAccountName);
+                String userFolder = String.Format("{0}\\{1}\\Profile", disabledFolderPath, user.SamAccountName);
 
                 if (!System.IO.Directory.Exists(disabledFolderPath))
                 {
@@ -45,14 +45,9 @@ namespace ItemToRun
                     return new Utilities.ItemRunResult { ResultID = 4, ResultText = String.Format("{0} could not be found in Active Directory.", emp.Username), TimeDone = DateTime.Now };
                 }
 
-                var HD = DE.InvokeGet("TerminalServicesHomeDirectory");
+                var profilePath = DE.InvokeGet("TerminalServicesProfilePath");
 
-                if (HD == null)
-                {
-                    HD = user.HomeDirectory;
-                }
-
-                String homeFolder = HD == null ? "" : HD.ToString();
+                String homeFolder = profilePath == null ? "" : profilePath.ToString();
 
                 if (String.IsNullOrEmpty(homeFolder))
                 {
@@ -86,7 +81,7 @@ namespace ItemToRun
 
                 System.IO.Directory.Delete(userFolder, true);
 
-                return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1}'s home folder documents were moved from '{3}' to '{2}'.", emp.FirstName, emp.LastName, homeFolder, userFolder), TimeDone = DateTime.Now };
+                return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1}'s profile folder was moved from '{3}' to '{2}'.", emp.FirstName, emp.LastName, homeFolder, userFolder), TimeDone = DateTime.Now };
             }
             catch (Exception ex)
             {
