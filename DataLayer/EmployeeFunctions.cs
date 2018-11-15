@@ -297,7 +297,7 @@ namespace DataLayer
                         m.Properties["mail"].Count > 0 ? m.Properties["mail"][0].ToString() : "",
                         m.Properties["givenName"].Count > 0 ? m.Properties["givenName"][0].ToString() : "",
                         m.Properties["sn"].Count > 0 ? m.Properties["sn"][0].ToString() : "",
-                        m.Username,
+                        m.Properties["sAMAccountName"][0].ToString(),
                         "true",
                         manager != null ? manager.EmpID.ToString() : "",
                         m.Properties["employeeNumber"].Count > 0 ? m.Properties["employeeNumber"][0].ToString() : "",

@@ -15,7 +15,7 @@ namespace ItemToRun
             {
                 Utilities util = new Utilities();
 
-                String emailServer = util.GetParam("EmailServer", "smtp (email) server name");
+                String emailServer = util.GetParam("SMTPServer", "smtp (email) server name");
                 String from = util.GetParam("EmailFrom", "email address to send from");
                 String to = util.GetParam("HelpDeskEmail", "email address to send to for helpdesk tickets");
                 String body = util.GetParam("ClonedLaptopBody", "message to create a helpdesk ticket for cloned laptops");

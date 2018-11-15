@@ -15,7 +15,7 @@ namespace ItemToRun
             {
                 Utilities util = new Utilities();
 
-                String emailServer = util.GetParam("EmailServer", "smtp (email) server name");
+                String emailServer = util.GetParam("SMTPServer", "smtp (email) server name");
                 String from = util.GetParam("EmailFrom", "email address to send from");
                 String to = util.GetParam("WifiAdminEmailAddress", "email address for the wifi admin");
                 String body = util.GetParam("WifiAdminNotifyBody", "message to wifi admin to notify them of a disabled employee");

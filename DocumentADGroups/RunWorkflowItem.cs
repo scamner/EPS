@@ -30,7 +30,7 @@ namespace ItemToRun
 
                 PrincipalContext context = new PrincipalContext(ContextType.Domain, domain, adminName, password);
                 UserPrincipal user = UserPrincipal.FindByIdentity(context, emp.Username);
-                String userFolder = String.Format("{0}\\{1}", disabledFolderPath, user.SamAccountName);
+                String userFolder = String.Format("{0}\\{1}\\{2}", disabledFolderPath, DateTime.Now.Year.ToString(), user.SamAccountName);
                 String groupNameFilePath = String.Format("{0}\\ADGroups.txt", userFolder);
                 StringBuilder sbGroupNamesFile = new StringBuilder();
 

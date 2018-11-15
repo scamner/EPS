@@ -27,7 +27,7 @@ namespace ItemToRun
                     throw new Exception(String.Format("The manager assigned to {0} {1} does not have an email set.", emp.FirstName, emp.LastName));
                 }
 
-                String emailServer = util.GetParam("EmailServer", "smtp (email) server name");
+                String emailServer = util.GetParam("SMTPServer", "smtp (email) server name");
                 String from = util.GetParam("EmailFrom", "email address to send from");
                 String to = manager.Email;
                 String body = util.GetParam("FinalDisableNotifyBody", "message to disable distro group to notify them of a disabled employee");

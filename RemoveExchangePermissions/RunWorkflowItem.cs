@@ -1,0 +1,46 @@
+﻿using DataLayer;
+using System;
+using System.Collections.Generic;
+using System.Data.Linq;
+using System.Linq;
+using System.Text;
+
+namespace ItemToRun
+{
+    public class RunWorkflowItem
+    {
+        public Utilities.ItemRunResult RunItem(int EmpID, RunPayload RunPayload)
+        {
+            DataLayer.EPSEntities db = new DataLayer.EPSEntities();
+            Utilities util = new Utilities();
+
+            Employee emp = db.Employees.Where(e => e.EmpID == EmpID).FirstOrDefault();
+            String domain = util.GetParam("ADDomain", "Active Directory Domain name");
+
+            String Script = "";
+
+            try
+            {               
+                Script = "$CallEMS = \". '$env:ExchangeInstallPath\\bin\\RemoteExchange.ps1'; Connect-ExchangeServer -auto -ClientApplication:ManagementShell\"; Invoke-Expression $CallEMS;";
+                Script = Script + "Get-Mailbox | Remove-MailboxPermission -User " + emp.Username + " -AccessRights Fullaccess -InheritanceType all -Confirm:$false;";
+                Script = Script + "Get-PublicFolder -Recurse | Remove-PublicFolderClientPermission -User " + emp.Username + " -Confirm:$false;";
+
+                String result = util.RunPSScript(Script);
+
+                if (!result.Contains("There is no existing permission entry found for user"))
+                {
+                    if (!String.IsNullOrEmpty(result))
+                    {
+                        throw new Exception(result);
+                    }
+                }
+
+                return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1}'s access and public folder permissions were removed.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now };
+            }
+            catch (Exception ex)
+            {
+                return new Utilities.ItemRunResult { ResultID = 4, ResultText = String.Format("Error: {0}... Script Run: {1}", ex.Message, Script), TimeDone = DateTime.Now };
+            }
+        }
+    }
+}

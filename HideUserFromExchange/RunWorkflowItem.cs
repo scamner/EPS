@@ -25,6 +25,11 @@ namespace ItemToRun
 
                 String result = util.RunPSScript(Script);
 
+                if (!String.IsNullOrEmpty(result))
+                {
+                    throw new Exception(result);
+                }
+
                 return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1} was hidden from the Exchange address lists.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now};
             }
             catch (Exception ex)

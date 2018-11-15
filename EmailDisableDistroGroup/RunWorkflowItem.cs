@@ -16,7 +16,7 @@ namespace ItemToRun
                 Utilities util = new Utilities();
 
                 String disableGroup = util.GetParam("DisableDistroGroupEmail", "Disable Distro Group email address");
-                String emailServer = util.GetParam("EmailServer", "smtp (email) server name");
+                String emailServer = util.GetParam("SMTPServer", "smtp (email) server name");
                 String from = util.GetParam("EmailFrom", "email address to send from");
                 String to = disableGroup;
                 String body = util.GetParam("DisableDistroGroupBody", "message to disable distro group to notify them of a disabled employee");

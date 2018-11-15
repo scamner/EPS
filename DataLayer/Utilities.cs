@@ -22,7 +22,7 @@ namespace DataLayer
         public void SendEmail(int EmpID, String FromEmail, String ToEmail, String[] CC, String[] BCC, String Subject, String Body)
         {
             Employee emp = db.Employees.Where(e => e.EmpID == EmpID).FirstOrDefault();
-            Parameter param = db.Parameters.Where(p => p.ParamName == "EmailServer").FirstOrDefault();
+            Parameter param = db.Parameters.Where(p => p.ParamName == "SMTPServer").FirstOrDefault();
 
             if (param == null)
             {
@@ -108,12 +108,17 @@ namespace DataLayer
             psh.Commands.AddScript(scriptText);
             psh.Runspace = runspace;
             Collection<PSObject> results = psh.Invoke();
+            Collection<ErrorRecord> errors = psh.Streams.Error.ReadAll();
 
             StringBuilder stringBuilder = new StringBuilder();
-            foreach (PSObject obj in results)
+            foreach (ErrorRecord obj in errors)
             {
-                stringBuilder.AppendLine(obj.ToString());
+                stringBuilder.AppendFormat("Script Error: {0} ", obj.Exception.Message.ToString());
             }
+
+            runspace.Close();
+            runspace.Dispose();
+            psh.Dispose();
 
             return stringBuilder.ToString();
         }

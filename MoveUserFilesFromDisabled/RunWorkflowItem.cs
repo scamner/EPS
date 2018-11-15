@@ -33,7 +33,6 @@ namespace ItemToRun
                 PrincipalContext context = new PrincipalContext(ContextType.Domain, domain, adminName, password);
                 UserPrincipal user = UserPrincipal.FindByIdentity(context, emp.Username);
                 DirectoryEntry DE = (DirectoryEntry)user.GetUnderlyingObject();
-                String userFolder = String.Format("{0}\\{1}\\UserFiles", disabledFolderPath, user.SamAccountName);
 
                 if (!System.IO.Directory.Exists(disabledFolderPath))
                 {
@@ -43,6 +42,37 @@ namespace ItemToRun
                 if (user == null)
                 {
                     return new Utilities.ItemRunResult { ResultID = 4, ResultText = String.Format("{0} could not be found in Active Directory.", emp.Username), TimeDone = DateTime.Now };
+                }
+
+                String userFolder = "";
+
+                foreach (string dirPath in Directory.GetDirectories(disabledFolderPath, "*", SearchOption.AllDirectories))
+                {
+                    if (userFolder != "")
+                    {
+                        break;
+                    }
+
+                    int yearFolder = 0;
+                    DirectoryInfo di = new DirectoryInfo(dirPath);
+                    string currentFolder = di.Name;
+
+                    if (currentFolder.Length == 4 && int.TryParse(currentFolder, out yearFolder) == true)
+                    {
+                        foreach (string uf in Directory.GetDirectories(di.FullName, "*", SearchOption.TopDirectoryOnly))
+                        {
+                            if (uf.EndsWith("\\" + emp.Username))
+                            {
+                                userFolder = uf;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (userFolder == "")
+                {
+                    return new Utilities.ItemRunResult { ResultID = 5, ResultText = String.Format("{0} {1}'s folder was not found in the disabled folder path.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now };
                 }
 
                 var HD = DE.InvokeGet("TerminalServicesHomeDirectory");
