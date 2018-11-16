@@ -68,6 +68,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportArchive", "ExportArch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportEmployees", "ImportEmployees\ImportEmployees.csproj", "{89B2E2CD-0F91-4470-AD72-278E2462C954}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunPendingWorkflows", "RunPendingWorkflows\RunPendingWorkflows.csproj", "{1A78845D-0D76-4182-83B4-EB8ABEECCAA3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -194,6 +196,10 @@ Global
 		{89B2E2CD-0F91-4470-AD72-278E2462C954}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89B2E2CD-0F91-4470-AD72-278E2462C954}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89B2E2CD-0F91-4470-AD72-278E2462C954}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A78845D-0D76-4182-83B4-EB8ABEECCAA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A78845D-0D76-4182-83B4-EB8ABEECCAA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A78845D-0D76-4182-83B4-EB8ABEECCAA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A78845D-0D76-4182-83B4-EB8ABEECCAA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

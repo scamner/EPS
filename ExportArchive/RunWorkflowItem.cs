@@ -51,7 +51,7 @@ namespace ItemToRun
 
             if (archiveName == null || String.IsNullOrEmpty(archiveName.ToString()))
             {
-                return new Utilities.ItemRunResult { ResultID = 4, ResultText = String.Format("{0} does not have an archive folder set.", emp.Username), TimeDone = DateTime.Now };
+                return new Utilities.ItemRunResult { ResultID = 5, ResultText = String.Format("{0} does not have an archive folder set.", emp.Username), TimeDone = DateTime.Now };
             }
 
             if (!System.IO.Directory.Exists(userFolder))
@@ -64,7 +64,7 @@ namespace ItemToRun
             try
             {
                 Script = "$CallEMS = \". '$env:ExchangeInstallPath\\bin\\RemoteExchange.ps1'; Connect-ExchangeServer -auto -ClientApplication:ManagementShell\"; Invoke-Expression $CallEMS; ";
-                Script = Script + String.Format("New-MailboxExportRequest -Mailbox {0} -FilePath \"{1}\\MailboxExport.pst\" -IsArchive -Priority High", emp.Username, userFolder);
+                Script = Script + String.Format("New-MailboxExportRequest -Mailbox {0} -FilePath \"{1}\\ArchiveExport.pst\" -IsArchive -Priority High", emp.Username, userFolder);
 
                 String result = util.RunPSScript(Script);
 
