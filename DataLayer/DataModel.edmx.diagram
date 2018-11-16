@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="d642fe2b9b9e4e42b19dbc2aa5959fa6" Name="Diagram1" ZoomLevel="95">
+      <Diagram DiagramId="d642fe2b9b9e4e42b19dbc2aa5959fa6" Name="Diagram1" ZoomLevel="85">
         <EntityTypeShape EntityType="EPSModel.Employee" Width="1.5" PointX="3.75" PointY="0.75" />
         <EntityTypeShape EntityType="EPSModel.Employees_Log" Width="1.5" PointX="3" PointY="16.125" />
         <EntityTypeShape EntityType="EPSModel.ErrorLog" Width="1.5" PointX="0.75" PointY="1.5" />
@@ -19,7 +19,6 @@
         <EntityTypeShape EntityType="EPSModel.WorkflowItem" Width="1.5" PointX="6" PointY="27.25" />
         <EntityTypeShape EntityType="EPSModel.Workflow" Width="1.5" PointX="3.75" PointY="12.5" />
         <EntityTypeShape EntityType="EPSModel.vw_Managers_From_Logs" Width="1.5" PointX="5.75" PointY="4.5" />
-        <EntityTypeShape EntityType="EPSModel.vw_RunResults_Log" Width="1.5" PointX="5.75" PointY="7.5" />
         <EntityTypeShape EntityType="EPSModel.vwRunItem" Width="1.5" PointX="7.75" PointY="1.5" />
         <AssociationConnector Association="EPSModel.FK_WorkflowRun_Employees" />
         <AssociationConnector Association="EPSModel.FK_Employees_Log_Users" />
@@ -44,6 +43,8 @@
         <EntityTypeShape EntityType="EPSModel.RunResult" Width="1.5" PointX="8.25" PointY="26.125" />
         <AssociationConnector Association="EPSModel.FK_RunResult_RunResultStatus" />
         <AssociationConnector Association="EPSModel.FK_RunResult_WorkflowItems" />
+        <EntityTypeShape EntityType="EPSModel.vw_RunResults_Log" Width="1.5" PointX="5.375" PointY="6.75" />
+        <AssociationConnector Association="EPSModel.FK_Employees_Log_Employees" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

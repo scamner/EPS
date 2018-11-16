@@ -29,5 +29,6 @@ namespace DataLayer
         public int ChangedBy { get; set; }
     
         public virtual User User { get; set; }
+        public virtual Employee Employee { get; set; }
     }
 }

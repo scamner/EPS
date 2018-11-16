@@ -20,7 +20,7 @@ namespace DataLayer
         public int ResultID { get; set; }
         public string ResultString { get; set; }
         public System.DateTime TimeStarted { get; set; }
-        public System.DateTime TimeCompleted { get; set; }
+        public Nullable<System.DateTime> TimeCompleted { get; set; }
         public string ResultStatus { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

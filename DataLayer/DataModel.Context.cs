@@ -39,7 +39,6 @@ namespace DataLayer
         public virtual DbSet<WorkflowItem> WorkflowItems { get; set; }
         public virtual DbSet<Workflow> Workflows { get; set; }
         public virtual DbSet<vw_Managers_From_Logs> vw_Managers_From_Logs { get; set; }
-        public virtual DbSet<vw_RunResults_Log> vw_RunResults_Log { get; set; }
         public virtual DbSet<vwRunItem> vwRunItems { get; set; }
         public virtual DbSet<vwRunWorkflow> vwRunWorkflows { get; set; }
         public virtual DbSet<Parameter> Parameters { get; set; }
@@ -47,5 +46,6 @@ namespace DataLayer
         public virtual DbSet<RunPayload> RunPayloads { get; set; }
         public virtual DbSet<RunPayloadItem> RunPayloadItems { get; set; }
         public virtual DbSet<RunResult> RunResults { get; set; }
+        public virtual DbSet<vw_RunResults_Log> vw_RunResults_Log { get; set; }
     }
 }

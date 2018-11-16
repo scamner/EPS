@@ -139,7 +139,7 @@ else
                 @startTime
             </td>
             <td style="text-align: left;">
-                @{ String compTime = item.TimeCompleted.ToString("MM/dd/yyyy hh:mm tt"); }
+                @{ String compTime = item.TimeCompleted == null ? "" : Convert.ToDateTime(item.TimeCompleted).ToString("MM/dd/yyyy hh:mm tt"); }
                 @compTime
             </td>
             <td style="text-align: left;">
