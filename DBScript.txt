@@ -1,0 +1,1096 @@
+USE [master]
+GO
+/****** Object:  Database [EPS]    Script Date: 11/16/2018 11:15:33 AM ******/
+CREATE DATABASE [EPS]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'EPS', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.SQLEXPRESS\MSSQL\DATA\EPS.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'EPS_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.SQLEXPRESS\MSSQL\DATA\EPS_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+GO
+ALTER DATABASE [EPS] SET COMPATIBILITY_LEVEL = 130
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [EPS].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [EPS] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [EPS] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [EPS] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [EPS] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [EPS] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [EPS] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [EPS] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [EPS] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [EPS] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [EPS] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [EPS] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [EPS] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [EPS] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [EPS] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [EPS] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [EPS] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [EPS] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [EPS] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [EPS] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [EPS] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [EPS] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [EPS] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [EPS] SET RECOVERY SIMPLE 
+GO
+ALTER DATABASE [EPS] SET  MULTI_USER 
+GO
+ALTER DATABASE [EPS] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [EPS] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [EPS] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [EPS] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [EPS] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [EPS] SET QUERY_STORE = OFF
+GO
+
+CREATE LOGIN [EPS_User] WITH PASSWORD=N'mSmwbtHMPdcv0RXPxqfQ2s08VKWM40bGE2IU9tyPsl8=', DEFAULT_DATABASE=[master], DEFAULT_LANGUAGE=[us_english], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF
+GO
+ALTER LOGIN [EPS_User] DISABLE
+USE [EPS]
+GO
+/****** Object:  User [EPS_User]    Script Date: 11/16/2018 11:15:33 AM ******/
+CREATE USER [EPS_User] FOR LOGIN [EPS_User] WITH DEFAULT_SCHEMA=[dbo]
+GO
+ALTER ROLE [db_owner] ADD MEMBER [EPS_User]
+GO
+/****** Object:  UserDefinedFunction [dbo].[fcn_GetRun_Item_Count]    Script Date: 11/16/2018 11:15:33 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE FUNCTION [dbo].[fcn_GetRun_Item_Count] (@RunID INT, @WorkflowID INT)
+RETURNS INT
+AS
+BEGIN
+	DECLARE @ItemCount INT = (SELECT COUNT(*) FROM RunItems where RunID = @RunID)
+	RETURN @ItemCount
+END
+GO
+/****** Object:  UserDefinedFunction [dbo].[fcn_GetRun_Status]    Script Date: 11/16/2018 11:15:33 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+CREATE FUNCTION [dbo].[fcn_GetRun_Status] (@RunID INT, @WorkflowID INT)
+RETURNS varchar(50)
+AS
+BEGIN
+	DECLARE @ResultStatus varchar(50)
+	DECLARE @RunCount INT = (SELECT dbo.fcn_GetRun_Item_Count(@RunID, @WorkflowID))
+	DECLARE @RunResultCount INT = (SELECT COUNT(*) FROM RunResult WHERE RunID = @RunID)
+
+	IF @RunResultCount = 0
+		BEGIN
+			SET @ResultStatus = 'Pending'
+		END
+
+	ELSE IF (SELECT COUNT(*) FROM RunResult WHERE RunID = @RunID AND TimeCompleted IS NULL) > 0
+		BEGIN
+			SET @ResultStatus = 'Running'
+		END
+
+	ELSE IF EXISTS (SELECT 1 FROM RunResult rr INNER JOIN RunItems ri ON rr.RunID = ri.RunID 
+		WHERE rr.RunID = @RunID)
+		BEGIN
+			IF EXISTS (SELECT 1 FROM RunResult WHERE RunID = @RunID AND ResultID = 4)
+			BEGIN
+				SET @ResultStatus = 'Completed with Errors'
+			END
+			ELSE IF EXISTS (SELECT 1 FROM RunResult WHERE RunID = @RunID AND ResultID = 6)
+			BEGIN
+				SET @ResultStatus = 'Cancelled'
+			END
+			ELSE IF EXISTS (SELECT 1 FROM RunResult WHERE RunID = @RunID AND ResultID = 5)
+			BEGIN
+				SET @ResultStatus = 'Completed with Messages'
+			END
+			ELSE 
+			BEGIN
+				SET @ResultStatus = 'Completed Successfully'
+			END
+		END
+
+	RETURN @ResultStatus
+
+END
+GO
+/****** Object:  Table [dbo].[Employees]    Script Date: 11/16/2018 11:15:33 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Employees](
+	[EmpID] [int] IDENTITY(1,1) NOT NULL,
+	[Username] [varchar](50) NOT NULL,
+	[ADGUID] [uniqueidentifier] NOT NULL,
+	[FirstName] [varchar](50) NOT NULL,
+	[LastName] [varchar](50) NOT NULL,
+	[Email] [varchar](50) NOT NULL,
+	[IsManager] [bit] NOT NULL,
+	[ReportsTo] [int] NULL,
+	[EmpNum] [varchar](50) NULL,
+ CONSTRAINT [PK_Employees] PRIMARY KEY CLUSTERED 
+(
+	[EmpID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Employees_Log]    Script Date: 11/16/2018 11:15:33 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Employees_Log](
+	[LogID] [int] IDENTITY(1,1) NOT NULL,
+	[EmpID] [int] NULL,
+	[Username] [varchar](50) NULL,
+	[ADGUID] [uniqueidentifier] NULL,
+	[FirstName] [varchar](50) NULL,
+	[LastName] [varchar](50) NULL,
+	[Email] [varchar](50) NULL,
+	[IsManager] [bit] NULL,
+	[ReportsTo] [int] NULL,
+	[EmpNum] [varchar](20) NULL,
+	[ChangeType] [varchar](20) NOT NULL,
+	[ChangeDate] [datetime] NOT NULL,
+	[ChangedBy] [int] NOT NULL,
+ CONSTRAINT [PK_Employees_Log] PRIMARY KEY CLUSTERED 
+(
+	[LogID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[vw_Managers_From_Logs]    Script Date: 11/16/2018 11:15:33 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE View [dbo].[vw_Managers_From_Logs]
+AS
+SELECT DISTINCT e.EmpID, e.FirstName + ' ' + e.LastName As ManagerName FROM Employees e INNER JOIN Employees_Log l ON e.EmpID = l.ReportsTo
+GO
+/****** Object:  Table [dbo].[RunResult]    Script Date: 11/16/2018 11:15:33 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RunResult](
+	[RunResultID] [int] IDENTITY(1,1) NOT NULL,
+	[RunID] [int] NOT NULL,
+	[WFItemID] [int] NOT NULL,
+	[ResultID] [int] NOT NULL,
+	[ResultString] [varchar](max) NOT NULL,
+	[TimeStarted] [datetime] NOT NULL,
+	[TimeCompleted] [datetime] NULL,
+ CONSTRAINT [PK_RunResults] PRIMARY KEY CLUSTERED 
+(
+	[RunResultID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RunWorkflow]    Script Date: 11/16/2018 11:15:33 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RunWorkflow](
+	[RunID] [int] IDENTITY(1,1) NOT NULL,
+	[EmpID] [int] NOT NULL,
+	[WorkflowID] [int] NOT NULL,
+	[StartTime] [datetime] NOT NULL,
+	[RunByUserID] [int] NOT NULL,
+	[RunDate] [date] NULL,
+ CONSTRAINT [PK_WorkflowRun] PRIMARY KEY CLUSTERED 
+(
+	[RunID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Workflows]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Workflows](
+	[WorkflowID] [int] IDENTITY(1,1) NOT NULL,
+	[WorkflowName] [varchar](50) NOT NULL,
+	[WorkflowDesc] [varchar](500) NOT NULL,
+	[Disabled] [bit] NOT NULL,
+ CONSTRAINT [PK_Workflows] PRIMARY KEY CLUSTERED 
+(
+	[WorkflowID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[LibraryItems]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[LibraryItems](
+	[ItemID] [int] IDENTITY(1,1) NOT NULL,
+	[ItemName] [varchar](50) NOT NULL,
+	[ItemDesc] [varchar](500) NOT NULL,
+	[Disabled] [bit] NOT NULL,
+	[LibraryPath] [varchar](500) NOT NULL,
+	[HtmlOptions] [varchar](max) NULL,
+ CONSTRAINT [PK_LibraryItems] PRIMARY KEY CLUSTERED 
+(
+	[ItemID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[WorkflowItems]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[WorkflowItems](
+	[WFItemID] [int] IDENTITY(1,1) NOT NULL,
+	[WorkflowID] [int] NOT NULL,
+	[ItemID] [int] NOT NULL,
+	[RunOrder] [int] NOT NULL,
+	[Disabled] [bit] NOT NULL,
+ CONSTRAINT [PK_WorkflowItems] PRIMARY KEY CLUSTERED 
+(
+	[WFItemID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RunResultStatus]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RunResultStatus](
+	[ResultID] [int] NOT NULL,
+	[ResultStatus] [varchar](50) NOT NULL,
+ CONSTRAINT [PK_RunResultStatus] PRIMARY KEY CLUSTERED 
+(
+	[ResultID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Users]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Users](
+	[UserID] [int] IDENTITY(1,1) NOT NULL,
+	[Username] [varchar](50) NOT NULL,
+	[FirstName] [varchar](50) NOT NULL,
+	[LastName] [varchar](50) NOT NULL,
+	[Email] [varchar](50) NOT NULL,
+ CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
+(
+	[UserID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[vw_RunResults_Log]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+CREATE View [dbo].[vw_RunResults_Log]
+AS 
+SELECT rr.RunResultID, rr.RunID, rr.WFItemID, rr.ResultID, rr.ResultString, rr.TimeStarted, rr.TimeCompleted,
+s.ResultStatus, e.FirstName, e.LastName, w.WorkflowName, li.ItemName, u.FirstName + ' ' + u.LastName AS RunByUser, u.UserID AS RunByUserID,
+w.WorkflowID, ISNULL(Convert(Varchar, rw.RunDate, 101), '') AS RunDate, ISNULL(rw.RunDate, '1/1/1900') AS RunDateFullDate
+FROM RunResult rr INNER JOIN RunResultStatus s ON s.ResultID = rr.ResultID
+INNER JOIN RunWorkflow rw ON rw.RunID = rr.RunID
+INNER JOIN Users u ON u.UserID = rw.RunByUserID
+INNER JOIN Employees e ON e.EmpID = rw.EmpID
+INNER JOIN Workflows w ON w.WorkflowID = rw.WorkflowID
+INNER JOIN WorkflowItems wfi ON wfi.WFItemID = rr.WFItemID
+INNER JOIN LibraryItems li ON li.ItemID = wfi.ItemID
+GO
+/****** Object:  Table [dbo].[RunItems]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RunItems](
+	[RunItemID] [int] IDENTITY(1,1) NOT NULL,
+	[RunID] [int] NOT NULL,
+	[WFItemID] [int] NULL,
+	[HtmlAnswers] [varchar](max) NULL,
+ CONSTRAINT [PK_RunItems] PRIMARY KEY CLUSTERED 
+(
+	[RunItemID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[vwRunWorkflow]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+CREATE VIEW [dbo].[vwRunWorkflow]
+AS
+SELECT     DISTINCT   w.RunID, w.EmpID, w.WorkflowID, dbo.fcn_GetRun_Item_Count(w.RunID, w.WorkflowID) AS ItemCount, dbo.fcn_GetRun_Status(w.RunID, w.WorkflowID) AS RunStatus, w.StartTime, u.Username, e.FirstName, e.LastName, ISNULL(Convert(Varchar, w.RunDate, 101), '') AS RunDate
+FROM            dbo.RunWorkflow AS w INNER JOIN
+                         dbo.Users AS u ON w.RunByUserID = u.UserID INNER JOIN
+                         dbo.Employees AS e ON e.EmpID = w.EmpID INNER JOIN 
+						 RunItems ri ON ri.RunID = w.RunID
+GO
+/****** Object:  View [dbo].[vwRunItems]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[vwRunItems]
+AS
+SELECT        ri.RunID, wfi.ItemID, wfi.RunOrder, ri.HtmlAnswers
+FROM            dbo.RunItems AS ri INNER JOIN
+                         dbo.WorkflowItems AS wfi ON wfi.WFItemID = ri.WFItemID
+WHERE        (wfi.Disabled = 0)
+GO
+/****** Object:  Table [dbo].[ErrorLog]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ErrorLog](
+	[LogID] [int] IDENTITY(1,1) NOT NULL,
+	[ErrorDate] [datetime] NOT NULL,
+	[ErrorMessage] [varchar](max) NOT NULL,
+	[Username] [varchar](50) NOT NULL,
+ CONSTRAINT [PK_ErrorLog] PRIMARY KEY CLUSTERED 
+(
+	[LogID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Logins]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Logins](
+	[LoginID] [int] IDENTITY(1,1) NOT NULL,
+	[UserID] [int] NOT NULL,
+	[LoginDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_Logins] PRIMARY KEY CLUSTERED 
+(
+	[LoginID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Parameters]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Parameters](
+	[ParamID] [int] IDENTITY(1,1) NOT NULL,
+	[ParamName] [varchar](25) NOT NULL,
+	[ParamDesc] [varchar](200) NOT NULL,
+	[ParamValue] [varchar](max) NOT NULL,
+ CONSTRAINT [PK_Parameters] PRIMARY KEY CLUSTERED 
+(
+	[ParamID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Parameters_Log]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Parameters_Log](
+	[LogID] [int] IDENTITY(1,1) NOT NULL,
+	[ParamName] [varchar](25) NOT NULL,
+	[ParamDesc] [varchar](200) NOT NULL,
+	[ParamValue] [varchar](max) NOT NULL,
+	[ChangeType] [varchar](20) NOT NULL,
+	[ChangeDate] [datetime] NOT NULL,
+	[ChangedBy] [int] NOT NULL,
+ CONSTRAINT [PK_Parameters_Log] PRIMARY KEY CLUSTERED 
+(
+	[LogID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RunPayload]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RunPayload](
+	[PayloadID] [int] IDENTITY(1,1) NOT NULL,
+	[RunID] [int] NOT NULL,
+ CONSTRAINT [PK_RunPayload] PRIMARY KEY CLUSTERED 
+(
+	[PayloadID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RunPayloadItems]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RunPayloadItems](
+	[RunPLItemID] [int] IDENTITY(1,1) NOT NULL,
+	[PayloadID] [int] NOT NULL,
+	[ItemID] [int] NOT NULL,
+	[ElementID] [varchar](50) NOT NULL,
+	[ElementValue] [varchar](max) NOT NULL,
+ CONSTRAINT [PK_RunPayloadItems_PayloadID] PRIMARY KEY CLUSTERED 
+(
+	[RunPLItemID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[User_Log]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[User_Log](
+	[LogID] [int] IDENTITY(1,1) NOT NULL,
+	[UserID] [int] NOT NULL,
+	[Username] [varchar](50) NULL,
+	[FirstName] [varchar](50) NULL,
+	[LastName] [varchar](50) NULL,
+	[ChangeType] [varchar](20) NOT NULL,
+	[ChangeDate] [datetime] NOT NULL,
+	[ChangedBy] [int] NOT NULL,
+ CONSTRAINT [PK_User_Log] PRIMARY KEY CLUSTERED 
+(
+	[LogID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Workflow_Log]    Script Date: 11/16/2018 11:15:34 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Workflow_Log](
+	[LogID] [int] IDENTITY(1,1) NOT NULL,
+	[ItemID] [int] NOT NULL,
+	[ItemType] [varchar](20) NOT NULL,
+	[ItemName] [varchar](50) NOT NULL,
+	[ChangeText] [varchar](max) NOT NULL,
+	[ChangeType] [varchar](20) NOT NULL,
+	[ChangeDate] [datetime] NOT NULL,
+	[ChangedBy] [int] NOT NULL,
+ CONSTRAINT [PK_Workflow_Log] PRIMARY KEY CLUSTERED 
+(
+	[LogID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Employees_Log_ChangeDate]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_Employees_Log_ChangeDate] ON [dbo].[Employees_Log]
+(
+	[ChangeDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Employees_Log_ChangedBy]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_Employees_Log_ChangedBy] ON [dbo].[Employees_Log]
+(
+	[ChangedBy] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Employees_Log_ChangeType]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_Employees_Log_ChangeType] ON [dbo].[Employees_Log]
+(
+	[ChangeType] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Employees_Log_Username]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_Employees_Log_Username] ON [dbo].[Employees_Log]
+(
+	[Username] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_LibraryItems_ItemName]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [IX_LibraryItems_ItemName] ON [dbo].[LibraryItems]
+(
+	[ItemName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Logins_LoginDate]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_Logins_LoginDate] ON [dbo].[Logins]
+(
+	[LoginDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Logins_UserID]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_Logins_UserID] ON [dbo].[Logins]
+(
+	[UserID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_RunItems_RunID]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_RunItems_RunID] ON [dbo].[RunItems]
+(
+	[RunID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_RunItems_WFItemID]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_RunItems_WFItemID] ON [dbo].[RunItems]
+(
+	[WFItemID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_RunPayload_RunID]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_RunPayload_RunID] ON [dbo].[RunPayload]
+(
+	[RunID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_RunPayloadItems_ItemID]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_RunPayloadItems_ItemID] ON [dbo].[RunPayloadItems]
+(
+	[ItemID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_RunResult_ResultID]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_RunResult_ResultID] ON [dbo].[RunResult]
+(
+	[ResultID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_RunResult_RunID]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_RunResult_RunID] ON [dbo].[RunResult]
+(
+	[RunID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_RunResult_WFItemID]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_RunResult_WFItemID] ON [dbo].[RunResult]
+(
+	[WFItemID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_RunWorkflow_EmpID]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_RunWorkflow_EmpID] ON [dbo].[RunWorkflow]
+(
+	[EmpID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_RunWorkflow_RunByUserID]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_RunWorkflow_RunByUserID] ON [dbo].[RunWorkflow]
+(
+	[RunByUserID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_RunWorkflow_RunDate]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_RunWorkflow_RunDate] ON [dbo].[RunWorkflow]
+(
+	[RunDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_RunWorkflow_WorkflowID]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_RunWorkflow_WorkflowID] ON [dbo].[RunWorkflow]
+(
+	[WorkflowID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Users_Username]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_Users_Username] ON [dbo].[Users]
+(
+	[Username] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Workflow_Log_ChangeDate]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_Workflow_Log_ChangeDate] ON [dbo].[Workflow_Log]
+(
+	[ChangeDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Workflow_Log_ChangedBy]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_Workflow_Log_ChangedBy] ON [dbo].[Workflow_Log]
+(
+	[ChangedBy] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Workflow_Log_ChangeType]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_Workflow_Log_ChangeType] ON [dbo].[Workflow_Log]
+(
+	[ChangeType] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Workflow_Log_ItemName]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_Workflow_Log_ItemName] ON [dbo].[Workflow_Log]
+(
+	[ItemName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_WorkflowItems_ItemID]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_WorkflowItems_ItemID] ON [dbo].[WorkflowItems]
+(
+	[ItemID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_WorkflowItems_WorkflowID]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE NONCLUSTERED INDEX [IX_WorkflowItems_WorkflowID] ON [dbo].[WorkflowItems]
+(
+	[WorkflowID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Workflows_WorkflowName]    Script Date: 11/16/2018 11:15:34 AM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Workflows_WorkflowName] ON [dbo].[Workflows]
+(
+	[WorkflowName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Employees] ADD  CONSTRAINT [DF_Employees_IsManager]  DEFAULT ((0)) FOR [IsManager]
+GO
+ALTER TABLE [dbo].[LibraryItems] ADD  CONSTRAINT [DF_LibraryItems_Disabled]  DEFAULT ((0)) FOR [Disabled]
+GO
+ALTER TABLE [dbo].[WorkflowItems] ADD  CONSTRAINT [DF_WorkflowItems_Disabled]  DEFAULT ((0)) FOR [Disabled]
+GO
+ALTER TABLE [dbo].[Workflows] ADD  CONSTRAINT [DF_Workflows_Disabled]  DEFAULT ((0)) FOR [Disabled]
+GO
+ALTER TABLE [dbo].[Employees_Log]  WITH CHECK ADD  CONSTRAINT [FK_Employees_Log_Employees] FOREIGN KEY([ReportsTo])
+REFERENCES [dbo].[Employees] ([EmpID])
+GO
+ALTER TABLE [dbo].[Employees_Log] CHECK CONSTRAINT [FK_Employees_Log_Employees]
+GO
+ALTER TABLE [dbo].[Employees_Log]  WITH CHECK ADD  CONSTRAINT [FK_Employees_Log_Users] FOREIGN KEY([ChangedBy])
+REFERENCES [dbo].[Users] ([UserID])
+GO
+ALTER TABLE [dbo].[Employees_Log] CHECK CONSTRAINT [FK_Employees_Log_Users]
+GO
+ALTER TABLE [dbo].[Logins]  WITH CHECK ADD  CONSTRAINT [FK_Logins_Users] FOREIGN KEY([UserID])
+REFERENCES [dbo].[Users] ([UserID])
+GO
+ALTER TABLE [dbo].[Logins] CHECK CONSTRAINT [FK_Logins_Users]
+GO
+ALTER TABLE [dbo].[Parameters_Log]  WITH CHECK ADD  CONSTRAINT [FK_Parameters_Log_Users] FOREIGN KEY([ChangedBy])
+REFERENCES [dbo].[Users] ([UserID])
+GO
+ALTER TABLE [dbo].[Parameters_Log] CHECK CONSTRAINT [FK_Parameters_Log_Users]
+GO
+ALTER TABLE [dbo].[RunItems]  WITH CHECK ADD  CONSTRAINT [FK_RunItems_WorkflowItems] FOREIGN KEY([WFItemID])
+REFERENCES [dbo].[WorkflowItems] ([WFItemID])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[RunItems] CHECK CONSTRAINT [FK_RunItems_WorkflowItems]
+GO
+ALTER TABLE [dbo].[RunItems]  WITH CHECK ADD  CONSTRAINT [FK_RunItems_WorkflowRun] FOREIGN KEY([RunID])
+REFERENCES [dbo].[RunWorkflow] ([RunID])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[RunItems] CHECK CONSTRAINT [FK_RunItems_WorkflowRun]
+GO
+ALTER TABLE [dbo].[RunPayload]  WITH CHECK ADD  CONSTRAINT [FK_RunPayload_RunWorkflow] FOREIGN KEY([RunID])
+REFERENCES [dbo].[RunWorkflow] ([RunID])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[RunPayload] CHECK CONSTRAINT [FK_RunPayload_RunWorkflow]
+GO
+ALTER TABLE [dbo].[RunPayloadItems]  WITH CHECK ADD  CONSTRAINT [FK_RunPayloadItems_LibraryItems] FOREIGN KEY([ItemID])
+REFERENCES [dbo].[LibraryItems] ([ItemID])
+GO
+ALTER TABLE [dbo].[RunPayloadItems] CHECK CONSTRAINT [FK_RunPayloadItems_LibraryItems]
+GO
+ALTER TABLE [dbo].[RunPayloadItems]  WITH CHECK ADD  CONSTRAINT [FK_RunPayloadItems_RunPayload] FOREIGN KEY([PayloadID])
+REFERENCES [dbo].[RunPayload] ([PayloadID])
+GO
+ALTER TABLE [dbo].[RunPayloadItems] CHECK CONSTRAINT [FK_RunPayloadItems_RunPayload]
+GO
+ALTER TABLE [dbo].[RunResult]  WITH CHECK ADD  CONSTRAINT [FK_RunResult_RunResultStatus] FOREIGN KEY([ResultID])
+REFERENCES [dbo].[RunResultStatus] ([ResultID])
+GO
+ALTER TABLE [dbo].[RunResult] CHECK CONSTRAINT [FK_RunResult_RunResultStatus]
+GO
+ALTER TABLE [dbo].[RunResult]  WITH CHECK ADD  CONSTRAINT [FK_RunResult_WorkflowItems] FOREIGN KEY([WFItemID])
+REFERENCES [dbo].[WorkflowItems] ([WFItemID])
+ON UPDATE CASCADE
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[RunResult] CHECK CONSTRAINT [FK_RunResult_WorkflowItems]
+GO
+ALTER TABLE [dbo].[RunWorkflow]  WITH CHECK ADD  CONSTRAINT [FK_RunWorkflow_Users] FOREIGN KEY([RunByUserID])
+REFERENCES [dbo].[Users] ([UserID])
+GO
+ALTER TABLE [dbo].[RunWorkflow] CHECK CONSTRAINT [FK_RunWorkflow_Users]
+GO
+ALTER TABLE [dbo].[RunWorkflow]  WITH CHECK ADD  CONSTRAINT [FK_WorkflowRun_Employees] FOREIGN KEY([EmpID])
+REFERENCES [dbo].[Employees] ([EmpID])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[RunWorkflow] CHECK CONSTRAINT [FK_WorkflowRun_Employees]
+GO
+ALTER TABLE [dbo].[RunWorkflow]  WITH CHECK ADD  CONSTRAINT [FK_WorkflowRun_Workflows] FOREIGN KEY([WorkflowID])
+REFERENCES [dbo].[Workflows] ([WorkflowID])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[RunWorkflow] CHECK CONSTRAINT [FK_WorkflowRun_Workflows]
+GO
+ALTER TABLE [dbo].[User_Log]  WITH CHECK ADD  CONSTRAINT [FK_User_Log_Users] FOREIGN KEY([ChangedBy])
+REFERENCES [dbo].[Users] ([UserID])
+GO
+ALTER TABLE [dbo].[User_Log] CHECK CONSTRAINT [FK_User_Log_Users]
+GO
+ALTER TABLE [dbo].[Workflow_Log]  WITH CHECK ADD  CONSTRAINT [FK_Workflow_Log_Users] FOREIGN KEY([ChangedBy])
+REFERENCES [dbo].[Users] ([UserID])
+GO
+ALTER TABLE [dbo].[Workflow_Log] CHECK CONSTRAINT [FK_Workflow_Log_Users]
+GO
+ALTER TABLE [dbo].[WorkflowItems]  WITH CHECK ADD  CONSTRAINT [FK_WorkflowItems_LibraryItems] FOREIGN KEY([ItemID])
+REFERENCES [dbo].[LibraryItems] ([ItemID])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[WorkflowItems] CHECK CONSTRAINT [FK_WorkflowItems_LibraryItems]
+GO
+ALTER TABLE [dbo].[WorkflowItems]  WITH CHECK ADD  CONSTRAINT [FK_WorkflowItems_Workflows] FOREIGN KEY([WorkflowID])
+REFERENCES [dbo].[Workflows] ([WorkflowID])
+GO
+ALTER TABLE [dbo].[WorkflowItems] CHECK CONSTRAINT [FK_WorkflowItems_Workflows]
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_DiagramPane1', @value=N'[0E232FF0-B466-11cf-A24F-00AA00A3EFFF, 1.00]
+Begin DesignProperties = 
+   Begin PaneConfigurations = 
+      Begin PaneConfiguration = 0
+         NumPanes = 4
+         Configuration = "(H (1[40] 4[20] 2[20] 3) )"
+      End
+      Begin PaneConfiguration = 1
+         NumPanes = 3
+         Configuration = "(H (1 [50] 4 [25] 3))"
+      End
+      Begin PaneConfiguration = 2
+         NumPanes = 3
+         Configuration = "(H (1 [50] 2 [25] 3))"
+      End
+      Begin PaneConfiguration = 3
+         NumPanes = 3
+         Configuration = "(H (4 [30] 2 [40] 3))"
+      End
+      Begin PaneConfiguration = 4
+         NumPanes = 2
+         Configuration = "(H (1 [56] 3))"
+      End
+      Begin PaneConfiguration = 5
+         NumPanes = 2
+         Configuration = "(H (2 [66] 3))"
+      End
+      Begin PaneConfiguration = 6
+         NumPanes = 2
+         Configuration = "(H (4 [50] 3))"
+      End
+      Begin PaneConfiguration = 7
+         NumPanes = 1
+         Configuration = "(V (3))"
+      End
+      Begin PaneConfiguration = 8
+         NumPanes = 3
+         Configuration = "(H (1[56] 4[18] 2) )"
+      End
+      Begin PaneConfiguration = 9
+         NumPanes = 2
+         Configuration = "(H (1 [75] 4))"
+      End
+      Begin PaneConfiguration = 10
+         NumPanes = 2
+         Configuration = "(H (1[66] 2) )"
+      End
+      Begin PaneConfiguration = 11
+         NumPanes = 2
+         Configuration = "(H (4 [60] 2))"
+      End
+      Begin PaneConfiguration = 12
+         NumPanes = 1
+         Configuration = "(H (1) )"
+      End
+      Begin PaneConfiguration = 13
+         NumPanes = 1
+         Configuration = "(V (4))"
+      End
+      Begin PaneConfiguration = 14
+         NumPanes = 1
+         Configuration = "(V (2))"
+      End
+      ActivePaneConfig = 0
+   End
+   Begin DiagramPane = 
+      Begin Origin = 
+         Top = 0
+         Left = 0
+      End
+      Begin Tables = 
+         Begin Table = "ri"
+            Begin Extent = 
+               Top = 6
+               Left = 38
+               Bottom = 136
+               Right = 208
+            End
+            DisplayFlags = 280
+            TopColumn = 0
+         End
+         Begin Table = "wfi"
+            Begin Extent = 
+               Top = 6
+               Left = 246
+               Bottom = 136
+               Right = 416
+            End
+            DisplayFlags = 280
+            TopColumn = 0
+         End
+      End
+   End
+   Begin SQLPane = 
+   End
+   Begin DataPane = 
+      Begin ParameterDefaults = ""
+      End
+   End
+   Begin CriteriaPane = 
+      Begin ColumnWidths = 11
+         Column = 1440
+         Alias = 900
+         Table = 1170
+         Output = 720
+         Append = 1400
+         NewValue = 1170
+         SortType = 1350
+         SortOrder = 1410
+         GroupBy = 1350
+         Filter = 1350
+         Or = 1350
+         Or = 1350
+         Or = 1350
+      End
+   End
+End
+' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'VIEW',@level1name=N'vwRunItems'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_DiagramPaneCount', @value=1 , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'VIEW',@level1name=N'vwRunItems'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_DiagramPane1', @value=N'[0E232FF0-B466-11cf-A24F-00AA00A3EFFF, 1.00]
+Begin DesignProperties = 
+   Begin PaneConfigurations = 
+      Begin PaneConfiguration = 0
+         NumPanes = 4
+         Configuration = "(H (1[40] 4[20] 2[20] 3) )"
+      End
+      Begin PaneConfiguration = 1
+         NumPanes = 3
+         Configuration = "(H (1 [50] 4 [25] 3))"
+      End
+      Begin PaneConfiguration = 2
+         NumPanes = 3
+         Configuration = "(H (1 [50] 2 [25] 3))"
+      End
+      Begin PaneConfiguration = 3
+         NumPanes = 3
+         Configuration = "(H (4 [30] 2 [40] 3))"
+      End
+      Begin PaneConfiguration = 4
+         NumPanes = 2
+         Configuration = "(H (1 [56] 3))"
+      End
+      Begin PaneConfiguration = 5
+         NumPanes = 2
+         Configuration = "(H (2 [66] 3))"
+      End
+      Begin PaneConfiguration = 6
+         NumPanes = 2
+         Configuration = "(H (4 [50] 3))"
+      End
+      Begin PaneConfiguration = 7
+         NumPanes = 1
+         Configuration = "(V (3))"
+      End
+      Begin PaneConfiguration = 8
+         NumPanes = 3
+         Configuration = "(H (1[56] 4[18] 2) )"
+      End
+      Begin PaneConfiguration = 9
+         NumPanes = 2
+         Configuration = "(H (1 [75] 4))"
+      End
+      Begin PaneConfiguration = 10
+         NumPanes = 2
+         Configuration = "(H (1[66] 2) )"
+      End
+      Begin PaneConfiguration = 11
+         NumPanes = 2
+         Configuration = "(H (4 [60] 2))"
+      End
+      Begin PaneConfiguration = 12
+         NumPanes = 1
+         Configuration = "(H (1) )"
+      End
+      Begin PaneConfiguration = 13
+         NumPanes = 1
+         Configuration = "(V (4))"
+      End
+      Begin PaneConfiguration = 14
+         NumPanes = 1
+         Configuration = "(V (2))"
+      End
+      ActivePaneConfig = 0
+   End
+   Begin DiagramPane = 
+      Begin Origin = 
+         Top = 0
+         Left = 0
+      End
+      Begin Tables = 
+         Begin Table = "w"
+            Begin Extent = 
+               Top = 6
+               Left = 38
+               Bottom = 136
+               Right = 208
+            End
+            DisplayFlags = 280
+            TopColumn = 0
+         End
+         Begin Table = "u"
+            Begin Extent = 
+               Top = 6
+               Left = 246
+               Bottom = 136
+               Right = 416
+            End
+            DisplayFlags = 280
+            TopColumn = 0
+         End
+         Begin Table = "e"
+            Begin Extent = 
+               Top = 6
+               Left = 454
+               Bottom = 136
+               Right = 624
+            End
+            DisplayFlags = 280
+            TopColumn = 3
+         End
+      End
+   End
+   Begin SQLPane = 
+   End
+   Begin DataPane = 
+      Begin ParameterDefaults = ""
+      End
+   End
+   Begin CriteriaPane = 
+      Begin ColumnWidths = 11
+         Column = 1440
+         Alias = 900
+         Table = 1170
+         Output = 720
+         Append = 1400
+         NewValue = 1170
+         SortType = 1350
+         SortOrder = 1410
+         GroupBy = 1350
+         Filter = 1350
+         Or = 1350
+         Or = 1350
+         Or = 1350
+      End
+   End
+End
+' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'VIEW',@level1name=N'vwRunWorkflow'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_DiagramPaneCount', @value=1 , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'VIEW',@level1name=N'vwRunWorkflow'
+GO
+USE [master]
+GO
+ALTER DATABASE [EPS] SET  READ_WRITE 
+GO
+
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ADDomain', 'Active Directory Name','ShawnTest.local')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ADUsername', 'Active Directory Username For Admin','Administrator')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ADPassword', 'Password for the administrator','Nin^2020')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('SMTPServer', 'The server used to send emails.','TestServer.ShawnTest.local')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('EmailFrom', 'The "From" address that emails use for this system.','Administrator@Shawtest.local')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisabledNotifyBody', 'The email body sent to managers of disabled employees.','<div> [FirstName] [LastName] has been set to disabled! </div>')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisabledNotifySubject', 'The email subject sent to managers of disabled employees.','Employee Disabled.')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ExchangeServer', 'The Exchange Server.','testserver.shawntest.local')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisableDistroGroupEmail', 'Disabled user Distro Group Email Address','DisabledUsers@shawntest.local')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisableDistroGroupBody', 'Disabled Users Distro Group Body','[FirstName] [LastName] was disabled in Active Directory.')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisableDistroGroupSubject', 'Disabled Users Distro Group Subject','A user was disabled in Active Directory.')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisabledUsersOU', 'Active Directory Disabled Users OU','OU=DisabledUsers,DC=ShawnTest,DC=local')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DefaultUsersCN', 'Default Users Container','CN=Users,DC=ShawnTest,DC=local')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DefaultPassword', 'The default password for re-enabled accounts.','Nin^2020')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisabledFolderPath', 'The UNC path to the Disabled Users folder.','\\TestServer\C$\DisabledUsers\')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('FinalDisableNotifyBody', 'The email body sent to managers of disabled employees.','<div> [FirstName] [LastName] has been set to disabled! </div>')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('FinalDisableNotifySubject', 'The email subject sent to managers of disabled employees.','[FirstName] [LastName] has been terminated!')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('WifiAdminNotifyBody', 'The mail body for the wifi admin. ','<div> [FirstName] [LastName] ([Username]) has been set to disabled, remove their wifi access. </div>')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('WifiAdminNotifySubject', 'The mail subject for the wifi admin. ','[FirstName] [LastName] has been terminated!')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('WifiAdminEmailAddress', 'The email address to send to the wifi admin.','administrator@shawntest.local')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('HelpDeskEmail', 'The email address to sent to for helpdesk tickets.','scamner@shawntest.local')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ClonedLaptopSubject', 'The email subject for cloned laptops','[FirstName] [LastName] has been terminated!')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ClonedLaptopBody', 'The email body for cloned laptops.','<div> [FirstName] [LastName] ([Username]) has been set to disabled, clone their laptop. </div>')
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ActiveUsersFolderPath', 'Active Users root folder','C:\ActiveUsers')
+
+GO
+
+INSERT RunResultStatus (ResultID, ResultStatus) VALUES (1, 'Pending')
+INSERT RunResultStatus (ResultID, ResultStatus) VALUES (2, 'Success')
+INSERT RunResultStatus (ResultID, ResultStatus) VALUES (3, 'Success with Message')
+INSERT RunResultStatus (ResultID, ResultStatus) VALUES (4, 'Failed')
+INSERT RunResultStatus (ResultID, ResultStatus) VALUES (5, 'Skipped/Not Needed')
+INSERT RunResultStatus (ResultID, ResultStatus) VALUES (6, 'Cancelled')
