@@ -70,6 +70,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportEmployees", "ImportEm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunPendingWorkflows", "RunPendingWorkflows\RunPendingWorkflows.csproj", "{1A78845D-0D76-4182-83B4-EB8ABEECCAA3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoveActiveToDisabled", "MoveActiveToDisabled\MoveActiveToDisabled.csproj", "{56E38623-0367-48FD-8B63-139FFCC81839}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoveActiveFromDisabled", "MoveActiveFromDisabled\MoveActiveFromDisabled.csproj", "{D75D29D5-3263-4CBD-8BE0-BAFCF54BB35E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -200,6 +204,14 @@ Global
 		{1A78845D-0D76-4182-83B4-EB8ABEECCAA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A78845D-0D76-4182-83B4-EB8ABEECCAA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A78845D-0D76-4182-83B4-EB8ABEECCAA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56E38623-0367-48FD-8B63-139FFCC81839}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56E38623-0367-48FD-8B63-139FFCC81839}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56E38623-0367-48FD-8B63-139FFCC81839}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56E38623-0367-48FD-8B63-139FFCC81839}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D75D29D5-3263-4CBD-8BE0-BAFCF54BB35E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D75D29D5-3263-4CBD-8BE0-BAFCF54BB35E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D75D29D5-3263-4CBD-8BE0-BAFCF54BB35E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D75D29D5-3263-4CBD-8BE0-BAFCF54BB35E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -231,6 +243,8 @@ Global
 		{3B3A3171-3D5D-4A03-B867-0748EB490477} = {3659EE2F-1950-4216-B848-D4990154AD9C}
 		{5356C402-D90A-4354-970A-66590B52FBF9} = {3659EE2F-1950-4216-B848-D4990154AD9C}
 		{9A1BDED8-E4B7-4EB5-A54C-6B1BC7841EE5} = {3659EE2F-1950-4216-B848-D4990154AD9C}
+		{56E38623-0367-48FD-8B63-139FFCC81839} = {3659EE2F-1950-4216-B848-D4990154AD9C}
+		{D75D29D5-3263-4CBD-8BE0-BAFCF54BB35E} = {3659EE2F-1950-4216-B848-D4990154AD9C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C13BB5A-4F02-4A18-BD4E-A277D1C492C3}
