@@ -24,7 +24,8 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (var item in Model)
+{
     <tr>
         <td style="text-align: left;">
             <label class="NoEdit_@item.ParamID">@item.ParamName</label>
@@ -35,8 +36,12 @@
             <input type="text" class="Edit_@item.ParamID" style="display: none; width: 200px;" maxlength="200" id="txtParamDesc_@item.ParamID" value="@item.ParamDesc" />
         </td>
         <td style="text-align: left;">
-            <label class="NoEdit_@item.ParamID">@item.ParamValue</label>
-            <textarea class="Edit_@item.ParamID" style="display: none; width: 200px; height: 100px;" id="txtParamValue_@item.ParamID">@item.ParamValue</textarea>
+            @{ 
+                String paramval = item.ParamName == "ADPassword" ? "**********" : item.ParamValue;
+                String paramvalEdit = item.ParamName == "ADPassword" ? "" : item.ParamValue;
+            }
+            <label class="NoEdit_@item.ParamID">@paramval</label>
+            <textarea class="Edit_@item.ParamID" style="display: none; width: 200px; height: 100px;" id="txtParamValue_@item.ParamID">@paramvalEdit</textarea>
         </td>
         <td nowrap>
             <input type="button" class="NoEdit_@item.ParamID" onclick="SetParamEdit(true, '@item.ParamID');" value="Edit" />

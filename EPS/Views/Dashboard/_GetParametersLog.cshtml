@@ -29,7 +29,7 @@
         <tr>
             <td></td>
             <td style="text-align: left;">
-                @Html.DropDownList("ParamName_Filter", new SelectList(ViewBag.ParamList, "Value", "Text", ViewBag.ParamID), new { @id = "ParamName_Filter" })
+                @Html.DropDownList("ParamName_Filter", new SelectList(ViewBag.ParamList, "Value", "Text", ViewBag.ParamName), new { @id = "ParamName_Filter" })
             </td>
             <td style="text-align: left;">
                 <input type="text" id="AuditDateFrom_Filter" style="width: 75px;" value="@ViewBag.AuditDateFrom" />

@@ -12,12 +12,15 @@ namespace DataLayer
     public class EmployeeFunctions
     {
         DataLayer.EPSEntities db = new DataLayer.EPSEntities();
+        Utilities util = new Utilities();
 
         public DirectoryEntry GetUserByPath(String Path)
         {
             String Domain = db.Parameters.Where(p => p.ParamName == "ADDomain").FirstOrDefault().ParamValue;
             Parameter adminName = db.Parameters.Where(p => p.ParamName == "ADUsername").FirstOrDefault();
             Parameter password = db.Parameters.Where(p => p.ParamName == "ADPassword").FirstOrDefault();
+
+            password.ParamValue = util.Decrypt(password.ParamValue);
 
             string strRootForest = "LDAP://" + Domain;
             System.DirectoryServices.DirectoryEntry root = new System.DirectoryServices.DirectoryEntry(strRootForest, adminName.ParamValue, password.ParamValue);
@@ -61,6 +64,8 @@ namespace DataLayer
             String Domain = db.Parameters.Where(p => p.ParamName == "ADDomain").FirstOrDefault().ParamValue;
             Parameter adminName = db.Parameters.Where(p => p.ParamName == "ADUsername").FirstOrDefault();
             Parameter password = db.Parameters.Where(p => p.ParamName == "ADPassword").FirstOrDefault();
+
+            password.ParamValue = util.Decrypt(password.ParamValue);
 
             string strRootForest = "LDAP://" + Domain;
             System.DirectoryServices.DirectoryEntry root = new System.DirectoryServices.DirectoryEntry(strRootForest, adminName.ParamValue, password.ParamValue);

@@ -66,6 +66,11 @@ namespace DataLayer
                 throw new Exception(String.Format("The {0} is not configured in the parameters table. Please add a parameter with the name of '{1}' and the appropriate value.", ErrorMessage, ParamName));
             }
 
+            if (ParamName == "ADPassword")
+            {
+                param.ParamValue = Decrypt(param.ParamValue);
+            }
+
             return param.ParamValue;
         }
 
@@ -156,6 +161,18 @@ namespace DataLayer
             pl = db.RunPayloads.Where(r => r.RunID == RunID).FirstOrDefault();
 
             return pl;
+        }
+
+        public String Encrypt(String Value)
+        {
+            CHSEncryption.Encryption enc = new CHSEncryption.Encryption();
+            return enc.Encrypt(Value, "3P$Encr!");
+        }
+
+        public String Decrypt(String Value)
+        {
+            CHSEncryption.Encryption enc = new CHSEncryption.Encryption();
+            return enc.Decrypt(Value, "3P$Encr!");
         }
 
         public class ItemRunResult

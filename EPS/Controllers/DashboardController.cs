@@ -548,7 +548,7 @@ namespace EPS.Controllers
                     tran.Commit();
 
                     RunWorkflows.ExecuteWorkflows exec = new RunWorkflows.ExecuteWorkflows();
-                    
+
                     if (String.IsNullOrEmpty(RunDate) || Convert.ToDateTime(RunDate).Date == DateTime.Now.Date)
                     {
                         exec.RunID = run.RunID;
@@ -1425,6 +1425,12 @@ namespace EPS.Controllers
                     String beforeParamName = p.ParamName;
                     String beforeParamValue = p.ParamValue;
 
+                    if (ParamName == "ADPassword")
+                    {
+                        DataLayer.Utilities enc = new DataLayer.Utilities();
+                        ParamValue = enc.Encrypt(ParamValue);
+                    }
+
                     p.ParamDesc = ParamDesc;
                     p.ParamName = ParamName;
                     p.ParamValue = ParamValue;
@@ -1485,6 +1491,11 @@ namespace EPS.Controllers
                 {
                     Parameter p = db.Parameters.Where(pa => pa.ParamID == ParamID).FirstOrDefault();
                     logp = p;
+
+                    if (p.ParamName == "ADPassword")
+                    {
+                        throw new Exception("That parameter cannot be deleted.");
+                    }
 
                     db.Parameters.Remove(p);
                     db.SaveChanges();
@@ -1736,7 +1747,7 @@ namespace EPS.Controllers
                 DateTime? auditDateTo = String.IsNullOrEmpty(AuditDateTo) ? new DateTime() : Convert.ToDateTime(AuditDateTo);
 
                 List<Parameters_Log> logs = db.Parameters_Log
-                    .Where(e => (String.IsNullOrEmpty(ParamName) || e.ParamName.StartsWith(ParamName)) &&
+                    .Where(e => (String.IsNullOrEmpty(ParamName) || e.ParamName == ParamName) &&
                         (AuditUser == null || e.ChangedBy == AuditUser) &&
                         (auditDateFrom.Value.Year == 0001 || e.ChangeDate > auditDateFrom) &&
                         (auditDateTo.Value.Year == 0001 || e.ChangeDate < auditDateTo) &&
@@ -1784,7 +1795,7 @@ namespace EPS.Controllers
                 List<SelectListItem> paramList = new List<SelectListItem> { new SelectListItem { Text = "", Value = "", Selected = true } };
                 foreach (Parameter e in prm)
                 {
-                    paramList.Add(new SelectListItem { Text = String.Format("{0}", e.ParamName), Value = e.ParamID.ToString() });
+                    paramList.Add(new SelectListItem { Text = String.Format("{0}", e.ParamName), Value = e.ParamName.ToString() });
                 }
 
                 List<User> users = db.Users.OrderBy(u => u.FirstName).ToList();
