@@ -1094,3 +1094,12 @@ INSERT RunResultStatus (ResultID, ResultStatus) VALUES (3, 'Success with Message
 INSERT RunResultStatus (ResultID, ResultStatus) VALUES (4, 'Failed')
 INSERT RunResultStatus (ResultID, ResultStatus) VALUES (5, 'Skipped/Not Needed')
 INSERT RunResultStatus (ResultID, ResultStatus) VALUES (6, 'Cancelled')
+
+GO
+
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Parameters_ParamName] ON [dbo].[Parameters]
+(
+	[ParamName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+

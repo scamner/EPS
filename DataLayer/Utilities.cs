@@ -59,7 +59,7 @@ namespace DataLayer
 
         public String GetParam(String ParamName, String ErrorMessage)
         {
-            Parameter param = db.Parameters.Where(p => p.ParamName == ParamName).FirstOrDefault();
+            Parameter param = db.Parameters.AsNoTracking().Where(p => p.ParamName == ParamName).FirstOrDefault();
 
             if (param == null)
             {

@@ -23,6 +23,10 @@ namespace RunWorkflows
             try
             {
                 RunWorkflow run = db.RunWorkflows.Where(r => r.RunID == RunID).FirstOrDefault();
+
+                run.StartTime = DateTime.Now;
+                db.SaveChanges();
+
                 List<vwRunItem> items = db.vwRunItems.Where(i => i.RunID == RunID).OrderBy(i => i.RunOrder).ToList();
                 RunPayload pl = run.RunPayloads.FirstOrDefault();
                 

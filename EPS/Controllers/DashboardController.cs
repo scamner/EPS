@@ -122,23 +122,13 @@ namespace EPS.Controllers
 
                 List<vwRunWorkflow> runs = new List<vwRunWorkflow>();
 
-                if (FutureRuns == false)
-                {
-                    String today = DateTime.Now.Date.ToShortDateString();
+                String today = DateTime.Now.Date.ToShortDateString();
 
-                    runs = db.vwRunWorkflows.
-                        Where(r => (r.RunStatus == "Pending" || r.StartTime >= checkTime)
-                        && (r.RunDate == "" || r.RunDate == today)
-                        && r.RunStatus != "Cancelled")
-                        .OrderByDescending(e => e.StartTime).ToList();
-                }
-                else
-                {
-                    runs = db.vwRunWorkflows.
-                        Where(r => (r.RunStatus == "Pending" || r.StartTime >= checkTime)
-                        && r.RunStatus != "Cancelled")
-                        .OrderByDescending(e => e.StartTime).ToList();
-                }
+                runs = db.vwRunWorkflows.
+                    Where(r => (r.RunStatus == "Pending" || r.RunStatus == "Running" || r.StartTime >= checkTime)
+                    && (FutureRuns == true || (r.RunDate == "" || r.RunDate == today))
+                    && (r.RunStatus != "Cancelled"))
+                    .OrderByDescending(e => e.StartTime).ToList();
 
                 List<int> RunIDs = runs.Select(r => r.RunID).Distinct().ToList();
                 List<RunResult> Results = db.RunResults.Where(r => RunIDs.Contains(r.RunID)).ToList();
