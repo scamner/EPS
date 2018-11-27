@@ -4,9 +4,9 @@ GO
 CREATE DATABASE [EPS]
  CONTAINMENT = NONE
  ON  PRIMARY 
-( NAME = N'EPS', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.SQLEXPRESS\MSSQL\DATA\EPS.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+( NAME = N'EPS', FILENAME = N'C:\EPS\DATA\EPS.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
  LOG ON 
-( NAME = N'EPS_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.SQLEXPRESS\MSSQL\DATA\EPS_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+( NAME = N'EPS_log', FILENAME = N'C:\EPS\LOGS\EPS_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
 GO
 ALTER DATABASE [EPS] SET COMPATIBILITY_LEVEL = 130
 GO
@@ -78,7 +78,6 @@ GO
 
 CREATE LOGIN [EPS_User] WITH PASSWORD=N'mSmwbtHMPdcv0RXPxqfQ2s08VKWM40bGE2IU9tyPsl8=', DEFAULT_DATABASE=[master], DEFAULT_LANGUAGE=[us_english], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF
 GO
-ALTER LOGIN [EPS_User] DISABLE
 USE [EPS]
 GO
 /****** Object:  User [EPS_User]    Script Date: 11/16/2018 11:15:33 AM ******/
@@ -1061,32 +1060,39 @@ GO
 ALTER DATABASE [EPS] SET  READ_WRITE 
 GO
 
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ADDomain', 'Active Directory Name','ShawnTest.local')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ADUsername', 'Active Directory Username For Admin','Administrator')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ADPassword', 'Password for the administrator','Nin^2020')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('SMTPServer', 'The server used to send emails.','TestServer.ShawnTest.local')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('EmailFrom', 'The "From" address that emails use for this system.','Administrator@Shawtest.local')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisabledNotifyBody', 'The email body sent to managers of disabled employees.','<div> [FirstName] [LastName] has been set to disabled! </div>')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisabledNotifySubject', 'The email subject sent to managers of disabled employees.','Employee Disabled.')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ExchangeServer', 'The Exchange Server.','testserver.shawntest.local')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisableDistroGroupEmail', 'Disabled user Distro Group Email Address','DisabledUsers@shawntest.local')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisableDistroGroupBody', 'Disabled Users Distro Group Body','[FirstName] [LastName] was disabled in Active Directory.')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisableDistroGroupSubject', 'Disabled Users Distro Group Subject','A user was disabled in Active Directory.')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisabledUsersOU', 'Active Directory Disabled Users OU','OU=DisabledUsers,DC=ShawnTest,DC=local')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DefaultUsersCN', 'Default Users Container','CN=Users,DC=ShawnTest,DC=local')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DefaultPassword', 'The default password for re-enabled accounts.','Nin^2020')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisabledFolderPath', 'The UNC path to the Disabled Users folder.','\\TestServer\C$\DisabledUsers\')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('FinalDisableNotifyBody', 'The email body sent to managers of disabled employees.','<div> [FirstName] [LastName] has been set to disabled! </div>')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('FinalDisableNotifySubject', 'The email subject sent to managers of disabled employees.','[FirstName] [LastName] has been terminated!')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('WifiAdminNotifyBody', 'The mail body for the wifi admin. ','<div> [FirstName] [LastName] ([Username]) has been set to disabled, remove their wifi access. </div>')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('WifiAdminNotifySubject', 'The mail subject for the wifi admin. ','[FirstName] [LastName] has been terminated!')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('WifiAdminEmailAddress', 'The email address to send to the wifi admin.','administrator@shawntest.local')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('HelpDeskEmail', 'The email address to sent to for helpdesk tickets.','scamner@shawntest.local')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ClonedLaptopSubject', 'The email subject for cloned laptops','[FirstName] [LastName] has been terminated!')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ClonedLaptopBody', 'The email body for cloned laptops.','<div> [FirstName] [LastName] ([Username]) has been set to disabled, clone their laptop. </div>')
-INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ActiveUsersFolderPath', 'Active Users root folder','C:\ActiveUsers')
-
+USE EPS
 GO
+
+DECLARE @AdminUsername varchar(50) = 'Administrator'
+DECLARE @AdminFirstName varchar(50) = 'Admin'
+DECLARE @AdminLastName varchar(50) = 'Istrator'
+DECLARE @AdminEmail varchar(50) = 'Admin@test.local'
+
+DECLARE @ADDomain varchar(max) = ''
+DECLARE @ADUsername varchar(max) = ''
+DECLARE @SMTPServer varchar(max) = ''
+DECLARE @EmailFrom varchar(max) = ''
+DECLARE @DisabledNotifyBody varchar(max) = ''
+DECLARE @DisabledNotifySubject varchar(max) = ''
+DECLARE @ExchangeServer varchar(max) = ''
+DECLARE @DisableDistroGroupEmail varchar(max) = ''
+DECLARE @DisableDistroGroupBody varchar(max) = ''
+DECLARE @DisableDistroGroupSubject varchar(max) = ''
+DECLARE @DisabledUsersOU varchar(max) = ''
+DECLARE @DefaultUsersCN varchar(max) = ''
+DECLARE @DefaultPassword varchar(max) = ''
+DECLARE @DisabledFolderPath varchar(max) = ''
+DECLARE @FinalDisableNotifyBody varchar(max) = ''
+DECLARE @FinalDisableNotifySubject varchar(max) = ''
+DECLARE @WifiAdminNotifyBody varchar(max) = ''
+DECLARE @WifiAdminNotifySubject varchar(max) = ''
+DECLARE @WifiAdminEmailAddress varchar(max) = ''
+DECLARE @HelpDeskEmail varchar(max) = ''
+DECLARE @ClonedLaptopSubject varchar(max) = ''
+DECLARE @ClonedLaptopBody varchar(max) = ''
+DECLARE @ActiveUsersFolderPath varchar(max) = ''
+
+INSERT Users (Username, FirstName, LastName, Email) VALUES (@AdminUsername, @AdminFirstName, @AdminLastName, @AdminEmail)
 
 INSERT RunResultStatus (ResultID, ResultStatus) VALUES (1, 'Pending')
 INSERT RunResultStatus (ResultID, ResultStatus) VALUES (2, 'Success')
@@ -1095,11 +1101,55 @@ INSERT RunResultStatus (ResultID, ResultStatus) VALUES (4, 'Failed')
 INSERT RunResultStatus (ResultID, ResultStatus) VALUES (5, 'Skipped/Not Needed')
 INSERT RunResultStatus (ResultID, ResultStatus) VALUES (6, 'Cancelled')
 
-GO
-
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Parameters_ParamName] ON [dbo].[Parameters]
 (
 	[ParamName] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
 
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ADDomain', 'Active Directory Name', @ADDomain)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ADUsername', 'Active Directory Username For Admin', @ADUsername)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('SMTPServer', 'The server used to send emails.', @SMTPServer)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('EmailFrom', 'The "From" address that emails use for this system.', @EmailFrom)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisabledNotifyBody', 'The email body sent to managers of disabled employees.', @DisabledNotifyBody)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisabledNotifySubject', 'The email subject sent to managers of disabled employees.', @DisabledNotifySubject)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ExchangeServer', 'The Exchange Server.', @ExchangeServer)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisableDistroGroupEmail', 'Disabled user Distro Group Email Address', @DisableDistroGroupEmail)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisableDistroGroupBody', 'Disabled Users Distro Group Body', @DisableDistroGroupBody)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisableDistroGroupSubject', 'Disabled Users Distro Group Subject', @DisableDistroGroupSubject)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisabledUsersOU', 'Active Directory Disabled Users OU', @DisabledUsersOU)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DefaultUsersCN', 'Default Users Container', @DefaultUsersCN)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DefaultPassword', 'The default password for re-enabled accounts.', @DefaultPassword)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('DisabledFolderPath', 'The UNC path to the Disabled Users folder.', @DisabledFolderPath)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('FinalDisableNotifyBody', 'The email body sent to managers of disabled employees.', @FinalDisableNotifyBody)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('FinalDisableNotifySubject', 'The email subject sent to managers of disabled employees.', @FinalDisableNotifySubject)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('WifiAdminNotifyBody', 'The mail body for the wifi admin. ', @WifiAdminNotifyBody)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('WifiAdminNotifySubject', 'The mail subject for the wifi admin. ', @WifiAdminNotifySubject)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('WifiAdminEmailAddress', 'The email address to send to the wifi admin.', @WifiAdminEmailAddress)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('HelpDeskEmail', 'The email address to sent to for helpdesk tickets.', @HelpDeskEmail)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ClonedLaptopSubject', 'The email subject for cloned laptops', @ClonedLaptopSubject)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ClonedLaptopBody', 'The email body for cloned laptops.', @ClonedLaptopBody)
+INSERT Parameters (ParamName, ParamDesc, ParamValue) VALUES ('ActiveUsersFolderPath', 'Active Users root folder', @ActiveUsersFolderPath)
+
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('ADDomain', 'Active Directory Name', @ADDomain, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('ADUsername', 'Active Directory Username For Admin', @ADUsername, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('SMTPServer', 'The server used to send emails.', @SMTPServer, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('EmailFrom', 'The "From" address that emails use for this system.', @EmailFrom, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('DisabledNotifyBody', 'The email body sent to managers of disabled employees.', @DisabledNotifyBody, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('DisabledNotifySubject', 'The email subject sent to managers of disabled employees.', @DisabledNotifySubject, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('ExchangeServer', 'The Exchange Server.', @ExchangeServer, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('DisableDistroGroupEmail', 'Disabled user Distro Group Email Address', @DisableDistroGroupEmail, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('DisableDistroGroupBody', 'Disabled Users Distro Group Body', @DisableDistroGroupBody, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('DisableDistroGroupSubject', 'Disabled Users Distro Group Subject', @DisableDistroGroupSubject, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('DisabledUsersOU', 'Active Directory Disabled Users OU', @DisabledUsersOU, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('DefaultUsersCN', 'Default Users Container', @DefaultUsersCN, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('DefaultPassword', 'The default password for re-enabled accounts.', @DefaultPassword, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('DisabledFolderPath', 'The UNC path to the Disabled Users folder.', @DisabledFolderPath, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('FinalDisableNotifyBody', 'The email body sent to managers of disabled employees.', @FinalDisableNotifyBody, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('FinalDisableNotifySubject', 'The email subject sent to managers of disabled employees.', @FinalDisableNotifySubject, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('WifiAdminNotifyBody', 'The mail body for the wifi admin. ', @WifiAdminNotifyBody, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('WifiAdminNotifySubject', 'The mail subject for the wifi admin. ', @WifiAdminNotifySubject, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('WifiAdminEmailAddress', 'The email address to send to the wifi admin.', @WifiAdminEmailAddress, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('HelpDeskEmail', 'The email address to sent to for helpdesk tickets.', @HelpDeskEmail, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('ClonedLaptopSubject', 'The email subject for cloned laptops', @ClonedLaptopSubject, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('ClonedLaptopBody', 'The email body for cloned laptops.', @ClonedLaptopBody, 'Insert', GETDATE(), 1)
+INSERT Parameters_Log (ParamName, ParamDesc, ParamValue, ChangeType, ChangeDate, ChangedBy) VALUES ('ActiveUsersFolderPath', 'Active Users root folder', @ActiveUsersFolderPath, 'Insert', GETDATE(), 1)
