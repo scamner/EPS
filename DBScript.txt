@@ -803,6 +803,19 @@ REFERENCES [dbo].[Workflows] ([WorkflowID])
 GO
 ALTER TABLE [dbo].[WorkflowItems] CHECK CONSTRAINT [FK_WorkflowItems_Workflows]
 GO
+Create Function dbo.fcn_GetManagerName(@EmpID INT) RETURNS Varchar(100)
+AS 
+BEGIN
+	DECLARE @retManager varchar(100)
+
+	SET @retManager = (SELECT mgr.FirstName + ' ' + mgr.LastName FROM Employees mgr 
+		INNER JOIN Employees emp ON mgr.EmpID = emp.ReportsTo  Where emp.EmpID = @EmpID)
+
+	RETURN @retManager
+END
+GO
+ALTER Table Employees ADD ManagerName AS dbo.fcn_GetManagerName(EmpID)
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_DiagramPane1', @value=N'[0E232FF0-B466-11cf-A24F-00AA00A3EFFF, 1.00]
 Begin DesignProperties = 
    Begin PaneConfigurations = 
@@ -1063,33 +1076,48 @@ GO
 USE EPS
 GO
 
-DECLARE @AdminUsername varchar(50) = 'Administrator'
-DECLARE @AdminFirstName varchar(50) = 'Admin'
-DECLARE @AdminLastName varchar(50) = 'Istrator'
-DECLARE @AdminEmail varchar(50) = 'Admin@test.local'
+DECLARE @AdminUsername varchar(50) = 'sgasco'
+DECLARE @AdminFirstName varchar(50) = 'Scott'
+DECLARE @AdminLastName varchar(50) = 'Gasco'
+DECLARE @AdminEmail varchar(50) = 'sgasco@ravagoamericas.com'
 
-DECLARE @ADDomain varchar(max) = ''
+DECLARE @ADDomain varchar(max) = 'ravagoamericas'
 DECLARE @ADUsername varchar(max) = ''
-DECLARE @SMTPServer varchar(max) = ''
+DECLARE @SMTPServer varchar(max) = '32810.ravagoamericas.com'
 DECLARE @EmailFrom varchar(max) = ''
-DECLARE @DisabledNotifyBody varchar(max) = ''
-DECLARE @DisabledNotifySubject varchar(max) = ''
+DECLARE @DisabledNotifyBody varchar(max) = '<p>[ManagerName],</br>
+The account for [FirstName] [LastName] has been disabled and the password changed. The request number is [TicketNumber].
+It will remain in the disabled state for 60 days and still be accessible by those you designate.
+Please notify IT who needs access and if there needs to be an out of office message placed on the mailbox.</br></br>
+After 60 days the account will be removed from the system and the mailbox archived for future need.</br>
+A reminder email will be sent out several days before the final removal.</br>
+Thank you,</br>
+IT Support</p>'
+DECLARE @DisabledNotifySubject varchar(max) = 'Account Disable process - [FirstName] [LastName]'
 DECLARE @ExchangeServer varchar(max) = ''
-DECLARE @DisableDistroGroupEmail varchar(max) = ''
-DECLARE @DisableDistroGroupBody varchar(max) = ''
-DECLARE @DisableDistroGroupSubject varchar(max) = ''
+DECLARE @DisableDistroGroupEmail varchar(max) = 'Disabled_Distribution@ravagoamericas.com'
+DECLARE @DisableDistroGroupBody varchar(max) = '<p>Please disable account for [FirstName] [LastName].</br>
+Username – [Username]</br>Email – [Email]</br></br>
+AD account has been disabled and the password changed.</br>
+Please update ticket number – [TicketNumber]</p>'
+DECLARE @DisableDistroGroupSubject varchar(max) = 'User disable - [FirstName] [LastName]'
 DECLARE @DisabledUsersOU varchar(max) = ''
 DECLARE @DefaultUsersCN varchar(max) = ''
 DECLARE @DefaultPassword varchar(max) = ''
 DECLARE @DisabledFolderPath varchar(max) = ''
-DECLARE @FinalDisableNotifyBody varchar(max) = ''
-DECLARE @FinalDisableNotifySubject varchar(max) = ''
-DECLARE @WifiAdminNotifyBody varchar(max) = ''
-DECLARE @WifiAdminNotifySubject varchar(max) = ''
-DECLARE @WifiAdminEmailAddress varchar(max) = ''
+DECLARE @FinalDisableNotifyBody varchar(max) = '<p>[ManagerName],
+ The account for [FirstName] [LastName] was disabled on [AccountExpirationDate]. </br>The request number is [TicketNumber].
+ </br>In [NumDays] days the account will be removed from the system and the mailbox archived for future need.
+</br>If any mail needs to copied to another employee’s mailbox please do so soon.
+</br></br>Thank you,
+ IT Support</p>'
+DECLARE @FinalDisableNotifySubject varchar(max) = 'Account Disable process - [FirstName] [LastName]'
+DECLARE @WifiAdminNotifyBody varchar(max) = 'Please remove user - [Username] from the Clearpass system.'
+DECLARE @WifiAdminNotifySubject varchar(max) = 'Remove from Clearpass system - [Username]'
+DECLARE @WifiAdminEmailAddress varchar(max) = 'itsupport@ravagoamericas.com,emejia@ravagoameircas.com'
 DECLARE @HelpDeskEmail varchar(max) = ''
-DECLARE @ClonedLaptopSubject varchar(max) = ''
-DECLARE @ClonedLaptopBody varchar(max) = ''
+DECLARE @ClonedLaptopSubject varchar(max) = 'Create image of laptop for [Username]'
+DECLARE @ClonedLaptopBody varchar(max) = 'Please create an image of the laptop for [FirstName] [LastName] – [Username] , if Applicable.'
 DECLARE @ActiveUsersFolderPath varchar(max) = ''
 
 INSERT Users (Username, FirstName, LastName, Email) VALUES (@AdminUsername, @AdminFirstName, @AdminLastName, @AdminEmail)

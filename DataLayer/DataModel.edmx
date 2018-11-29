@@ -18,6 +18,7 @@
           <Property Name="IsManager" Type="bit" Nullable="false" />
           <Property Name="ReportsTo" Type="int" />
           <Property Name="EmpNum" Type="varchar" MaxLength="50" />
+          <Property Name="ManagerName" Type="varchar" MaxLength="100" StoreGeneratedPattern="Computed" />
         </EntityType>
         <EntityType Name="Employees_Log">
           <Key>
@@ -226,6 +227,7 @@ warning 6002: The table/view 'EPS.dbo.vw_RunResults_Log' does not have a primary
             <PropertyRef Name="RunByUserID" />
             <PropertyRef Name="WorkflowID" />
             <PropertyRef Name="RunDate" />
+            
           </Key>
           <Property Name="RunResultID" Type="int" Nullable="false" />
           <Property Name="RunID" Type="int" Nullable="false" />
@@ -243,7 +245,7 @@ warning 6002: The table/view 'EPS.dbo.vw_RunResults_Log' does not have a primary
           <Property Name="RunByUserID" Type="int" Nullable="false" />
           <Property Name="WorkflowID" Type="int" Nullable="false" />
           <Property Name="RunDate" Type="varchar" MaxLength="30" Nullable="false" />
-          <Property Name="RunDateFullDate" Type="date" />
+          <Property Name="RunDateFullDate" Type="date" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'EPS.dbo.vwRunItems' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -768,6 +770,7 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <Property Name="EmpNum" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="RunWorkflows" Relationship="EPSModel.FK_WorkflowRun_Employees" FromRole="Employee" ToRole="RunWorkflow" />
           <NavigationProperty Name="Employees_Log" Relationship="EPSModel.FK_Employees_Log_Employees" FromRole="Employee" ToRole="Employees_Log" />
+          <Property Name="ManagerName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" annotation:StoreGeneratedPattern="Computed" />
         </EntityType>
         <EntityType Name="Employees_Log">
           <Key>
@@ -1274,7 +1277,7 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <Property Name="RunByUserID" Type="Int32" Nullable="false" />
           <Property Name="WorkflowID" Type="Int32" Nullable="false" />
           <Property Name="RunDate" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="RunDateFullDate" Type="DateTime" Precision="0" />
+          <Property Name="RunDateFullDate" Type="DateTime" Precision="0" Nullable="false" />
         </EntityType>
         <Association Name="FK_Employees_Log_Employees">
           <End Type="EPSModel.Employee" Role="Employee" Multiplicity="0..1" />
@@ -1297,6 +1300,7 @@ warning 6002: The table/view 'EPS.dbo.vwRunWorkflow' does not have a primary key
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="EPSModel.Employee">
               <MappingFragment StoreEntitySet="Employees">
+                <ScalarProperty Name="ManagerName" ColumnName="ManagerName" />
                 <ScalarProperty Name="EmpNum" ColumnName="EmpNum" />
                 <ScalarProperty Name="ReportsTo" ColumnName="ReportsTo" />
                 <ScalarProperty Name="IsManager" ColumnName="IsManager" />

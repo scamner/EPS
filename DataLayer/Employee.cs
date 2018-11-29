@@ -30,6 +30,7 @@ namespace DataLayer
         public bool IsManager { get; set; }
         public Nullable<int> ReportsTo { get; set; }
         public string EmpNum { get; set; }
+        public string ManagerName { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RunWorkflow> RunWorkflows { get; set; }

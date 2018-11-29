@@ -30,6 +30,6 @@ namespace DataLayer
         public int RunByUserID { get; set; }
         public int WorkflowID { get; set; }
         public string RunDate { get; set; }
-        public Nullable<System.DateTime> RunDateFullDate { get; set; }
+        public System.DateTime RunDateFullDate { get; set; }
     }
 }

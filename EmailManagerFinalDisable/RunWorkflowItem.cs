@@ -1,5 +1,6 @@
 ﻿using DataLayer;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ItemToRun
@@ -14,6 +15,11 @@ namespace ItemToRun
             try
             {
                 Utilities util = new Utilities();
+
+                String myName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+                LibraryItem li = db.LibraryItems.Where(l => l.LibraryPath.EndsWith(myName + ".dll")).FirstOrDefault();
+
+                String htmlOptions = li.HtmlOptions;
 
                 Employee manager = db.Employees.Where(e => e.EmpID == emp.ReportsTo).FirstOrDefault();
 
@@ -32,6 +38,14 @@ namespace ItemToRun
                 String to = manager.Email;
                 String body = util.GetParam("FinalDisableNotifyBody", "message to disable distro group to notify them of a disabled employee");
                 String subject = util.GetParam("FinalDisableNotifySubject", "subject line for the email to send the disable distro group to notify them of a disabled employee");
+
+                List<RunPayloadItem> thisPL = RunPayload.RunPayloadItems.Where(p => p.ItemID == li.ItemID).ToList();
+
+                string numDays = thisPL.Where(p => p.ElementID == "NumDays").FirstOrDefault().ElementValue;
+                string ticketNumber = thisPL.Where(p => p.ElementID == "TicketNumber").FirstOrDefault().ElementValue;
+
+                body = body.Replace("[NumDays]", numDays);
+                body = body.Replace("[TicketNumber]", ticketNumber);
 
                 util.SendEmail(EmpID, from, to, null, null, subject, body);
 

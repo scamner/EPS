@@ -12,6 +12,7 @@ using System.Web.Script.Serialization;
 using Newtonsoft;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.DirectoryServices.AccountManagement;
 
 namespace DataLayer
 {
@@ -23,6 +24,14 @@ namespace DataLayer
         {
             Employee emp = db.Employees.Where(e => e.EmpID == EmpID).FirstOrDefault();
             Parameter param = db.Parameters.Where(p => p.ParamName == "SMTPServer").FirstOrDefault();
+
+            String domain = GetParam("ADDomain", "Active Directory domain");
+            String adminName = GetParam("ADUsername", "Active Directory admin user");
+            String password = GetParam("ADPassword", "Active Directory admin user password");
+
+            PrincipalContext context = new PrincipalContext(ContextType.Domain, domain, adminName, password);
+            UserPrincipal user = UserPrincipal.FindByIdentity
+                    (context, emp.Username);
 
             if (param == null)
             {
@@ -45,6 +54,17 @@ namespace DataLayer
             {
                 Body = Body.Replace(String.Format("[{0}]", prop.Name), prop.GetValue(emp).ToString());
                 Subject = Subject.Replace(String.Format("[{0}]", prop.Name), prop.GetValue(emp).ToString());
+            }
+
+            foreach (System.Reflection.PropertyInfo prop in typeof(UserPrincipal).GetProperties())
+            {
+                if (prop.GetValue(user) != null)
+                {
+                    String val = prop.GetValue(user).ToString();
+
+                    Body = Body.Replace(String.Format("[{0}]", prop.Name), val);
+                    Subject = Subject.Replace(String.Format("[{0}]", prop.Name), val);
+                }
             }
 
             message.Subject = Subject;
