@@ -16,9 +16,9 @@ namespace DataLayer
 
         public DirectoryEntry GetUserByPath(String Path)
         {
-            String Domain = db.Parameters.Where(p => p.ParamName == "ADDomain").FirstOrDefault().ParamValue;
-            Parameter adminName = db.Parameters.Where(p => p.ParamName == "ADUsername").FirstOrDefault();
-            Parameter password = db.Parameters.Where(p => p.ParamName == "ADPassword").FirstOrDefault();
+            String Domain = db.Parameters.AsNoTracking().Where(p => p.ParamName == "ADDomain").FirstOrDefault().ParamValue;
+            Parameter adminName = db.Parameters.AsNoTracking().Where(p => p.ParamName == "ADUsername").FirstOrDefault();
+            Parameter password = db.Parameters.AsNoTracking().Where(p => p.ParamName == "ADPassword").FirstOrDefault();
 
             password.ParamValue = util.Decrypt(password.ParamValue);
 
@@ -61,9 +61,9 @@ namespace DataLayer
         public List<ADUser> SearchAD(String FirstName, String LastName, Boolean ForUser, int AuditUserID)
         {
             List<ADUser> lstUsers = new List<ADUser>();
-            String Domain = db.Parameters.Where(p => p.ParamName == "ADDomain").FirstOrDefault().ParamValue;
-            Parameter adminName = db.Parameters.Where(p => p.ParamName == "ADUsername").FirstOrDefault();
-            Parameter password = db.Parameters.Where(p => p.ParamName == "ADPassword").FirstOrDefault();
+            String Domain = db.Parameters.AsNoTracking().Where(p => p.ParamName == "ADDomain").FirstOrDefault().ParamValue;
+            Parameter adminName = db.Parameters.AsNoTracking().Where(p => p.ParamName == "ADUsername").FirstOrDefault();
+            Parameter password = db.Parameters.AsNoTracking().Where(p => p.ParamName == "ADPassword").FirstOrDefault();
 
             password.ParamValue = util.Decrypt(password.ParamValue);
 

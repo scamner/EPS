@@ -23,6 +23,7 @@ function AddEmployee(ADGUID, Email, FirstName, LastName, Username, EmpNum) {
 
                 $('#lblAddEmp_' + Username).css('display', 'block');
                 $('#btnAddEmp_' + Username).css('display', 'none');
+                $('#btnAddUser_' + Username).css('display', 'none');
                 $('#ddlReportTo_' + Username).css('display', 'none');
 
                 ShowMessage('Employee Added', 'show', false);

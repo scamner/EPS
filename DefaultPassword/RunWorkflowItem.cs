@@ -20,7 +20,7 @@ namespace ItemToRun
                 String domain = util.GetParam("ADDomain", "Active Directory domain");
                 String adminName = util.GetParam("ADUsername", "Active Directory admin user");
                 String password = util.GetParam("ADPassword", "Active Directory admin user password");
-                String defaultPassword = util.GetParam("DefaultPassword", "default password for re-enabled users");
+                String defaultPassword = String.Format("AA{0}^", Guid.NewGuid().ToString());
 
                 PrincipalContext context = new PrincipalContext(ContextType.Domain, domain, adminName, password);
                 UserPrincipal user = UserPrincipal.FindByIdentity(context, emp.Username);

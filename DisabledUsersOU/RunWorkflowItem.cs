@@ -22,6 +22,8 @@ namespace ItemToRun
                 String adminName = util.GetParam("ADUsername", "Active Directory admin user");
                 String password = util.GetParam("ADPassword", "Active Directory admin user password");
                 String ou = util.GetParam("DisabledUsersOU", "Active Directory Disabled Users OU path");
+                String myName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+                LibraryItem li = db.LibraryItems.Where(l => l.LibraryPath.EndsWith(myName + ".dll")).FirstOrDefault();
 
                 PrincipalContext context = new PrincipalContext(ContextType.Domain, domain, adminName, password);
                 UserPrincipal user = UserPrincipal.FindByIdentity(context, emp.Username);
@@ -38,7 +40,7 @@ namespace ItemToRun
 
                 String OUCheckUser = userOU.Path.ToString();
 
-                if (OUCheckUser.EndsWith(ou))
+                if (OUCheckUser.EndsWith(disabledOU.Path.Replace("LDAP://", "")))
                 {
                     isInOUAlready = true;
                 }
@@ -48,8 +50,15 @@ namespace ItemToRun
                     return new Utilities.ItemRunResult { ResultID = 5, ResultText = String.Format("{0} is already in the Disabled Users OU.", emp.Username), TimeDone = DateTime.Now};
                 }
 
+                String plPath = userOU.Path.Replace(String.Format("CN={0} {1},", emp.FirstName, emp.LastName), "");
+
                 userOU.MoveTo(disabledOU);
                 userOU.Close();
+
+                String htmlAnswers = String.Format("{1}:UserOUPath={0}", plPath, li.ItemID);
+
+                RunWorkflow run = db.RunWorkflows.Where(r => r.EmpID == EmpID).OrderByDescending(r => r.StartTime).FirstOrDefault();
+                util.SetPayload(run.RunID, li.ItemID, htmlAnswers);
 
                 return new Utilities.ItemRunResult { ResultID = 2, ResultText = String.Format("{0} {1} was moved to the Disabled Users OU in Active Directory.", emp.FirstName, emp.LastName), TimeDone = DateTime.Now};
             }

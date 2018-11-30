@@ -24,7 +24,7 @@
                     <label for="Username">Username:</label>
                 </td>
                 <td>
-                    @Html.TextBox("Username", "scamner")
+                    @Html.TextBox("Username")
                     <br />
                     @Html.ValidationMessageFor(model => model.Username)
                 </td>
@@ -34,7 +34,7 @@
                     <label for="Password">Password:</label>
                 </td>
                 <td>
-                    @Html.Password("Password", "Nin^2020", new { @autocomplete = "off" })
+                    @Html.Password("Password", "", new { @autocomplete = "off" })
                     <br />
                     @Html.ValidationMessageFor(model => model.Password)
                 </td>

@@ -27,7 +27,7 @@ namespace EPS.Controllers
             {
                 User user = db.Users.Where(u => u.Username == Username).FirstOrDefault();
                 Boolean isGood = false;
-                String Domain = db.Parameters.Where(p => p.ParamName == "ADDomain").FirstOrDefault().ParamValue;
+                String Domain = db.Parameters.AsNoTracking().Where(p => p.ParamName == "ADDomain").FirstOrDefault().ParamValue;
 
                 if (user != null)
                 {

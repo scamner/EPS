@@ -23,7 +23,7 @@ namespace DataLayer
         public void SendEmail(int EmpID, String FromEmail, String ToEmail, String[] CC, String[] BCC, String Subject, String Body)
         {
             Employee emp = db.Employees.Where(e => e.EmpID == EmpID).FirstOrDefault();
-            Parameter param = db.Parameters.Where(p => p.ParamName == "SMTPServer").FirstOrDefault();
+            Parameter param = db.Parameters.AsNoTracking().Where(p => p.ParamName == "SMTPServer").FirstOrDefault();
 
             String domain = GetParam("ADDomain", "Active Directory domain");
             String adminName = GetParam("ADUsername", "Active Directory admin user");

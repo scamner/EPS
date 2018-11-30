@@ -73,6 +73,7 @@ function AddUser(ADGUID, Email, FirstName, LastName, Username) {
 
                 $('#lblAddEmp_' + Username).css('display', 'block');
                 $('#btnAddEmp_' + Username).css('display', 'none');
+                $('#btnAddUser_' + Username).css('display', 'none');
 
                 ShowMessage('User Added', 'show', false);
             }
